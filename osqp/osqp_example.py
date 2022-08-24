@@ -15,7 +15,13 @@ prob = osqp.OSQP()
 # Setup workspace and change alpha parameter
 prob.setup(P, q, A, l, u, alpha=1.0)
 
-prob.codegen("generated", FLOAT=True, force_rewrite=True, project_type='Makefile')
+prob.codegen("cffirmware_osqp/src/generated",
+    project_type='Makefile',
+    # parameters='matrices',
+    python_ext_name='emosqp',
+    force_rewrite=True)#,
+    # FLOAT=True,
+    # LONG=False)
 
 # Solve problem
 res = prob.solve()

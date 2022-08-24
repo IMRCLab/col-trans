@@ -6,38 +6,38 @@ extern "C" {
 # endif /* ifdef __cplusplus */
 
 /* DEBUG */
-/* #undef DEBUG */
+#cmakedefine DEBUG
 
 /* Operating system */
-#define IS_LINUX
-/* #undef IS_MAC */
-/* #undef IS_WINDOWS */
+#cmakedefine IS_LINUX
+#cmakedefine IS_MAC
+#cmakedefine IS_WINDOWS
 
 /* EMBEDDED */
-#define EMBEDDED (1)
+#cmakedefine EMBEDDED (@EMBEDDED@)
 
 /* PRINTING */
-/* #undef PRINTING */
+#cmakedefine PRINTING
 
 /* PROFILING */
-/* #undef PROFILING */
+#cmakedefine PROFILING
 
 /* CTRLC */
-/* #undef CTRLC */
+#cmakedefine CTRLC
 
 /* DFLOAT */
-#undef DFLOAT
+#cmakedefine DFLOAT
 
 /* DLONG */
-#define DLONG
+#cmakedefine DLONG
 
 /* ENABLE_MKL_PARDISO */
-/* #undef ENABLE_MKL_PARDISO */
+#cmakedefine ENABLE_MKL_PARDISO
 
 /* MEMORY MANAGEMENT */
-/* #undef OSQP_CUSTOM_MEMORY */
+#cmakedefine OSQP_CUSTOM_MEMORY
 #ifdef OSQP_CUSTOM_MEMORY
-#include ""
+#include "@OSQP_CUSTOM_MEMORY@"
 #endif
 
 

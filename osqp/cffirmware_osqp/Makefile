@@ -20,6 +20,9 @@ CRAZYFLIE_BASE := ../../crazyflie-firmware
 #
 OOT_CONFIG := $(PWD)/app-config
 
-# EXTRA_CFLAGS += -DEMBEDDED=2
+#
+# To include header files from other directories
+#
+EXTRA_CFLAGS += -I$(PWD)/src/generated/include
 
 include $(CRAZYFLIE_BASE)/tools/make/oot.mk
