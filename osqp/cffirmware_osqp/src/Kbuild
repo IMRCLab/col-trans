@@ -9,3 +9,5 @@ obj-y += generated/src/osqp/error.o
 obj-y += generated/src/osqp/scaling.o
 obj-y += generated/src/osqp/proj.o
 obj-y += generated/src/osqp/util.o
+# only needed if embedded == 2
+obj-y += generated/src/osqp/kkt.o

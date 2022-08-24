@@ -23,7 +23,7 @@ Define macros
 # Pass EMBEDDED flag to cmake to generate osqp_configure.h
 # and qdldl_types.h files
 cmake_args = []
-embedded_flag = 1
+embedded_flag = 2
 cmake_args += ['-DEMBEDDED:INT=%i' % embedded_flag]
 
 # Pass Python flag to compile interface
@@ -74,7 +74,7 @@ emosqp = Extension('emosqp',
 
 
 setup(name='emosqp',
-      version='0.6.2.post0',
+      version='0.6.2.post5',
       author='Bartolomeo Stellato, Goran Banjac',
       author_email='bartolomeo.stellato@gmail.com',
       description='This is the Python module for embedded OSQP: ' +

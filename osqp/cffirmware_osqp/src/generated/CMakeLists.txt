@@ -31,7 +31,7 @@ endif()
 #   2 :   Yes. Matrix update allowed.
 
 if (NOT DEFINED EMBEDDED)  # enable embedded anyway
-    set (EMBEDDED 1)
+    set (EMBEDDED 2)
 endif()
 
 message(STATUS "Embedded is ${EMBEDDED}")

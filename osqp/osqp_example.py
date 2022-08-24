@@ -17,11 +17,11 @@ prob.setup(P, q, A, l, u, alpha=1.0)
 
 prob.codegen("cffirmware_osqp/src/generated",
     project_type='Makefile',
-    # parameters='matrices',
+    parameters='matrices',
     python_ext_name='emosqp',
-    force_rewrite=True)#,
-    # FLOAT=True,
-    # LONG=False)
+    force_rewrite=True,
+    FLOAT=True,
+    LONG=False)
 
 # Solve problem
 res = prob.solve()
