@@ -39,12 +39,32 @@
 #define DEBUG_MODULE "HELLOWORLD"
 #include "debug.h"
 
+#include "usec_time.h"
+
+
+// OSQP
+#include "workspace.h"
+#include "osqp.h"
 
 void appMain() {
-  DEBUG_PRINT("Waiting for activation ...\n");
 
   while(1) {
-    vTaskDelay(M2T(2000));
-    DEBUG_PRINT("Hello World!\n");
+
+    // Solve Problem
+    uint64_t start = usecTimestamp();
+    osqp_solve(&workspace);
+    uint64_t end = usecTimestamp();
+
+    // Print status
+    DEBUG_PRINT("Status:                %s\n", (&workspace)->info->status);
+    DEBUG_PRINT("Number of iterations:  %d\n", (int)((&workspace)->info->iter));
+    DEBUG_PRINT("Objective value:       %f\n", (&workspace)->info->obj_val);
+    DEBUG_PRINT("Primal residual:       %f\n", (&workspace)->info->pri_res);
+    DEBUG_PRINT("Dual residual:         %f\n", (&workspace)->info->dua_res);
+    DEBUG_PRINT("time: %d us\n", (int)(end - start));
+
+
+    vTaskDelay(M2T(1000));
+
   }
 }

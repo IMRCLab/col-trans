@@ -1,1 +1,11 @@
 obj-y += hello_world.o
+obj-y += workspace.o
+obj-y += qdldl.o
+obj-y += qdldl_interface.o
+obj-y += osqp.o
+obj-y += auxil.o
+obj-y += lin_alg.o
+obj-y += error.o
+obj-y += scaling.o
+obj-y += proj.o
+obj-y += util.o

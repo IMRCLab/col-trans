@@ -20,4 +20,6 @@ CRAZYFLIE_BASE := ../../crazyflie-firmware
 #
 OOT_CONFIG := $(PWD)/app-config
 
+# EXTRA_CFLAGS += -DEMBEDDED=2
+
 include $(CRAZYFLIE_BASE)/tools/make/oot.mk
