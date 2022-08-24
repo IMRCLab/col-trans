@@ -93,7 +93,7 @@ void set_rho_vec(OSQPWorkspace *work) {
       work->constr_type[i] = 0;
       work->rho_vec[i]     = work->settings->rho;
     }
-    work->rho_inv_vec[i] = 1. / work->rho_vec[i];
+    work->rho_inv_vec[i] = 1.f / work->rho_vec[i];
   }
 }
 
@@ -110,7 +110,7 @@ c_int update_rho_vec(OSQPWorkspace *work) {
       if (work->constr_type[i] != -1) {
         work->constr_type[i] = -1;
         work->rho_vec[i]     = RHO_MIN;
-        work->rho_inv_vec[i] = 1. / RHO_MIN;
+        work->rho_inv_vec[i] = 1.f / RHO_MIN;
         constr_type_changed  = 1;
       }
     } else if (work->data->u[i] - work->data->l[i] < RHO_TOL) {
@@ -118,7 +118,7 @@ c_int update_rho_vec(OSQPWorkspace *work) {
       if (work->constr_type[i] != 1) {
         work->constr_type[i] = 1;
         work->rho_vec[i]     = RHO_EQ_OVER_RHO_INEQ * work->settings->rho;
-        work->rho_inv_vec[i] = 1. / work->rho_vec[i];
+        work->rho_inv_vec[i] = 1.f / work->rho_vec[i];
         constr_type_changed  = 1;
       }
     } else {
@@ -126,7 +126,7 @@ c_int update_rho_vec(OSQPWorkspace *work) {
       if (work->constr_type[i] != 0) {
         work->constr_type[i] = 0;
         work->rho_vec[i]     = work->settings->rho;
-        work->rho_inv_vec[i] = 1. / work->settings->rho;
+        work->rho_inv_vec[i] = 1.f / work->settings->rho;
         constr_type_changed  = 1;
       }
     }
@@ -378,11 +378,11 @@ c_int is_primal_infeasible(OSQPWorkspace *work, c_float eps_prim_inf) {
         work->delta_y[i] = 0.0;
       } else {
         // Only upper bound infinite
-        work->delta_y[i] = c_min(work->delta_y[i], 0.0);
+        work->delta_y[i] = c_min(work->delta_y[i], 0.0f);
       }
     } else if (work->data->l[i] < -OSQP_INFTY * MIN_SCALING) {  // Infinite lower bound
       // Only lower bound infinite
-      work->delta_y[i] = c_max(work->delta_y[i], 0.0);
+      work->delta_y[i] = c_max(work->delta_y[i], 0.0f);
     }
   }
 

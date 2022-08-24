@@ -1297,12 +1297,12 @@ c_int osqp_update_rho(OSQPWorkspace *work, c_float rho_new) {
     if (work->constr_type[i] == 0) {
       // Inequalities
       work->rho_vec[i]     = work->settings->rho;
-      work->rho_inv_vec[i] = 1. / work->settings->rho;
+      work->rho_inv_vec[i] = 1.f / work->settings->rho;
     }
     else if (work->constr_type[i] == 1) {
       // Equalities
       work->rho_vec[i]     = RHO_EQ_OVER_RHO_INEQ * work->settings->rho;
-      work->rho_inv_vec[i] = 1. / work->rho_vec[i];
+      work->rho_inv_vec[i] = 1.f / work->rho_vec[i];
     }
   }
 
@@ -1348,7 +1348,7 @@ c_int osqp_update_eps_abs(OSQPWorkspace *work, c_float eps_abs_new) {
   if (!work) return osqp_error(OSQP_WORKSPACE_NOT_INIT_ERROR);
 
   // Check that eps_abs is positive
-  if (eps_abs_new < 0.) {
+  if (eps_abs_new < 0.f) {
 #ifdef PRINTING
     c_eprint("eps_abs must be nonnegative");
 #endif /* ifdef PRINTING */
@@ -1367,7 +1367,7 @@ c_int osqp_update_eps_rel(OSQPWorkspace *work, c_float eps_rel_new) {
   if (!work) return osqp_error(OSQP_WORKSPACE_NOT_INIT_ERROR);
 
   // Check that eps_rel is positive
-  if (eps_rel_new < 0.) {
+  if (eps_rel_new < 0.f) {
 #ifdef PRINTING
     c_eprint("eps_rel must be nonnegative");
 #endif /* ifdef PRINTING */
@@ -1386,7 +1386,7 @@ c_int osqp_update_eps_prim_inf(OSQPWorkspace *work, c_float eps_prim_inf_new) {
   if (!work) return osqp_error(OSQP_WORKSPACE_NOT_INIT_ERROR);
 
   // Check that eps_prim_inf is positive
-  if (eps_prim_inf_new < 0.) {
+  if (eps_prim_inf_new < 0.f) {
 #ifdef PRINTING
     c_eprint("eps_prim_inf must be nonnegative");
 #endif /* ifdef PRINTING */
@@ -1405,7 +1405,7 @@ c_int osqp_update_eps_dual_inf(OSQPWorkspace *work, c_float eps_dual_inf_new) {
   if (!work) return osqp_error(OSQP_WORKSPACE_NOT_INIT_ERROR);
 
   // Check that eps_dual_inf is positive
-  if (eps_dual_inf_new < 0.) {
+  if (eps_dual_inf_new < 0.f) {
 #ifdef PRINTING
     c_eprint("eps_dual_inf must be nonnegative");
 #endif /* ifdef PRINTING */
@@ -1425,7 +1425,7 @@ c_int osqp_update_alpha(OSQPWorkspace *work, c_float alpha_new) {
   if (!work) return osqp_error(OSQP_WORKSPACE_NOT_INIT_ERROR);
 
   // Check that alpha is between 0 and 2
-  if ((alpha_new <= 0.) || (alpha_new >= 2.)) {
+  if ((alpha_new <= 0.f) || (alpha_new >= 2.f)) {
 #ifdef PRINTING
     c_eprint("alpha must be between 0 and 2");
 #endif /* ifdef PRINTING */

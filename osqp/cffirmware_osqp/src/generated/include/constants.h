@@ -56,20 +56,20 @@ extern const char * OSQP_ERROR_MESSAGE[];
 * Solver Parameters and Settings *
 **********************************/
 
-# define RHO (0.1)
-# define SIGMA (1E-06)
+# define RHO (0.1f)
+# define SIGMA (1E-06f)
 # define MAX_ITER (4000)
-# define EPS_ABS (1E-3)
-# define EPS_REL (1E-3)
-# define EPS_PRIM_INF (1E-4)
-# define EPS_DUAL_INF (1E-4)
-# define ALPHA (1.6)
+# define EPS_ABS (1E-3f)
+# define EPS_REL (1E-3f)
+# define EPS_PRIM_INF (1E-4f)
+# define EPS_DUAL_INF (1E-4f)
+# define ALPHA (1.6f)
 # define LINSYS_SOLVER (QDLDL_SOLVER)
 
-# define RHO_MIN (1e-06)
-# define RHO_MAX (1e06)
-# define RHO_EQ_OVER_RHO_INEQ (1e03)
-# define RHO_TOL (1e-04) ///< tolerance for detecting if an inequality is set to equality
+# define RHO_MIN (1e-06f)
+# define RHO_MAX (1e06f)
+# define RHO_EQ_OVER_RHO_INEQ (1e03f)
+# define RHO_TOL (1e-04f) ///< tolerance for detecting if an inequality is set to equality
 
 
 # ifndef EMBEDDED
@@ -84,8 +84,8 @@ extern const char * OSQP_ERROR_MESSAGE[];
 # define WARM_START (1)
 # define SCALING (10)
 
-# define MIN_SCALING (1e-04) ///< minimum scaling value
-# define MAX_SCALING (1e+04) ///< maximum scaling value
+# define MIN_SCALING (1e-04f) ///< minimum scaling value
+# define MAX_SCALING (1e+04f) ///< maximum scaling value
 
 
 # ifndef OSQP_NULL

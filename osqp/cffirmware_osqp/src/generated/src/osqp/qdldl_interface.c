@@ -398,7 +398,7 @@ c_int update_linsys_solver_rho_vec_qdldl(qdldl_solver * s, const c_float * rho_v
 
     // Update internal rho_inv_vec
     for (i = 0; i < s->m; i++){
-        s->rho_inv_vec[i] = 1. / rho_vec[i];
+        s->rho_inv_vec[i] = 1.0f / rho_vec[i];
     }
 
     // Update KKT matrix with new rho_vec

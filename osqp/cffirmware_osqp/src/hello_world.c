@@ -52,15 +52,18 @@ void appMain() {
 
     // Solve Problem
     uint64_t start = usecTimestamp();
+
+    // use osqp_update_P, osqp_update_A, etc. to adjust the problem here
+
     osqp_solve(&workspace);
     uint64_t end = usecTimestamp();
 
     // Print status
     DEBUG_PRINT("Status:                %s\n", (&workspace)->info->status);
-    DEBUG_PRINT("Number of iterations:  %d\n", (int)((&workspace)->info->iter));
-    DEBUG_PRINT("Objective value:       %f\n", (&workspace)->info->obj_val);
-    DEBUG_PRINT("Primal residual:       %f\n", (&workspace)->info->pri_res);
-    DEBUG_PRINT("Dual residual:         %f\n", (&workspace)->info->dua_res);
+    // DEBUG_PRINT("Number of iterations:  %d\n", (int)((&workspace)->info->iter));
+    // DEBUG_PRINT("Objective value:       %f\n", (&workspace)->info->obj_val);
+    // DEBUG_PRINT("Primal residual:       %f\n", (&workspace)->info->pri_res);
+    // DEBUG_PRINT("Dual residual:         %f\n", (&workspace)->info->dua_res);
     DEBUG_PRINT("time: %d us\n", (int)(end - start));
 
 

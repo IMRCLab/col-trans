@@ -117,8 +117,8 @@ QDLDL_int QDLDL_factor(const QDLDL_int    n,
 
   // First element of the diagonal D.
   D[0]     = Ax[0];
-  if(D[0] == 0.0){return -1;}
-  if(D[0]  > 0.0){positiveValuesInD++;}
+  if(D[0] == 0.0f){return -1;}
+  if(D[0]  > 0.0f){positiveValuesInD++;}
   Dinv[0] = 1/D[0];
 
   //Start from 1 here. The upper LH corner is trivially 0
@@ -220,8 +220,8 @@ QDLDL_int QDLDL_factor(const QDLDL_int    n,
     //Maintain a count of the positive entries
     //in D.  If we hit a zero, we can't factor
     //this matrix, so abort
-    if(D[k] == 0.0){return -1;}
-    if(D[k]  > 0.0){positiveValuesInD++;}
+    if(D[k] == 0.0f){return -1;}
+    if(D[k]  > 0.0f){positiveValuesInD++;}
 
     //compute the inverse of the diagonal
     Dinv[k]= 1/D[k];

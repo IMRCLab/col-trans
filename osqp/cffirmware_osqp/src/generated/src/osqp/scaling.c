@@ -8,7 +8,7 @@ void limit_scaling(c_float *D, c_int n) {
   c_int i;
 
   for (i = 0; i < n; i++) {
-    D[i] = D[i] < MIN_SCALING ? 1.0 : D[i];
+    D[i] = D[i] < MIN_SCALING ? 1.0f : D[i];
     D[i] = D[i] > MAX_SCALING ? MAX_SCALING : D[i];
   }
 }
@@ -129,7 +129,7 @@ c_int scale_data(OSQPWorkspace *work) {
     limit_scaling(&c_temp, 1);
 
     // Invert scaling c = 1 / cost_measure
-    c_temp = 1. / c_temp;
+    c_temp = 1.f / c_temp;
 
     // Scale P
     mat_mult_scalar(work->data->P, c_temp);
@@ -143,7 +143,7 @@ c_int scale_data(OSQPWorkspace *work) {
 
 
   // Store cinv, Dinv, Einv
-  work->scaling->cinv = 1. / work->scaling->c;
+  work->scaling->cinv = 1.f / work->scaling->c;
   vec_ew_recipr(work->scaling->D, work->scaling->Dinv, work->data->n);
   vec_ew_recipr(work->scaling->E, work->scaling->Einv, work->data->m);
 

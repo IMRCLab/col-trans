@@ -26,10 +26,10 @@ extern "C" {
 /* #undef CTRLC */
 
 /* DFLOAT */
-/* #undef DFLOAT */
+#define DFLOAT (1)
 
 /* DLONG */
-#define DLONG
+// #define DLONG
 
 /* ENABLE_MKL_PARDISO */
 /* #undef ENABLE_MKL_PARDISO */
