@@ -64,6 +64,9 @@ void appMain() {
     // DEBUG_PRINT("Objective value:       %f\n", (&workspace)->info->obj_val);
     // DEBUG_PRINT("Primal residual:       %f\n", (&workspace)->info->pri_res);
     // DEBUG_PRINT("Dual residual:         %f\n", (&workspace)->info->dua_res);
+     for (int i = 0; i < 6; ++i) {
+      DEBUG_PRINT("result (%d): %f\n", i, (double)((&workspace)->solution->x[i]));
+    }
     DEBUG_PRINT("time: %d us\n", (int)(end - start));
 
 
