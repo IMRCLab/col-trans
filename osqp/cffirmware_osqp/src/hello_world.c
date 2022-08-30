@@ -41,7 +41,7 @@
 
 #include "usec_time.h"
 
-
+#include "math3d.h"
 // OSQP
 #include "workspace.h"
 #include "osqp.h"
@@ -53,7 +53,30 @@ void appMain() {
     // Solve Problem
     uint64_t start = usecTimestamp();
 
-    // use osqp_update_P, osqp_update_A, etc. to adjust the problem here
+    // use osqp_update_P, osqp_update_A, etc. to adjust the problem here 
+    // A matrix have [A_equality, A_inequality]
+    // A_equality: P martix in the paper (eq. 23) P @ mu == Fd
+    // A_inequality: Fixed hyperplanes at angle of 20 degrees with the z-axis
+    // our objective is to update the lower and the upper bounds in the first three indices only.
+    // l = [Ud[0], Ud[1], Ud[2], -inf, -inf]
+    // u = [Ud[0], Ud[1], Ud[2],   0,    0]
+    // They are dependent on the desired forces applied on the payload.
+   
+    // First trial at time = 7.301 [s]
+    // Fd = [-0.000687801451762	7.75278822401621E-05	0.171593864239784]
+    // Expected result = [-0.005584135823817	0.029758117364301	0.085884672451666	0.004896525877707	-0.02968066880112	0.085663796567353]
+    // c_float l_new[6] = {-0.000687801451762,	7.75278822401621E-05,	0.171593864239784, -INFINITY, -INFINITY};
+    // c_float u_new[6] =  {-0.000687801451762,	7.75278822401621E-05,	0.171593864239784, 0, 0};
+    //////////////////////////////
+    // Second Trial at time = 4.589	[s]
+    // Fd = [-0.001026575844217	5.48644314921118E-05	0.172234130371821]
+    // Expected result = [-0.00577303063058	0.029857674746736	0.086225314351011	0.004746737438521	-0.029802894650152	0.085963251417401]
+    c_float l_new[6] = {-0.001026575844217, 5.48644314921118E-05,	0.172234130371821, -INFINITY, -INFINITY};
+    c_float u_new[6] =  {-0.001026575844217, 5.48644314921118E-05,	0.172234130371821, 0, 0};
+
+
+    osqp_update_lower_bound(&workspace, l_new);
+    osqp_update_upper_bound(&workspace, u_new);
 
     osqp_solve(&workspace);
     uint64_t end = usecTimestamp();
