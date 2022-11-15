@@ -21,3 +21,11 @@ make
 ```
 
 Note that this uses a simple out-of-source-build. All submodules need to recursively updated (`git submodule update --init --recursive`).
+
+## ROS2 Package
+
+Use a symlink to your ROS2 workspace
+
+```
+ln -s <path-to>/col-trans/coltrans_ros <path-to>/ros2_workspace/src
+```
