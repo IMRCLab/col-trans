@@ -3,23 +3,44 @@ robots:
   cf5:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E705
-    initial_position: [0.29279852, 0.1690473,0.0]
+    initial_position: [0.0, 0.5, 0.0]
     type: cf21 # cf21_betafpv  # see robot_types
+    firmware_params:
+      stabilizer:
+        otherID: 6
+      ctrlLeeP:
+        value: 0.0
+        radius: 0.2
+        Kpos_P_limit: 0.01
+        Kpos_D_limit: 0.05
+        Kpos_I_limit: 0.0
+
     # firmware_params:
       # kalman:
       #   pNAcc_xy: 1.0 # default 0.5
   cf6:
-    enabled: false
+    enabled: true
     uri: radio://0/80/2M/E7E7E7E706
-    initial_position: [-0.29279852, 0.1690473,0.0]
+    initial_position: [0.0, -0.5, 0.0]
     type: cf21 #cf21_betafpv # see robot_types
-    # firmware_params:
+    firmware_params:
+      stabilizer:
+        otherID: 5
+      ctrlLeeP:
+        value: 1.0
+        radius: 0.2
+        Kpos_P_limit: 0.01
+        Kpos_D_limit: 0.05
+        Kpos_I_limit: 0.0
+
+
       # kalman:
       #   pNAcc_xy: 1.0 # default 0.5
+
   cf255:
-    enabled: false
+    enabled: true
     uri: radio://0/80/2M/E7E7E7E7FF
-    initial_position: [0.0,0.0,0.0]
+    initial_position: [0.0, 0.0, 0.0]
     type: cf21 #cf21_betafpv # see robot_types
     # firmware_params:
       # kalman:
@@ -27,19 +48,23 @@ robots:
   cf4:
     enabled: false
     uri: radio://0/80/2M/E7E7E7E704
-    initial_position: [0.0,-0.33809461,0.0]
+    initial_position: [0.0, 0.5, 0.0]
     type: cf21 #cf21_betafpv # see robot_types
-    # firmware_params:
+    firmware_params:
+      stabilizer:
+        otherID: 6
+      ctrlLeeP:
+        value: 0.0
+        radius: 0.3
       # kalman:
       #   pNAcc_xy: 1.0 # default 0.5
-      
 # Definition of the various robot types
 robot_types:
   cf21:
     motion_capture:
       enabled: true
       # only if enabled; see motion_capture.yaml
-      marker:  systemid #  default_single_marker
+      marker: default_single_marker  #  default_single_marker
       dynamics: default
     big_quad: false
     battery:
@@ -82,7 +107,7 @@ robot_types:
         Kpos_Iz: 0.0  # 8.0
         KR_x: 0.006 #0.0055   # def: 0.005  
         KR_y: 0.006 #0.0055  # def: 0.005
-        KR_z:  0.006 #0.008   # def: 0.005
+        KR_z: 0.006  #0.008   # def: 0.005
         Kw_x: 0.002 #0.0013 # def: 0.0009
         Kw_y: 0.002 #0.0013  # def: 0.0009
         Kw_z: 0.0015  # def: 0.0012
@@ -114,7 +139,7 @@ all:
       enHighLevel: 1
     stabilizer:
       estimator: 2 # 1: complementary, 2: kalman
-      controller: 6 # 1: PID, 2: mellinger 4: sjc 6: Lee 7: lee payload
+      controller: 7 # 1: PID, 2: mellinger 4: sjc 6: Lee 7: lee payload
       pAlpha: 0.9
     ctrlLee:
       Kpos_Px: 9.0 # def: 10.0
@@ -128,7 +153,7 @@ all:
       Kpos_Iz: 8.0
       KR_x: 0.0055 #0.0055   # def: 0.005  
       KR_y: 0.0055 #0.0055  # def: 0.005
-      KR_z:  0.01 #0.008   # def: 0.005
+      KR_z: 0.01  #0.008   # def: 0.005
       Kw_x: 0.0013 #0.0013 # def: 0.0009
       Kw_y: 0.0013 #0.0013  # def: 0.0009
       Kw_z: 0.002  # def: 0.0012
@@ -138,65 +163,65 @@ all:
       mass: 0.0333
     ctrlLeeP:
       # P load
-      Kpos_Px    : 15.0 #18.0 #15.0 #20.0 #15.0 #100.0 #60.0
-      Kpos_Py    : 15.0 #18.0 #15.0 #20.0 #15.0 #100.0 #60.0
-      Kpos_Pz    : 15.0 #18.0 #20.0 #15.0 #160.0 #90.0
+      Kpos_Px: 15.0     #18.0 #15.0 #20.0 #15.0 #100.0 #60.0
+      Kpos_Py: 15.0     #18.0 #15.0 #20.0 #15.0 #100.0 #60.0
+      Kpos_Pz: 15.0     #18.0 #20.0 #15.0 #160.0 #90.0
       # D load
-      Kpos_Dx    :  12.5 #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
-      Kpos_Dy    :  12.5 #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
-      Kpos_Dz    :  12.5 #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
+      Kpos_Dx: 12.5      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
+      Kpos_Dy: 12.5      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
+      Kpos_Dz: 12.5      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
       # P cable
-      Kqx        :  13.0 #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
-      Kqy        :  13.0 #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
-      Kqz        :  13.0 #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
+      Kqx: 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
+      Kqy: 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
+      Kqz: 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
       # D cable
-      Kwx        :  11.0 #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
-      Kwy        :  11.0 #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
-      Kwz        :  11.0 #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
+      Kwx: 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
+      Kwy: 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
+      Kwz: 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
       # P angle
-      KRx        : 0.008 #0.0055 #0.008 #0.0055 #0.008
-      KRy        : 0.008 #0.0055 #0.008 #0.0055 #0.008
-      KRz        : 0.01 #0.01 #0.008
+      KRx: 0.008         #0.0055 #0.008 #0.0055 #0.008
+      KRy: 0.008         #0.0055 #0.008 #0.0055 #0.008
+      KRz: 0.01         #0.01 #0.008
       # D angle
-      Komx       : 0.0013 #0.0013 #0.0017 #0.0013   #0.0017
-      Komy       : 0.0013 #0.0013 #0.0017 #0.0013   #0.0017
-      Komz       : 0.002   #0.0017
+      Komx: 0.0013        #0.0013 #0.0017 #0.0013   #0.0017
+      Komy: 0.0013        #0.0013 #0.0017 #0.0013   #0.0017
+      Komz: 0.002          #0.0017
       # I angle
-      KI_x       : 0.02 #0.05 #0.01 #0.009 #0.015
-      KI_y       : 0.02 #0.05 #0.01 #0.009 #0.015
-      KI_z       : 0.05 #0.05 #0.01 #0.009 #0.015
-      mass       : 0.034
-      massP      : 0.009
-      length     : 0.8
-      offsetx    : 0.0
-      offsety    : 0.0
-      offsetz    : 0.0
+      KI_x: 0.02        #0.05 #0.01 #0.009 #0.015
+      KI_y: 0.02        #0.05 #0.01 #0.009 #0.015
+      KI_z: 0.05        #0.05 #0.01 #0.009 #0.015
+      mass: 0.034
+      massP: 0.009
+      length: 0.8
+      offsetx: 0.0
+      offsety: 0.0
+      offsetz: 0.0
 
-      ## 6 planes rpy and yaw 
-      r11: 25.0
-      p11: 0.0
-      y11: 0.0
-      r12: 30.0
-      p12: 0.0
-      y12: 0.0
-      r21: 25.0
-      p21: 0.0
-      y21: 180.0
-      r22: 30.0
-      p22: 0.0
-      y22: 180.0
-      r31: 25.0
-      p31: 0.0
-      y31: 240.0
-      r32: 30.0
-      p32: 0.0
-      y32: 240.0
-      yawp11: 180.0
-      yawp12: 0.0
-      yawp21: 300.0
-      yawp22: 120.0
-      yawp31: 420.0
-      yawp32: 240.0
+      # ## 6 planes rpy and yaw 
+      # r11: 25.0
+      # p11: 0.0
+      # y11: 0.0
+      # r12: 30.0
+      # p12: 0.0
+      # y12: 0.0
+      # r21: 25.0
+      # p21: 0.0
+      # y21: 180.0
+      # r22: 30.0
+      # p22: 0.0
+      # y22: 180.0
+      # r31: 25.0
+      # p31: 0.0
+      # y31: 240.0
+      # r32: 30.0
+      # p32: 0.0
+      # y32: 240.0
+      # yawp11: 180.0
+      # yawp12: 0.0
+      # yawp21: 300.0
+      # yawp22: 120.0
+      # yawp31: 420.0
+      # yawp32: 240.0
     # ring:
     #   effect: 16 # 6: double spinner, 7: solid color, 16: packetRate
     #   solidBlue: 255 # if set to solid color

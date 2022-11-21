@@ -54,7 +54,7 @@ def generate_launch_description():
             package='motion_capture_tracking',
             executable='motion_capture_tracking_node',
             name='motion_capture_tracking',
-            output='screen',
+            # output='screen',
             parameters=[motion_capture_params]
         ),
         Node(
@@ -62,12 +62,12 @@ def generate_launch_description():
             executable='teleop',
             name='teleop',
             remappings=[
-                ('emergency', 'cf2/emergency'),
-                ('takeoff', 'cf2/takeoff'),
-                ('land', 'cf2/land'),
+                ('emergency', 'all/emergency'),
+                ('takeoff', 'all/takeoff'),
+                ('land', 'all/land'),
+                ('notify_setpoints_stop', 'cf255/notify_setpoints_stop'),
                 ('cmd_vel', 'cf2/cmd_vel'),
                 ('cmd_full_state', 'cf2/cmd_full_state'),
-                ('notify_setpoints_stop', 'cf2/notify_setpoints_stop'),
             ],
             parameters=[teleop_params]
         ),
@@ -83,11 +83,11 @@ def generate_launch_description():
             output='screen',
             parameters=[server_params]
         ),
-        Node(
-            package='rviz2',
-            namespace='',
-            executable='rviz2',
-            name='rviz2',
-            arguments=['-d' + rviz_config]
-        ),
+        # Node(
+        #     package='rviz2',
+        #     namespace='',
+        #     executable='rviz2',
+        #     name='rviz2',
+        #     arguments=['-d' + rviz_config]
+        # ),
     ])
