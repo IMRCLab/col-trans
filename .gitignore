@@ -1,3 +1,6 @@
 *.o
 *.cmd
 *.so
+.vscode
+*.csv
+osqp/cffirmware_osqp/src/.~lock.FDvsmu.csv#
