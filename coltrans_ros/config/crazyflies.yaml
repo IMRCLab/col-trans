@@ -235,7 +235,7 @@ all:
     # led:
     #   bitmask: 128s
   firmware_logging:
-    enabled: false
+    enabled: true
     # default_topics:
      # remove to disable default topic
       # pose:
