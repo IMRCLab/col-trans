@@ -2,7 +2,9 @@ import os
 import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
 from launch_ros.actions import Node
+from launch.conditions import LaunchConfigurationEquals
 
 
 def generate_launch_description():
@@ -50,6 +52,7 @@ def generate_launch_description():
         'config.rviz')
 
     return LaunchDescription([
+        DeclareLaunchArgument('backend', default_value='cpp'),
         Node(
             package='motion_capture_tracking',
             executable='motion_capture_tracking_node',
@@ -78,10 +81,30 @@ def generate_launch_description():
         ),
         Node(
             package='crazyflie',
-            executable='crazyflie_server',
+            executable='crazyflie_server.py',
+            condition=LaunchConfigurationEquals('backend','cflib'),
             name='crazyflie_server',
             output='screen',
             parameters=[server_params]
+        ),
+        Node(
+            package='crazyflie',
+            executable='crazyflie_server',
+            condition=LaunchConfigurationEquals('backend','cpp'),
+            name='crazyflie_server',
+            output='screen',
+            parameters=[server_params]
+        ),
+        Node(
+            package='crazyflie_sim',
+            executable='crazyflie_server',
+            condition=LaunchConfigurationEquals('backend','sim'),
+            name='crazyflie_server',
+            output='screen',
+            emulate_tty=True,
+            parameters=[server_params] + [{
+                "max_dt": 0.1,              # artificially limit the step() function (set to 0 to disable)
+            }]
         ),
         # Node(
         #     package='rviz2',

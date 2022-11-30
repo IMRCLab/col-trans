@@ -11,9 +11,6 @@ robots:
       ctrlLeeP:
         value: 0.0
         radius: 0.2
-        Kpos_P_limit: 0.01
-        Kpos_D_limit: 0.05
-        Kpos_I_limit: 0.0
 
     # firmware_params:
       # kalman:
@@ -29,22 +26,13 @@ robots:
       ctrlLeeP:
         value: 1.0
         radius: 0.2
-        Kpos_P_limit: 0.01
-        Kpos_D_limit: 0.05
-        Kpos_I_limit: 0.0
 
+  payload:
+      enabled: true
+      initial_position: [0.0, 0.0, 0.0]
+      type: marker  # see robot_types
+      id: 255
 
-      # kalman:
-      #   pNAcc_xy: 1.0 # default 0.5
-
-  cf255:
-    enabled: true
-    uri: radio://0/80/2M/E7E7E7E7FF
-    initial_position: [0.0, 0.0, 0.0]
-    type: cf21 #cf21_betafpv # see robot_types
-    # firmware_params:
-      # kalman:
-      #   pNAcc_xy: 1.0 # default 0.5
   cf4:
     enabled: false
     uri: radio://0/80/2M/E7E7E7E704
@@ -130,6 +118,14 @@ robot_types:
     #   kalman:
     #     pNAcc_xy: 1.0 # default 0.5
 
+  # Just a marker to track, not a robot to connect to
+  marker:
+      connection: none
+      motion_capture:
+          enabled: true
+          marker: default_single_marker
+          dynamics: default
+
 # global settings for all robots
 all:
   # firmware parameters for all drones (use robot_types/type_name to set per type, or
@@ -139,7 +135,7 @@ all:
       enHighLevel: 1
     stabilizer:
       estimator: 2 # 1: complementary, 2: kalman
-      controller: 7 # 1: PID, 2: mellinger 4: sjc 6: Lee 7: lee payload
+      controller: 6 # 1: PID, 2: mellinger 4: sjc 6: Lee 7: lee payload
       pAlpha: 0.9
     ctrlLee:
       Kpos_Px: 9.0 # def: 10.0
@@ -238,3 +234,13 @@ all:
     #   trigger: 1 # int
     # led:
     #   bitmask: 128s
+  firmware_logging:
+    enabled: false
+    # default_topics:
+     # remove to disable default topic
+      # pose:
+        # frequency: 10 # Hz
+    custom_topics:
+      ctrlLeeP:
+       frequency: 10 # Hz
+       vars: ["ctrlLeeP.n1x", "ctrlLeeP.n1y", "ctrlLeeP.n1z", "ctrlLeeP.desVirtInpx", "ctrlLeeP.desVirtInpy", "ctrlLeeP.desVirtInpz"]

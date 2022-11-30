@@ -119,7 +119,7 @@ def main():
         allcfs.crazyfliesById[cfid].setParam('stabilizer.controller', 7)
 
     
-    timeHelper.sleep(50.0)
+    timeHelper.sleep(10.0)
 
 ###### Linear trajectory on x,y -axes #######################
     # for cfid in Ids:
