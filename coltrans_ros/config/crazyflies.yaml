@@ -6,10 +6,7 @@ robots:
     initial_position: [0.0, 0.5, 0.0]
     type: cf21 # cf21_betafpv  # see robot_types
     firmware_params:
-      stabilizer:
-        otherID: 6
       ctrlLeeP:
-        value: 0.0
         radius: 0.2
 
     # firmware_params:
@@ -21,10 +18,7 @@ robots:
     initial_position: [0.0, -0.5, 0.0]
     type: cf21 #cf21_betafpv # see robot_types
     firmware_params:
-      stabilizer:
-        otherID: 5
       ctrlLeeP:
-        value: 1.0
         radius: 0.2
 
   payload:
@@ -189,9 +183,6 @@ all:
       mass: 0.034
       massP: 0.009
       length: 0.8
-      offsetx: 0.0
-      offsety: 0.0
-      offsetz: 0.0
 
       # ## 6 planes rpy and yaw 
       # r11: 25.0
@@ -242,5 +233,5 @@ all:
         # frequency: 10 # Hz
     custom_topics:
       ctrlLeeP:
-       frequency: 10 # Hz
+       frequency: 100 # Hz
        vars: ["ctrlLeeP.n1x", "ctrlLeeP.n1y", "ctrlLeeP.n1z", "ctrlLeeP.desVirtInpx", "ctrlLeeP.desVirtInpy", "ctrlLeeP.desVirtInpz"]
