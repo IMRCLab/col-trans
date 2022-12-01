@@ -124,8 +124,13 @@ class VisualizationNode(Node):
         # draw hyperplane
         n = np.array(msg.values[0:3])
         a = 0
-        trans = self.tf_buffer.lookup_transform("world", "payload", rclpy.time.Time())
-        ppos = np.array([trans.transform.translation.x, trans.transform.translation.y, trans.transform.translation.z])
+        try:
+
+            trans = self.tf_buffer.lookup_transform("world", "payload", rclpy.time.Time())
+            ppos = np.array([trans.transform.translation.x, trans.transform.translation.y, trans.transform.translation.z])
+        except LookupException as e:
+            self.get_logger().error('failed to get transform {} \n'.format(repr(e)))
+            return
 
         x = np.array([1,0,0])
         z = n / np.linalg.norm(n)
@@ -139,7 +144,7 @@ class VisualizationNode(Node):
         self.vis["{}_hp".format(name)].set_transform(R)
 
         # draw normal
-        vertices = np.array([ppos,n]).T
+        vertices = np.array([ppos,ppos+n]).T
         self.vis["{}_hpn".format(name)].set_object(mcg.Line(
             mcg.PointsGeometry(vertices),
             material=mcg.LineBasicMaterial(linewidth=2, color=0xff0000)))
@@ -147,9 +152,8 @@ class VisualizationNode(Node):
         # draw mu
         # normalize mu because they are very small in values
         mu = np.array(msg.values[3:6])
-        print(name, mu)
-        normmu = np.linalg.norm(mu)
-        vertices = np.array([ppos,mu/normmu]).T
+        # normmu = np.linalg.norm(mu)
+        vertices = np.array([ppos,ppos+mu*2]).T
         self.vis["{}_mu".format(name)].set_object(mcg.Line(mcg.PointsGeometry(vertices), 
             material=mcg.LineBasicMaterial(linewidth=6, color=0x0000ff)))
 

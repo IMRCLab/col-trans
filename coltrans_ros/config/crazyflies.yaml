@@ -182,7 +182,6 @@ all:
       KI_z: 0.05        #0.05 #0.01 #0.009 #0.015
       mass: 0.034
       massP: 0.009
-      length: 0.8
 
       # ## 6 planes rpy and yaw 
       # r11: 25.0
