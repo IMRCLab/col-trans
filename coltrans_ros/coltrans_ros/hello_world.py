@@ -96,11 +96,7 @@ def main():
 
     # timeHelper.sleep(5.0)
 
-    for cfid in Ids:
-        pos = np.array(cf_config[cfid]['waypoints'][0])
-        print(cfid, pos)
-        allcfs.crazyfliesById[cfid].goTo(pos, 0, 6.0)
-    timeHelper.sleep(8.0) 
+
     
    
 #### CHANGE the values of the UAVs and the offset for the setpoints
@@ -111,12 +107,12 @@ def main():
         offset = offsets[cfid]['offset']
         length = lengths[cfid]['length']
         print('value and ID: ', value, cfid)
-        allcfs.crazyfliesById[cfid].setParam('ctrlLeeP.offsetx', offset[0])
-        allcfs.crazyfliesById[cfid].setParam('ctrlLeeP.offsety', offset[1])
-        allcfs.crazyfliesById[cfid].setParam('ctrlLeeP.offsetz', offset[2])
-        #allcfs.crazyfliesById[cfid].setParam('ctrlLeeP.value', value)
+        # allcfs.crazyfliesById[cfid].setParam('ctrlLeeP.offsetx', offset[0])
+        # allcfs.crazyfliesById[cfid].setParam('ctrlLeeP.offsety', offset[1])
+        # allcfs.crazyfliesById[cfid].setParam('ctrlLeeP.offsetz', offset[2])
+        # allcfs.crazyfliesById[cfid].setParam('ctrlLeeP.value', value)
         allcfs.crazyfliesById[cfid].setParam('ctrlLeeP.length', length)
-    timeHelper.sleep(2.0)
+    # timeHelper.sleep(2.0)
 
     print('start hovering with QP lee payload')
     
@@ -125,8 +121,17 @@ def main():
         # allcfs.crazyfliesById[cfid].setParam("usd.logging", 1)
         allcfs.crazyfliesById[cfid].setParam('stabilizer.controller', 7)
 
+    timeHelper.sleep(2.0)
+
+    # for cfid in Ids:
+    #     pos = np.array(cf_config[cfid]['waypoints'][0])
+    #     print(cfid, pos)
+    #     allcfs.crazyfliesById[cfid].goTo(pos, 0, 6.0)
+
+    allcfs.takeoff(targetHeight=0.2, duration=5.0)
+    timeHelper.sleep(6.0) 
     
-    timeHelper.sleep(10.0)
+    # timeHelper.sleep(10.0)
 
 ###### Linear trajectory on x,y -axes #######################
     # for cfid in Ids:
@@ -141,19 +146,29 @@ def main():
     
     # timeHelper.sleep(17.5)
  ################################################################   
-    print('get back to Lee')
+    # print('get back to Lee')
 
-    for cfid in Ids: 
-        # allcfs.crazyfliesById[cfid].setParam("usd.logging", 0)
-        allcfs.crazyfliesById[cfid].setParam('stabilizer.controller', 6)
-
-
-    for cfid in Ids:
-        pos = np.array(allcfs.crazyfliesById[cfid].initialPosition) + np.array([0, 0, LAND_HEIGHT])
-        allcfs.crazyfliesById[cfid].goTo(pos, 0, 3.0)
-    timeHelper.sleep(4.0)
+    # for cfid in Ids: 
+    #     # allcfs.crazyfliesById[cfid].setParam("usd.logging", 0)
+    #     allcfs.crazyfliesById[cfid].setParam('stabilizer.controller', 6)
 
 
+    # for cfid in Ids:
+    #     pos = np.array(allcfs.crazyfliesById[cfid].initialPosition) + np.array([0, 0, LAND_HEIGHT])
+    #     allcfs.crazyfliesById[cfid].goTo(pos, 0, 3.0)
+    # timeHelper.sleep(4.0)
+
+    # Bring the payload to the origin
+    for cf in allcfs.crazyflies:
+        cf.goTo([0.0,0.0,-0.1],0,4.0)
+    timeHelper.sleep(5.0)
+
+    # Switch to another controller, so that the setpoint is not the payload
+    for cf in allcfs.crazyflies:
+        cf.setParam('stabilizer.controller', 6)
+    timeHelper.sleep(2.0)
+
+    # Land!
     allcfs.land(targetHeight=0.02, duration=3.0)
     timeHelper.sleep(3.0)
 

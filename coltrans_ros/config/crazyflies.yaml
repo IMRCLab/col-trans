@@ -235,3 +235,6 @@ all:
       ctrlLeeP:
        frequency: 100 # Hz
        vars: ["ctrlLeeP.n1x", "ctrlLeeP.n1y", "ctrlLeeP.n1z", "ctrlLeeP.desVirtInpx", "ctrlLeeP.desVirtInpy", "ctrlLeeP.desVirtInpz"]
+      setpoint:
+       frequency: 100 # Hz
+       vars: ["ctrltarget.x", "ctrltarget.y", "ctrltarget.z"]
