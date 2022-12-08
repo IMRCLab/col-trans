@@ -1,13 +1,16 @@
 # named list of all robots
 robots:
+  cf231:
+    enabled: true
+    uri: radio://0/80/2M/E7E7E7E7E7
+    initial_position: [0.0, 0.5, 0.0]
+    type: cf21 # cf21_betafpv  # see robot_types
+
   cf5:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E705
-    initial_position: [0.0, 0.5, 0.0]
+    initial_position: [0.5, 0.0, 0.0]
     type: cf21 # cf21_betafpv  # see robot_types
-    firmware_params:
-      ctrlLeeP:
-        radius: 0.2
 
     # firmware_params:
       # kalman:
@@ -17,9 +20,13 @@ robots:
     uri: radio://0/80/2M/E7E7E7E706
     initial_position: [0.0, -0.5, 0.0]
     type: cf21 #cf21_betafpv # see robot_types
-    firmware_params:
-      ctrlLeeP:
-        radius: 0.2
+
+  cf1:
+    enabled: false
+    uri: radio://0/80/2M/E7E7E7E701
+    initial_position: [0.0, 0.5, 0.0]
+    type: cf21 # cf21_betafpv  # see robot_types
+
 
   payload:
       enabled: true
@@ -32,12 +39,6 @@ robots:
     uri: radio://0/80/2M/E7E7E7E704
     initial_position: [0.0, 0.5, 0.0]
     type: cf21 #cf21_betafpv # see robot_types
-    firmware_params:
-      stabilizer:
-        otherID: 6
-      ctrlLeeP:
-        value: 0.0
-        radius: 0.3
       # kalman:
       #   pNAcc_xy: 1.0 # default 0.5
 # Definition of the various robot types
@@ -160,28 +161,37 @@ all:
       Kpos_Dx: 12.5      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
       Kpos_Dy: 12.5      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
       Kpos_Dz: 12.5      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
+      # I load
+      Kpos_Ix: 0.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
+      Kpos_Iy: 0.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
+      Kpos_Iz: 0.0      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
+
       # P cable
-      Kqx: 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
-      Kqy: 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
-      Kqz: 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
+      Kqx:  10.0 #14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
+      Kqy:  10.0 #14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
+      Kqz:  10.0 #14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
       # D cable
-      Kwx: 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
-      Kwy: 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
-      Kwz: 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
+      Kwx: 8.0 #12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
+      Kwy: 8.0 #12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
+      Kwz: 8.0 #12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
       # P angle
-      KRx: 0.008         #0.0055 #0.008 #0.0055 #0.008
-      KRy: 0.008         #0.0055 #0.008 #0.0055 #0.008
+      KRx: 0.0055         #0.0055 #0.008 #0.0055 #0.008
+      KRy: 0.0055         #0.0055 #0.008 #0.0055 #0.008
       KRz: 0.01         #0.01 #0.008
       # D angle
       Komx: 0.0013        #0.0013 #0.0017 #0.0013   #0.0017
       Komy: 0.0013        #0.0013 #0.0017 #0.0013   #0.0017
       Komz: 0.002          #0.0017
       # I angle
-      KI_x: 0.02        #0.05 #0.01 #0.009 #0.015
-      KI_y: 0.02        #0.05 #0.01 #0.009 #0.015
-      KI_z: 0.05        #0.05 #0.01 #0.009 #0.015
+      KI_x: 0.012 #0.02        #0.05 #0.01 #0.009 #0.015
+      KI_y: 0.018 #0.02        #0.05 #0.01 #0.009 #0.015
+      KI_z: 0.015 #0.05        #0.05 #0.01 #0.009 #0.015
       mass: 0.034
       massP: 0.009
+
+      Kpos_P_limit: 100.0 #0.5 #0.5
+      Kpos_D_limit: 100.0 #0.1 #0.1
+      radius: 0.2
 
       # ## 6 planes rpy and yaw 
       # r11: 25.0
@@ -226,14 +236,18 @@ all:
     #   bitmask: 128s
   firmware_logging:
     enabled: true
-    # default_topics:
+    default_topics:
      # remove to disable default topic
-      # pose:
-        # frequency: 10 # Hz
+      pose:
+        frequency: 1 # Hz
     custom_topics:
       ctrlLeeP:
-       frequency: 100 # Hz
+       frequency: 10 # Hz
        vars: ["ctrlLeeP.n1x", "ctrlLeeP.n1y", "ctrlLeeP.n1z", "ctrlLeeP.desVirtInpx", "ctrlLeeP.desVirtInpy", "ctrlLeeP.desVirtInpz"]
-      setpoint:
-       frequency: 100 # Hz
-       vars: ["ctrltarget.x", "ctrltarget.y", "ctrltarget.z"]
+      ctrlLeeP2:
+       frequency: 10 # Hz
+       vars: ["ctrlLeeP.n2x", "ctrlLeeP.n2y", "ctrlLeeP.n2z", 'ctrlLeeP.Fdx', "ctrlLeeP.Fdy", "ctrlLeeP.Fdz"]
+
+      # setpoint:
+      #  frequency: 100 # Hz
+      #  vars: ["ctrltarget.x", "ctrltarget.y", "ctrltarget.z"]

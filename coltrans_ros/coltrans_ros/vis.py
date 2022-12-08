@@ -46,7 +46,7 @@ class VisualizationNode(Node):
 
         print(self.get_topic_names_and_types())
 
-        cfs = ['cf5', 'cf6']
+        cfs = ['cf1'] #, 'cf5', 'cf6']
         self.cfs = cfs
         
         # initalize meshcat
@@ -62,7 +62,7 @@ class VisualizationNode(Node):
 
         # for each crazyflie, generate a 3D model, a sphere, and a hyperplane
         for cf in cfs:
-            model = mcg.StlMeshGeometry.from_file("/home/whoenig/projects/crazyflie/crazyswarm2/src/coltrans_ros/coltrans_ros/cf2.stl")
+            model = mcg.StlMeshGeometry.from_file("/home/khaledwahba94/imrc/visualization-examples/meshes/cf2_assembly.stl")
             self.vis["{}_model".format(cf)].set_object(model)
 
             sphere = mcg.Mesh(mcg.Sphere(0.1), 
@@ -76,6 +76,12 @@ class VisualizationNode(Node):
                                 opacity=0.5,
                                 color=0xff0000))
             self.vis["{}_hp".format(cf)].set_object(hp)
+
+            hp2 = mcg.Mesh(Plane(), 
+                            material=mcg.MeshBasicMaterial(
+                                opacity=0.5,
+                                color=0xff0000))
+            self.vis["{}_hp2".format(cf)].set_object(hp2)
 
 
         # for the payload set
@@ -94,6 +100,13 @@ class VisualizationNode(Node):
                 LogDataGeneric,
                 '{}/ctrlLeeP'.format(cf),
                 partial(self.listener_callback, name=cf),
+                10)
+            self.subscriptions_.append(subscription)
+
+            subscription = self.create_subscription(
+                LogDataGeneric,
+                '{}/ctrlLeeP2'.format(cf),
+                partial(self.listener_callback2, name=cf),
                 10)
             self.subscriptions_.append(subscription)
 
@@ -147,15 +160,59 @@ class VisualizationNode(Node):
         vertices = np.array([ppos,ppos+n]).T
         self.vis["{}_hpn".format(name)].set_object(mcg.Line(
             mcg.PointsGeometry(vertices),
-            material=mcg.LineBasicMaterial(linewidth=2, color=0xff0000)))
+            material=mcg.LineBasicMaterial(linewidth=2, color=0xff0000, opacity=0.1)))
 
         # draw mu
         # normalize mu because they are very small in values
         mu = np.array(msg.values[3:6])
         # normmu = np.linalg.norm(mu)
-        vertices = np.array([ppos,ppos+mu*2]).T
+        vertices = np.array([ppos,ppos+mu*15]).T
         self.vis["{}_mu".format(name)].set_object(mcg.Line(mcg.PointsGeometry(vertices), 
             material=mcg.LineBasicMaterial(linewidth=6, color=0x0000ff)))
+
+
+    def listener_callback2(self, msg: LogDataGeneric, name: str):
+        # the expected configuration is
+        # vars: ["ctrlLeeP.n1x", "ctrlLeeP.n1y", "ctrlLeeP.n1z", "ctrlLeeP.desVirtInpx", , "ctrlLeeP.desVirtInpy", , "ctrlLeeP.desVirtInpz"]
+
+        # self.get_logger().info('I heard: "%s"' % msg)
+
+        # draw hyperplane
+        n = np.array(msg.values[0:3])
+        a = 0
+        try:
+
+            trans = self.tf_buffer.lookup_transform("world", "payload", rclpy.time.Time())
+            ppos = np.array([trans.transform.translation.x, trans.transform.translation.y, trans.transform.translation.z])
+        except LookupException as e:
+            self.get_logger().error('failed to get transform {} \n'.format(repr(e)))
+            return
+
+        x = np.array([1,0,0])
+        z = n / np.linalg.norm(n)
+        y = np.cross(z, x)
+        R = mctf.identity_matrix()
+        R[:3, 0] = x
+        R[:3, 1] = y
+        R[:3, 2] = z
+        R[:3, 3] = ppos
+
+        self.vis["{}_hp2".format(name)].set_transform(R)
+
+        # draw normal
+        vertices = np.array([ppos,ppos+n]).T
+        self.vis["{}_hp2n".format(name)].set_object(mcg.Line(
+            mcg.PointsGeometry(vertices),
+            material=mcg.LineBasicMaterial(linewidth=2, color=0xff0000, opacity=0.1)))
+
+        # draw mu
+        # normalize mu because they are very small in values
+        mu = np.array(msg.values[3:6])
+        # normmu = np.linalg.norm(mu)
+        vertices = np.array([ppos,ppos+mu*15]).T
+        self.vis["{}_Fd".format(name)].set_object(mcg.Line(mcg.PointsGeometry(vertices), 
+            material=mcg.LineBasicMaterial(linewidth=6, color=0x00ff00)))
+
 
 
 def main(args=None):
