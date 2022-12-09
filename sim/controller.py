@@ -781,7 +781,7 @@ def main(args, animateOrPlotdict, params):
         stDict = {}
 
         # Payload csv file
-        with open("../vis/payload.csv", "w") as f:
+        with open("output/payload.csv", "w") as f:
             np.savetxt(f, payload.plFullState, delimiter=",")
 
         # mu per robot csv file
@@ -789,7 +789,7 @@ def main(args, animateOrPlotdict, params):
             mufilePathsperId = []
             uavID = id.replace("uav_", "")
             fName = "mu_" + uavID + ".csv"
-            mufilepath = "../vis/"+ fName           
+            mufilepath = "output/"+ fName           
             with open(mufilepath, "w") as f:
                 np.savetxt(f, splitStackMu[stackMu], delimiter=",")
             
@@ -800,14 +800,14 @@ def main(args, animateOrPlotdict, params):
             uavID = id.replace("uav_", "")
             fName = uavID + ".csv"
 
-            with open("../vis/" + fName, "w") as f:
+            with open("output/" + fName, "w") as f:
                 np.savetxt(f, uavs[id].fullState, delimiter=",")    
             stDict[uavID] = fName
             # hps per robot csv
             hpsfilePathsperId = []           
             for hpPerId in uavs[id].hpStack.keys(): 
                 fName = "hp" + str(hpPerId+1) + "_" + uavID + ".csv"               
-                hpfilepath = "../vis/" + fName
+                hpfilepath = "output/" + fName
                 hpsfilePathsperId.append(fName)
                 with open(hpfilepath, "w") as f:
                     np.savetxt(f, uavs[id].hpStack[hpPerId][::payload.numOfquads,:], delimiter=",")
@@ -830,7 +830,7 @@ def main(args, animateOrPlotdict, params):
             robot['mu']    = muDict[id] 
             configData['robots'][id] = robot
 
-        with open('../vis/configData.yaml', 'w') as f:
+        with open('output/configData.yaml', 'w') as f:
             yaml.dump(configData, f)
         
         ## Animate or plot based on flags

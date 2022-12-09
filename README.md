@@ -8,6 +8,8 @@
 cd crazyflie-firmware
 make cf2_defconfig
 make bindings_python
+cd ..
+mkdir sim/output
 ```
 
 ### Use Python controller
@@ -33,8 +35,7 @@ python3 controller.py test
 ### Visualization
 
 ```
-cd vis
-python3 visualize.py
+python3 vis.py
 ```
 
 ## osqp demo

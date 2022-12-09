@@ -4,7 +4,7 @@ meshcat:
   openWindow: true
   timestep: 0.0001 # in secs
 robot:
-  shape  :  meshes/cf2_assembly.stl
+  shape  :  Animator/cf2_assembly.stl
   colors : [0x0000ff,  0xff0000,  0x00ff00]
   
   hps:

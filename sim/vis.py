@@ -38,10 +38,10 @@ class Plane(g.Geometry):
 
 
 if __name__ == '__main__':
-    with open('config.yaml') as f:
+    with open('config/vis.yaml') as f:
         meshcatdata = yaml.load(f, Loader=yaml.FullLoader)
 
-    with open('configData.yaml') as f:
+    with open('output/configData.yaml') as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
     
     uavs         = data['robots']
@@ -87,7 +87,7 @@ if __name__ == '__main__':
 
         
         # Add states for uav
-        states[id]    = np.loadtxt(stateFilePath, delimiter=',')
+        states[id]    = np.loadtxt('output/' + stateFilePath, delimiter=',')
         # Add shape for uav and its constraint sphere
         
         Quadspheres[id]    = g.StlMeshGeometry.from_file(robotshape)
@@ -99,7 +99,7 @@ if __name__ == '__main__':
         normaltmp      = {}
         for i, hpFilePath in zip(range(len(hpsFilePaths)), hpsFilePaths):
             # Add states for hyperplane
-            hptmp[i]       = np.loadtxt(hpFilePath, delimiter=',')
+            hptmp[i]       = np.loadtxt('output/' + hpFilePath, delimiter=',')
             hps[id]        = hptmp.copy()
             # Add materials for hyperplanes and normals
             hpcolor        = colors[qNum]
@@ -114,14 +114,14 @@ if __name__ == '__main__':
             normals[id]    = normaltmp
         ##
         # Add state for mu vector
-        mus[id]            = np.loadtxt(musFilePath, delimiter=',')
+        mus[id]            = np.loadtxt('output/' + musFilePath, delimiter=',')
         # Add shape for mu vector 
         mushape[id]        =  g.LineBasicMaterial(linewidth=muShape['linewidth'], color=colors[qNum])
         # Add shape for cable 
         cables[id]         = g.LineBasicMaterial(linewidth=cableShape['linewidth'], color=cableShape['color'])
     
     plstatePath = payload
-    plstates     = np.loadtxt(plstatePath, delimiter=',')
+    plstates     = np.loadtxt('output/' + plstatePath, delimiter=',')
     plproperties = meshcatdata['payload']
     vis["payload"].set_object(g.Mesh(g.Sphere(plproperties['radius']), g.MeshLambertMaterial(color=plproperties['color'])))
    
