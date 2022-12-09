@@ -1,0 +1,52 @@
+1     # version
+512   # buffer size in bytes
+log   # file name
+0     # enable on startup (0/1)
+on:fixedFrequency
+400     # frequency in Hz
+1     # mode (0: disabled, 1: synchronous stabilizer, 2: asynchronous)
+stateEstimateZ.x
+stateEstimateZ.y
+stateEstimateZ.z
+stateEstimateZ.vx
+stateEstimateZ.vy
+stateEstimateZ.vz
+stateEstimateZ.px
+stateEstimateZ.py
+stateEstimateZ.pz
+stateEstimateZ.pvx
+stateEstimateZ.pvy
+stateEstimateZ.pvz
+ctrltargetZ.x
+ctrltargetZ.y
+ctrltargetZ.z
+ctrltargetZ.vx
+ctrltargetZ.vy
+ctrltargetZ.vz
+ctrlLeeP.rpyx
+ctrlLeeP.rpyy
+ctrlLeeP.rpyz
+ctrlLeeP.rpydx
+ctrlLeeP.rpydy
+ctrlLeeP.rpydz
+ctrlLeeP.omegax
+ctrlLeeP.omegay
+ctrlLeeP.omegaz
+ctrlLeeP.omegarx
+ctrlLeeP.omegary
+ctrlLeeP.omegarz
+ctrlLeeP.thrustSI
+ctrlLeeP.torquex
+ctrlLeeP.torquey
+ctrlLeeP.torquez
+ctrlLeeP.Kpos_Px
+ctrlLeeP.Kpos_Pz
+ctrlLeeP.Kpos_Dx
+ctrlLeeP.Kpos_Dz
+ctrlLeeP.Kqx
+ctrlLeeP.Kqz
+ctrlLeeP.Kwx
+ctrlLeeP.Kwz
+ctrlLeeP.ux
+ctrlLeeP.uy
+ctrlLeeP.uz
