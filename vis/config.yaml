@@ -1,0 +1,30 @@
+## this config file sets the properties (shapes, linewidths, colors, etc..)
+# for each shape
+meshcat: 
+  openWindow: true
+  timestep: 0.0001 # in secs
+robot:
+  shape  :  meshes/cf2_assembly.stl
+  colors : [0x0000ff,  0xff0000,  0x00ff00]
+  
+  hps:
+    opacity : 0.5
+    size    : [1.5, 1.5] # lxw of plane
+    linewidth: 2
+
+  mu: 
+    linewidth : 5
+    scale: 10
+  
+  cable:
+    color: 0x000000
+    linewidth: 4
+  
+  constrSphere: 
+    radius  : [0.1, 0.1, 0.1]
+    opacity : 0.05
+    color   : 0x000000
+ 
+payload:
+    radius: 0.02
+    color: 0xff11dd
