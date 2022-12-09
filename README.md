@@ -1,5 +1,42 @@
 # col-trans
 
+## Simulation
+
+### Initial setup
+
+```
+cd crazyflie-firmware
+make cf2_defconfig
+make bindings_python
+```
+
+### Use Python controller
+
+(Make sure config/initialize.yaml uses 'lee' as controller)
+
+```
+cd sim
+export PYTHONPATH=$PWD/controllers
+python3 controller.py test
+```
+
+### Use C++ controller
+
+(Make sure config/initialize.yaml uses 'lee_firmware' as controller)
+
+```
+cd sim
+export PYTHONPATH=$PWD/../crazyflie-firmware
+python3 controller.py test
+```
+
+### Visualization
+
+```
+cd vis
+python3 visualize.py
+```
+
 ## osqp demo
 
 ### regenerate the code
