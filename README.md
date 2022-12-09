@@ -20,7 +20,7 @@ export PYTHONPATH=$PWD/controllers
 python3 controller.py test
 ```
 
-### Use C++ controller
+### Use Firmware controller
 
 (Make sure config/initialize.yaml uses 'lee_firmware' as controller)
 
