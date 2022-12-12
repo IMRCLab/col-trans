@@ -21,7 +21,7 @@ robot:
     linewidth: 4
   
   constrSphere: 
-    radius  : [0.2, 0.2, 0.2]
+    radius  : [0.15, 0.15, 0.15]
     opacity : 0.05
     color   : 0x000000
  
