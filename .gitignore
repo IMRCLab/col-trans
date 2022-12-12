@@ -1,4 +1,7 @@
 *.o
+sim/trajectoriescsv/
+sim/configData.yaml
+sim/output/
 *.cmd
 *.so
 .vscode
