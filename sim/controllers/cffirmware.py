@@ -333,10 +333,12 @@ def qlimit(uavs, payload, numofquads, tick):
             numsofHplaneperId = uavs[id].hpNums 
             for hpIds in uavs.keys():
                 hpstmp[id] = np.empty((1,4))
-
+            if payload.pointmass:
+                p0 = payload.state[0:3]
+            else:
+                p0 = payload.state[0:3] + payload.posFrloaddict[id]
             for topair, hplaneId in zip(toPairwith, range(numsofHplaneperId)):
                 pair = [id, topair]
-                pload = payload.state[0:3]
                 pos1 = uavs[pair[0]].state[0:3] 
                 pos2 = uavs[pair[1]].state[0:3] 
                 l1 = uavs[pair[0]].lc
@@ -348,8 +350,8 @@ def qlimit(uavs, payload, numofquads, tick):
                     else:
                         pos1_ = pos2
                         pos2_ = pos1
-                    pos1_r = pos1_ - pload  #pos1 relative to payload
-                    pos2_r = pos2_ - pload  #pos2 relative to payload
+                    pos1_r = pos1_ - p0  #pos1 relative to payload
+                    pos2_r = pos2_ - p0  #pos2 relative to payload
                     p1_dot_p2 = pos1_r.dot(pos2_r)
                     normPos1  = np.linalg.norm(pos1_r)
                     normPos2  = np.linalg.norm(pos2_r)
@@ -364,7 +366,7 @@ def qlimit(uavs, payload, numofquads, tick):
                         angle_1 = np.pi/2
                     angle_2   = np.pi - (angle_12 + angle_1) 
                     normpos2_r_new   = np.linalg.norm(pos1_r)*(np.sin(angle_1) /  np.sin(angle_2))
-                    pos2_new    = pload + normpos2_r_new * normVec(pos2_r)
+                    pos2_new    = p0 + normpos2_r_new * normVec(pos2_r)
                     pos1 = uavs[pair[0]].state[0:3]
                     pos2 = uavs[pair[1]].state[0:3]
                     if l2 >= l1:
@@ -376,7 +378,7 @@ def qlimit(uavs, payload, numofquads, tick):
                     pos2 = uavs[pair[1]].state[0:3] 
                 r = 0.15
                 pr = pos1 + ((pos2-pos1)/2) + r*normVec((pos1-pos2))
-                p0pr = pr - pload
+                p0pr = pr - p0
                 prp2 = pos2 - pr
                 
                 ns = np.cross(prp2, p0pr)           
@@ -462,7 +464,6 @@ def qp(uavs, payload, Ud, P, tick):
         else:
             print('Please choose either cvxpy framework or osqp solver in the mode of the payloadCtrl')
             sys.exit()
-        payload.mu_des_prev = mu_des
         return uavs, payload, mu_des
 
     except Exception as e:
@@ -565,6 +566,7 @@ def controllerLeePayload(uavs, id, payload, control, setpoint, sensors, state, t
     except Exception as e:
         print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno), type(e).__name__, e) 
     
+    payload.mu_des_prev = desVirtInp
     if not payload.pointmass:
         desVirtInp = desVirtInp[j-6-7:j-3-7]
     else:   
