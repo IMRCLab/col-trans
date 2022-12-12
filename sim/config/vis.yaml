@@ -8,8 +8,8 @@ robot:
   colors : [0x0000ff,  0xff0000,  0x00ff00]
   
   hps:
-    opacity : 0.5
-    size    : [1.5, 1.5] # lxw of plane
+    opacity : 0.
+    size    : [0.5, 0.5] # lxw of plane
     linewidth: 2
 
   mu: 
@@ -21,10 +21,12 @@ robot:
     linewidth: 4
   
   constrSphere: 
-    radius  : [0.1, 0.1, 0.1]
+    radius  : [0.2, 0.2, 0.2]
     opacity : 0.05
     color   : 0x000000
  
 payload:
     radius: 0.02
+    rigid: true
+    shape: Animator/Triangle_meteres_centered.stl
     color: 0xff11dd

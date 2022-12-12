@@ -43,9 +43,9 @@ if __name__ == '__main__':
 
     with open('output/configData.yaml') as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
-    
+        
     uavs         = data['robots']
-    # print(uavs)
+
     payload      = data['payload']
     
     visProps     = meshcatdata['meshcat']
@@ -107,7 +107,7 @@ if __name__ == '__main__':
             size           = hpShape['size']
             linewidthNorm  = hpShape['linewidth']
             
-            normaltmp[i]   = g.LineBasicMaterial(linewidth=linewidthNorm, color=hpcolor)
+            normaltmp[i]   = g.LineBasicMaterial(linewidth=linewidthNorm, color=hpcolor, opacity=hpopacity)
             hplanetmp[i]   =  (Plane(width=size[0], height=size[1]), 
                               g.MeshBasicMaterial(opacity=hpopacity, color=hpcolor))
             hplanes[id]    = hplanetmp 
@@ -123,15 +123,20 @@ if __name__ == '__main__':
     plstatePath = payload
     plstates     = np.loadtxt('output/' + plstatePath, delimiter=',')
     plproperties = meshcatdata['payload']
-    vis["payload"].set_object(g.Mesh(g.Sphere(plproperties['radius']), g.MeshLambertMaterial(color=plproperties['color'])))
+    if ploadShape['rigid'] == True:
+        loadshape   = meshcatdata['payload']['shape']
+        vis["payload"].set_object(g.StlMeshGeometry.from_file(loadshape), g.MeshLambertMaterial(color=plproperties['color']))
+    else:
+        vis["payload"].set_object(g.Mesh(g.Sphere(plproperties['radius']), g.MeshLambertMaterial(color=plproperties['color'])))
    
     while True:    
         tick = 0
         for plstate in plstates:
-            # print(plstates.shape)
             ppos = plstate[0:3]
-            vis["payload"].set_transform(
-                           tf.translation_matrix(ppos))
+            if ploadShape['rigid'] == True:
+                vis["payload"].set_transform(
+                            tf.translation_matrix(ppos).dot(
+                tf.quaternion_matrix(plstate[6:10])))
 
             for id in uavs.keys():
                 quadsphere  = Quadspheres[id]
@@ -152,12 +157,17 @@ if __name__ == '__main__':
                 vis["contrSph"+id].set_transform(tf.translation_matrix(state[0:3]).dot(
                 tf.quaternion_matrix(state[6:10])))
 
-                cablePos = np.linspace(ppos, state[0:3], num=10).T
+                if ploadShape['rigid'] == True:
+                    pRot = rn.to_matrix(plstate[6:10])
+                    p0 = ppos + pRot@uavs[id]['att']
+                else:
+                    p0 = ppos
+                cablePos = np.linspace(p0, state[0:3], num=2).T
                 vis["cable"+id].set_object(g.Line(g.PointsGeometry(cablePos), material=cable))
 
                 # normalize mu because they are very small in values
                 try: 
-                    muvec = np.linspace(ppos, ppos + muShape['scale']*(mu), num=2).T
+                    muvec = np.linspace(p0, p0 + muShape['scale']*(mu), num=2).T
                 except:
                     print('norm mu is zero!')
                     raise 
@@ -175,7 +185,7 @@ if __name__ == '__main__':
                     R[:3, 0] = R1[:,0]
                     R[:3, 1] = R1[:,1]
                     R[:3, 2] = R1[:,2]
-                    R[:3, 3] = ppos
+                    R[:3, 3] = p0
                     planeObj = hplanePerId[hpsKey][0]
                     planeMat = hplanePerId[hpsKey][1]
 
@@ -184,7 +194,7 @@ if __name__ == '__main__':
                     
                     # draw normals
                     normalMat = normal[hpsKey]
-                    n_ = np.linspace(ppos, n+ppos, num=10).T
+                    n_ = np.linspace(p0, n+p0, num=2).T
                     vis["n"+str(hpsKey)+id].set_object(g.Line(g.PointsGeometry(n_), material=normalMat))
             tick+=1
             time.sleep(visProps["timestep"])
