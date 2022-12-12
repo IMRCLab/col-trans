@@ -376,7 +376,7 @@ def qlimit(uavs, payload, numofquads, tick):
                 else:
                     pos1 = uavs[pair[0]].state[0:3] 
                     pos2 = uavs[pair[1]].state[0:3] 
-                r = 0.15
+                r = uavs[id].radius
                 pr = pos1 + ((pos2-pos1)/2) + r*normVec((pos1-pos2))
                 p0pr = pr - p0
                 prp2 = pos2 - pr
