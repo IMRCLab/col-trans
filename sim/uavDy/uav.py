@@ -416,6 +416,7 @@ class UavModel:
         self.hpStack   = {}
         self.hp_prev = {}
         self.hpNums  = uav_params['NumOfHplane']
+        self.radius  = uav_params['radius']
         for hpIds in range(self.hpNums):
             self.hpStack[hpIds] = np.empty((1,4))
             self.hp_prev[hpIds] = np.empty((1,4))
