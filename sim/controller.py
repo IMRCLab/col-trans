@@ -382,7 +382,14 @@ def initPLController(uavs, payload):
             leePayload.Kpos_I.x = payload.controller['kipx']
             leePayload.Kpos_I.y = payload.controller['kipy']
             leePayload.Kpos_I.z = payload.controller['kipz']
-        
+
+            leePayload.Kprot_P.x = payload.controller['krpx']
+            leePayload.Kprot_P.y = payload.controller['krpy']
+            leePayload.Kprot_P.z = payload.controller['krpz']
+            leePayload.Kprot_D.x = payload.controller['kwpy']
+            leePayload.Kprot_D.y = payload.controller['kwpx']
+            leePayload.Kprot_D.z = payload.controller['kwpz']
+
             leePayload.KR.x     = payload.controller['krx']
             leePayload.KR.y     = payload.controller['kry']
             leePayload.KR.z     = payload.controller['krz']
@@ -423,16 +430,21 @@ def initPLController(uavs, payload):
         controls[id] = control
     return controls, setpoint, sensors_, states 
 
-def updateNeighborStates(state, id, uavs):
+def updateNeighbors(leePayload, state, id, uavs, payload):
     i = 0
     for id_ in uavs.keys():
         if id != id_:
             stateofId = uavs[id_].state
+            attPoint = payload.posFrloaddict[id_]
             cffirmware.state_set_neighbor_position(state,  i, stateofId[0], stateofId[1], stateofId[2])
+            cffirmware.attPoints_set_neighbors(leePayload, i, attPoint[0], attPoint[1], attPoint[2])
             i+=1
         else:
-            pass
-    return state
+            attPoint = payload.posFrloaddict[id]
+            leePayload.attPoint.x = attPoint[0]
+            leePayload.attPoint.y = attPoint[1]
+            leePayload.attPoint.z = attPoint[2]
+    return leePayload, state
 
 def udpateHpsAndmu(id, uavs, leePayload):
     # This is currently fixed for 3 uavs 2 hyperplanes
@@ -474,22 +486,15 @@ def updatePlstate(state, payload):
     state.payload_vel.z = plstate[5]    # m/s
     if not payload.pointmass:
         q_curr = np.array(plstate[6:10]).reshape((4,))
-        rpy_state  = rn.to_euler(q_curr,convention='xyz')
-        state.attitude.roll  = np.degrees(rpy_state[0])
-        state.attitude.pitch = np.degrees(-rpy_state[1])
-        state.attitude.yaw   = np.degrees(rpy_state[2])
-        state.attitudeQuaternion.w = q_curr[0]
-        state.attitudeQuaternion.x = q_curr[1]
-        state.attitudeQuaternion.y = q_curr[2]
-        state.attitudeQuaternion.z = q_curr[3]
+        state.payload_quat.w = q_curr[0]
+        state.payload_quat.x = q_curr[1]
+        state.payload_quat.y = q_curr[2]
+        state.payload_quat.z = q_curr[3]
+        state.payload_omega.x = plstate[10]
+        state.payload_omega.y = plstate[11]
+        state.payload_omega.z = plstate[12]
     return state
 
-def updatePlsensors(sensors, payload):
-    plstate = payload.state
-    sensors.gyro.x = np.degrees(plstate[10]) # deg/s
-    sensors.gyro.y = np.degrees(plstate[11]) # deg/s
-    sensors.gyro.z = np.degrees(plstate[12]) # deg/s
-    return sensors
 
 def updatePlDesState(setpoint, payload, fulltraj):
     setpoint.position.x = fulltraj[0]  # m
@@ -517,10 +522,6 @@ def updatePlDesState(setpoint, payload, fulltraj):
             setpoint.snap.x = 0 
             setpoint.snap.y = 0 
             setpoint.snap.z = 0 
-    if not payload.pointmass:
-        setpoint.attitude.roll = 0
-        setpoint.attitude.pitch = 0
-        setpoint.attitude.roll = 0
     return setpoint
 
 def setPlanes(leePayload, rpyplanes4robots, yaw4robots):
@@ -684,10 +685,7 @@ def main(args, animateOrPlotdict, params):
                     state   =  updatePlstate(state, payload)
                     state, fullState = updateState(state, uavs[id])
 
-                    ## If payload is not point mass, update its angular velocities
                     sensors  = updateSensor(sensors, uavs[id])
-                    if not payload.pointmass:
-                        sensors = updatePlsensors(sensors, payload) 
 
                     if payload.lead:
                         ## Choose controller: Python or firmware
@@ -707,7 +705,7 @@ def main(args, animateOrPlotdict, params):
                             leePayload = uavs[id].ctrlPayload
                             leePayload.mass = uavs[id].m
                             try:
-                                state = updateNeighborStates(state, id, uavs)
+                                leePayload, state = updateNeighbors(leePayload, state, id, uavs, payload)
                                 cffirmware.controllerLeePayload(leePayload, control, setpoint, sensors, state, tick)
                                 uavs, desVirtInp_i = udpateHpsAndmu(id, uavs, leePayload)
                                 desVirtInp.append(desVirtInp_i)
