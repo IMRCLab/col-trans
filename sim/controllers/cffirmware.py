@@ -95,8 +95,10 @@ class state_t:
         self.velocity = vec3_s()
         self.acc = vec3_s()
         self.payload_pos = vec3_s()
+        self.payload_quat = quaternion_t()
         self.payload_vel = vec3_s()
-
+        self.payload_omega = vec3_s()
+  
 class hyperplane:
     def __str__(self):
       return  "normal: [{}, {}, {}], offset: {} ".format(np.around(self.n[0], decimals=5), np.around(self.n[1], decimals=5), np.around(self.n[2], decimals=5), np.around(self.a, decimals=5))
