@@ -30,33 +30,29 @@ if __name__ == '__main__':
     animateOrPlotdict = {'animate':args.animate, 'plot':args.plot}
     print('\nsimulation using the python script\n')
     
-    uavs_py, payload_py, ctrlInps_py, u_parpy, u_perpy = controller.main(args, animateOrPlotdict, params)
-    sys.path.remove("/home/khaledwahba94/imrc/pyCrazyflie/controllers")
+    uavs_py, payload_py = controller.main(args, animateOrPlotdict, params)
+    sys.path.remove("/home/khaledwahba94/imrc/col-trans/sim/controllers")
     sys.path.remove("controllers/")
 
     del sys.modules["controller"]
     del sys.modules["cffirmware"]
 
-    sys.path.append("crazyflie-firmware/")
+    sys.path.append("../crazyflie-firmware/")
     import controller
     params["RobotswithPayload"]["payload"]["payloadCtrl"]["name"] = "lee_firmware"
     print('\nsimulation using the firmware\n')
     
-    uavs_fw, payload_fw, ctrlInps_fw, u_parfw, u_perfw = controller.main(args, animateOrPlotdict, params)
+    uavs_fw, payload_fw = controller.main(args, animateOrPlotdict, params)
 
 
     mu_des_py = payload_py.mu_des_stack
     mu_des_fw = payload_fw.mu_des_stack
     # #extract data 
-    qi_py = payload_py.plFullState[:,6:15]
-    qi_fw = payload_fw.plFullState[:,6:15]
-    
-    wi_py = payload_py.plFullState[:,15::]
-    wi_fw = payload_fw.plFullState[:,15::]
-
-    v_py = payload_py.plFullState[:,3:6]
-    v_fw = payload_fw.plFullState[:,3:6]
-    print()
+    qi_py = payload_py.plFullState[0:500,6:10]
+    qi_fw = payload_fw.plFullState[0:500,6:10]
+    er = qi_py.flatten() - qi_fw.flatten()
+    # J = er.T@er
+    # print(J,np.allclose(qi_py, qi_fw))
 
     # for uavpy, uavfw in zip(uavs_py.values(), uavs_fw.values()):
     #     for i, j in zip(range(len(uavpy.fullState)), range(len(uavfw.fullState))):
