@@ -285,8 +285,9 @@ def perpindicularComp(desAcc, desVirtInp, uavModel, payload, kq, kw, ki, j, tick
     acc0 = acc_ - grav
     qdi    = - desVirtInp/ np.linalg.norm(desVirtInp)
     if tick == 0: 
-        payload.qdi_prevdict[uavModel.id] = qdi.copy()
-    qdidot = np.zeros(3,)
+        payload.qdi_prevdict[uavModel.id] = np.zeros(3,)
+    dt = 1/500 #attitude rate
+    qdidot = (qdi - payload.qdi_prevdict[uavModel.id])/dt
     payload.qdi_prevdict[uavModel.id] = qdi.copy()
     
     m   = uavModel.m
