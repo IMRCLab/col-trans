@@ -536,8 +536,6 @@ def controllerLeePayload(uavs, id, payload, control, setpoint, sensors, state, t
     Rp = np.eye(3)
     rows = 3
     Rdp = rn.to_matrix([setpoint.attitudeQuaternion.w, setpoint.attitudeQuaternion.x, setpoint.attitudeQuaternion.y, setpoint.attitudeQuaternion.z])
-    # print(rn.to_euler([setpoint.attitudeQuaternion.w, setpoint.attitudeQuaternion.x, setpoint.attitudeQuaternion.y, setpoint.attitudeQuaternion.z], convention="xyz", axis_type="extrinsic"))
-    # print(rn.to_euler(payload.state[6:10], convention="xyz", axis_type="extrinsic"))
     wdp = np.zeros(3,)
     Ud = Fd.copy()
 
