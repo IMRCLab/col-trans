@@ -286,7 +286,7 @@ def perpindicularComp(desAcc, desVirtInp, uavModel, payload, kq, kw, ki, j, tick
     qdi    = - desVirtInp/ np.linalg.norm(desVirtInp)
     if tick == 0: 
         payload.qdi_prevdict[uavModel.id] = qdi.copy()
-    qdidot = (qdi - payload.qdi_prevdict[uavModel.id])/payload.dt
+    qdidot = np.zeros(3,)
     payload.qdi_prevdict[uavModel.id] = qdi.copy()
     
     m   = uavModel.m
@@ -535,7 +535,9 @@ def controllerLeePayload(uavs, id, payload, control, setpoint, sensors, state, t
     Md = np.zeros(3,)
     Rp = np.eye(3)
     rows = 3
-    Rdp = np.eye(3)
+    Rdp = rn.to_matrix([setpoint.attitudeQuaternion.w, setpoint.attitudeQuaternion.x, setpoint.attitudeQuaternion.y, setpoint.attitudeQuaternion.z])
+    # print(rn.to_euler([setpoint.attitudeQuaternion.w, setpoint.attitudeQuaternion.x, setpoint.attitudeQuaternion.y, setpoint.attitudeQuaternion.z], convention="xyz", axis_type="extrinsic"))
+    # print(rn.to_euler(payload.state[6:10], convention="xyz", axis_type="extrinsic"))
     wdp = np.zeros(3,)
     Ud = Fd.copy()
 
