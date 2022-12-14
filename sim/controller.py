@@ -506,6 +506,17 @@ def updatePlDesState(setpoint, payload, fulltraj):
     setpoint.acceleration.x = fulltraj[6]  # m/s^2
     setpoint.acceleration.y = fulltraj[7]  # m/s^2
     setpoint.acceleration.z = fulltraj[8]  # m/s^2
+    if not payload.pointmass:
+        attSetpoint = payload.attSetpoint
+        q_des = rn.from_euler(np.radians(attSetpoint[0]), np.radians(attSetpoint[1]), np.radians(attSetpoint[2]), convention="xyz", axis_type="extrinsic")
+        setpoint.attitudeQuaternion.w = q_des[0]
+        setpoint.attitudeQuaternion.x = q_des[1]
+        setpoint.attitudeQuaternion.y = q_des[2]
+        setpoint.attitudeQuaternion.z = q_des[3]
+        setpoint.attitudeRate.roll  = 0
+        setpoint.attitudeRate.pitch = 0
+        setpoint.attitudeRate.yaw   = 0
+        
     if len(fulltraj) == 15:
         setpoint.jerk.x = fulltraj[9]
         setpoint.jerk.y = fulltraj[10]
