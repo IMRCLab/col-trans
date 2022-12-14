@@ -136,7 +136,7 @@ if __name__ == '__main__':
             if ploadShape['rigid'] == True:
                 vis["payload"].set_transform(
                             tf.translation_matrix(ppos).dot(
-                tf.quaternion_matrix(plstate[6:10])))
+                tf.quaternion_matrix([plstate[6],plstate[7],plstate[8],plstate[9]])))
 
             for id in uavs.keys():
                 quadsphere  = Quadspheres[id]
