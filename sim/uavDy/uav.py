@@ -151,7 +151,6 @@ class SharedPayload:
         self.plref_state = np.empty((1,6))
         self.state, self.prevSt = self.getInitState(uavs_params, payload_params)
         self.accl   = np.zeros(self.sys_dim,)
-        self.accl[2] = -self.mp*9.81 
         self.accl_prev = self.accl
         self.i_error = np.zeros(3,)
         self.qdi_prev = np.array([0,0,-1])
@@ -163,7 +162,6 @@ class SharedPayload:
         self.state = np.zeros(self.state_size,)
         self.state[0:3]   = payload_params['init_pos_L']
         self.accl   = np.zeros(self.sys_dim,)
-        self.accl[2] = 0 #-self.mp*9.81 
         self.state[3:6]   = self.accl[0:3]*self.dt + payload_params['init_linV_L']
         self.state[0:3]   = self.state[3:6]*self.dt + payload_params['init_pos_L']
         if not self.pointmass:
@@ -198,13 +196,12 @@ class SharedPayload:
                 R_p = to_matrix(self.state[6:10])
                 posFrload = np.array(uav['pos_fr_payload'])
                 qiqiT = qi.reshape((3,1))@(qi.T).reshape((1,3))
-                Bq[0:3, 3:6]   +=  m * qiqiT @ R_p @ skew(posFrload)
+                Bq[0:3, 3:6]   += -m * qiqiT @ R_p @ skew(posFrload)
                 Bq[3:6, 0:3]   +=  m * skew(posFrload) @ R_p.T @ qiqiT
                 Bq[3:6, 3:6]   +=  m * skew(posFrload) @ R_p.T @ qiqiT @ R_p @ skew(posFrload)
                 Bq[i:i+3, 3:6]  =  m * skew(qi) @ R_p @ skew(posFrload) 
             i+=3
         if not self.pointmass:
-            Bq[0:3, 3:6] = -Bq[0:3, 3:6]
             Bq[3:6, 3:6] = self.J - Bq[3:6, 3:6]
         return Bq
 
@@ -227,20 +224,16 @@ class SharedPayload:
             k+=3
 
             if self.pointmass:
-                Nq[0:3]  +=  m*l*np.dot(wi,wi)*qi # Lee 2018
-                Nq[i:i+3] = -m*skew(qi) @ np.array([0,0,-self.g]) # Lee 2018
-
+                Nq[0:3]  += -m*l*np.dot(wi,wi)*qi # Lee 2018
             else:
                 posFrload = np.array(uav['pos_fr_payload'])
                 qiqiT = qi.reshape((3,1))@(qi.T).reshape((1,3))
                 Nq[0:3]   += (-m*l*np.dot(wi,wi)*qi - m * qiqiT @ R_p @skew(wl) @skew(wl) @ posFrload)
-                Nq[3:6]   += (m*skew(posFrload) @ R_p.T @ qiqiT @ np.array([0,0,-self.g]) +\
-                             skew(posFrload) @ R_p.T @ ((-m *l * np.dot(wi, wi) * qi) - (m * qiqiT @ R_p @ skew(wl) @skew(wl) @ posFrload )))
+                Nq[3:6]   += skew(posFrload) @ R_p.T @ ((-m *l * np.dot(wi, wi) * qi) - (m * qiqiT @ R_p @ skew(wl) @skew(wl) @ posFrload))
 
-                Nq[i:i+3] = -m*skew(qi) @ np.array([0,0,-self.g]) + m*skew(qi) @ R_p @ skew(wl) @ skew(wl) @ posFrload  
+                Nq[i:i+3] = m*skew(qi) @ R_p @ skew(wl) @ skew(wl) @ posFrload  
             i+=3
 
-        Nq[0:3] = -Nq[0:3] + Mq @ np.array([0,0,-self.g])
         if not self.pointmass:
             Nq[3:6] = Nq[3:6] - skew(wl) @ self.J @ wl
         return Nq
@@ -325,6 +318,7 @@ class SharedPayload:
             ext_f_ = np.zeros_like(u_inp)
             ext_f_[0:3] = ext_f
             self.accl = np.linalg.inv(Bq)@(Nq + u_inp + ext_f_)
+            self.accl[0:3] -= np.array([0,0,9.81])
             self.accl_prev = self.accl
         except Exception as err:
             print(f"Unexpected {err=}, {type(err)=}")
