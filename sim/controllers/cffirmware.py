@@ -536,7 +536,9 @@ def controllerLeePayload(uavs, id, payload, control, setpoint, sensors, state, t
     Md = np.zeros(3,)
     Rp = np.eye(3)
     rows = 3
-    Rdp = rn.to_matrix([setpoint.attitudeQuaternion.w, setpoint.attitudeQuaternion.x, setpoint.attitudeQuaternion.y, setpoint.attitudeQuaternion.z])
+    Rdp = np.eye(3)
+    if not payload.pointmass:
+        Rdp = rn.to_matrix([setpoint.attitudeQuaternion.w, setpoint.attitudeQuaternion.x, setpoint.attitudeQuaternion.y, setpoint.attitudeQuaternion.z])
     wdp = np.zeros(3,)
     Ud = Fd.copy()
 
