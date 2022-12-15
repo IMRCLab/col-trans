@@ -452,7 +452,7 @@ def qp(uavs, payload, Ud, P, tick):
             A     = sparse.vstack((P, sparse.csc_matrix(Ain)), format='csc') 
             # print(A)
             Q     = sparse.csc_matrix(Q)
-            q     = -payload.mu_des_prev
+            q     = payload.mu_des_prev
             l     = np.hstack([Ud, -np.inf*np.ones(Ain.shape[0],)])
             u     = np.hstack([Ud, a_s])
             prob = osqp.OSQP()
