@@ -109,7 +109,7 @@ RobotswithPayload:
     refTrajPath: 'trajectoriescsv/hover_01.csv' #linTraj_traj.csv #cirTraj1.csv
     refAttitude: [0, 0, 0] # attitude setpoint in euler angles (degrees) 
     payloadCtrl:
-      name: 'lee'
+      name: 'lee_firmware'
       payloadLead: 'enabled'
       optimize:
         mode: 'enabled'
