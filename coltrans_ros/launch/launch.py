@@ -68,9 +68,9 @@ def generate_launch_description():
                 ('emergency', 'all/emergency'),
                 ('takeoff', 'all/takeoff'),
                 ('land', 'all/land'),
-                ('notify_setpoints_stop', 'cf255/notify_setpoints_stop'),
+                ('notify_setpoints_stop', 'all/notify_setpoints_stop'),
                 ('cmd_vel', 'cf2/cmd_vel'),
-                ('cmd_full_state', 'cf2/cmd_full_state'),
+                ('cmd_full_state', 'all/cmd_full_state'),
             ],
             parameters=[teleop_params]
         ),
@@ -105,6 +105,11 @@ def generate_launch_description():
             parameters=[server_params] + [{
                 "max_dt": 0.1,              # artificially limit the step() function (set to 0 to disable)
             }]
+        ),
+        Node(
+            package='coltrans_ros',
+            executable='teleop',
+            name='teleop_coltrans'
         ),
         # Node(
         #     package='rviz2',

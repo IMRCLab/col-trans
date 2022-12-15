@@ -46,7 +46,7 @@ class VisualizationNode(Node):
 
         print(self.get_topic_names_and_types())
 
-        cfs = ['cf1'] #, 'cf5', 'cf6']
+        cfs = ['cf231', 'cf5', 'cf6']
         self.cfs = cfs
         
         # initalize meshcat
@@ -55,10 +55,10 @@ class VisualizationNode(Node):
 
         self.vis["/Cameras/default"].set_transform(
             mctf.translation_matrix([0, 0, 0]).dot(
-            mctf.euler_matrix(0, np.radians(-30), np.radians(90))))
+            mctf.euler_matrix(0, np.radians(-30), np.radians(-180))))
 
         self.vis["/Cameras/default/rotated/<object>"].set_transform(
-            mctf.translation_matrix([1, 0, 0]))
+            mctf.translation_matrix([2, 0, 0]))
 
         # for each crazyflie, generate a 3D model, a sphere, and a hyperplane
         for cf in cfs:
@@ -85,9 +85,12 @@ class VisualizationNode(Node):
 
 
         # for the payload set
-        payload = mcg.Mesh(mcg.Sphere(0.02),
-            mcg.MeshBasicMaterial(color=0xff11dd))
-        self.vis["payload"].set_object(payload)
+        # payload = mcg.Mesh(mcg.Sphere(0.02),
+        #     mcg.MeshBasicMaterial(color=0xff11dd))
+        # self.vis["payload"].set_object(payload)
+
+        model = mcg.StlMeshGeometry.from_file("/home/whoenig/projects/tuberlin/col-trans/sim/Animator/Triangle_meteres_centered.stl")
+        self.vis["payload".format(cf)].set_object(model)
 
         # subscribe to ROS2 topics for data
         self.tf_buffer = Buffer()
@@ -123,7 +126,9 @@ class VisualizationNode(Node):
             # update the payload
             trans = self.tf_buffer.lookup_transform("world", "payload", rclpy.time.Time())
             pos = np.array([trans.transform.translation.x, trans.transform.translation.y, trans.transform.translation.z])
-            self.vis["payload"].set_transform(mctf.translation_matrix(pos))
+            quat = np.array([trans.transform.rotation.w, trans.transform.rotation.x, trans.transform.rotation.y, trans.transform.rotation.z])
+            # use an additional pi rotation, since the model is 180deg different than the defined orientation in mocap
+            self.vis["payload"].set_transform(mctf.translation_matrix(pos).dot(mctf.quaternion_matrix(quat).dot(mctf.euler_matrix(0,0,np.pi))))
 
         except LookupException as e:
             self.get_logger().error('failed to get transform {} \n'.format(repr(e)))
@@ -205,11 +210,11 @@ class VisualizationNode(Node):
             mcg.PointsGeometry(vertices),
             material=mcg.LineBasicMaterial(linewidth=2, color=0xff0000, opacity=0.1)))
 
-        # draw mu
+        # draw desVirtInput
         # normalize mu because they are very small in values
-        mu = np.array(msg.values[3:6])
+        desVirtInput = np.array(msg.values[3:6])
         # normmu = np.linalg.norm(mu)
-        vertices = np.array([ppos,ppos+mu*15]).T
+        vertices = np.array([ppos,ppos+desVirtInput*15]).T
         self.vis["{}_Fd".format(name)].set_object(mcg.Line(mcg.PointsGeometry(vertices), 
             material=mcg.LineBasicMaterial(linewidth=6, color=0x00ff00)))
 
