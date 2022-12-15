@@ -432,18 +432,20 @@ def initPLController(uavs, payload):
 
 def updateNeighbors(leePayload, state, id, uavs, payload):
     i = 0
+    cfid = 0
     for id_ in uavs.keys():
         if id != id_:
             stateofId = uavs[id_].state
-            attPoint = payload.posFrloaddict[id_]
-            cffirmware.state_set_neighbor_position(state,  i, stateofId[0], stateofId[1], stateofId[2])
-            cffirmware.attPoints_set_neighbors(leePayload, i, attPoint[0], attPoint[1], attPoint[2])
+            cffirmware.state_set_neighbor_position(state,  i, cfid, stateofId[0], stateofId[1], stateofId[2])
             i+=1
-        else:
-            attPoint = payload.posFrloaddict[id]
-            leePayload.attPoint.x = attPoint[0]
-            leePayload.attPoint.y = attPoint[1]
-            leePayload.attPoint.z = attPoint[2]
+        attPoint = payload.posFrloaddict[id_]
+        cffirmware.controller_lee_payload_set_attachement(leePayload, cfid, cfid, attPoint[0], attPoint[1], attPoint[2])
+        cfid += 1
+        # else:
+        #     attPoint = payload.posFrloaddict[id]
+        #     leePayload.attPoint.x = attPoint[0]
+        #     leePayload.attPoint.y = attPoint[1]
+        #     leePayload.attPoint.z = attPoint[2]
     return leePayload, state
 
 def udpateHpsAndmu(id, uavs, leePayload):
