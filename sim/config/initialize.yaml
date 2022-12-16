@@ -113,7 +113,8 @@ RobotswithPayload:
       payloadLead: 'enabled'
       optimize:
         mode: 'enabled'
-        qp  : 'osqp'
+        lambda: 1.0
+        qp  : 'cvxpy'
         downwashAware: true
       offset: [0.0, 0.0, 0.0]
       gains:

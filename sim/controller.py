@@ -370,6 +370,7 @@ def initPLController(uavs, payload):
             leePayload = cffirmware.controllerLeePayload_t()
             cffirmware.controllerLeePayloadInit(leePayload)
             leePayload.mp = payload.mp
+            leePayload.lambdaa = payload.lambdaa
             leePayload.offsetx = payload.offset[0]
             leePayload.offsety = payload.offset[1]
             leePayload.offsetz = payload.offset[2]

@@ -110,6 +110,7 @@ class SharedPayload:
         self.optimize      = payload_params['payloadCtrl']['optimize']['mode']
         self.qp_tool       = payload_params['payloadCtrl']['optimize']['qp']
         self.downwashAware = payload_params['payloadCtrl']['optimize']['downwashAware']
+        self.lambdaa = payload_params['payloadCtrl']['optimize']['lambda']
         self.attSetpoint   = payload_params['refAttitude']
         self.posFrload = np.empty((1,3))
         self.posFrloaddict = {}
