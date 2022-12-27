@@ -1,0 +1,22 @@
+1     # version
+512   # buffer size in bytes
+log   # file name
+0     # enable on startup (0/1)
+on:fixedFrequency
+500     # frequency
+1     # mode (0: disabled, 1: synchronous stabilizer, 2: asynchronous)
+stateEstimate.px
+stateEstimate.py
+stateEstimate.pz
+stateEstimate.pvx
+stateEstimate.pvy
+stateEstimate.pvz
+ctrlLeeP.Fdx
+ctrlLeeP.Fdy
+ctrlLeeP.Fdz
+ctrlLeeP.Mdx
+ctrlLeeP.Mdy
+ctrlLeeP.Mdz
+ctrlLeeP.desVirtInpx
+ctrlLeeP.desVirtInpy
+ctrlLeeP.desVirtInpz
