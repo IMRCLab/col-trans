@@ -1,6 +1,7 @@
 import numpy as np
 import time
 import rowan
+import cvxpy as cp
 
 # Meshcat
 import meshcat as mc
@@ -14,7 +15,7 @@ uav2 = [0.9, -20, 45]
 safety_radius = 0.15
 
 ppos = np.array([0,0,0.0])
-Fd = np.array([0.0,0.0,-0.1])
+Fd = np.array([0.1,0.0,0.0])
 
 def sphericalToCartCoord(spherical, use_degrees=True):
     r, inc, azi = spherical
@@ -98,15 +99,78 @@ def main():
                             material=mcg.MeshLambertMaterial(opacity=1.0, color=0x0000FF)))
     vis["uav2"].set_transform(mctf.translation_matrix(p2))
 
-    # Basic version: use hyperplane that contains Fd and
-    # vector perpendicular to p2-p1
-    v1 = p2 - p1
-    v1 = v1 / np.linalg.norm(v1)
-    v2 = np.array([0,0,1])
-    v3 = np.cross(v1, v2)
+    # # Basic version: use hyperplane that contains Fd and
+    # # vector perpendicular to p2-p1
+    # v1 = p2 - p1
+    # v1 = v1 / np.linalg.norm(v1)
+    # v2 = np.array([0,0,1])
+    # v3 = np.cross(v1, v2)
 
-    n = np.cross(Fd, v3)
-    n = n / np.linalg.norm(n)
+    # n = np.cross(Fd, v3)
+    # n = n / np.linalg.norm(n)
+
+    # hp = mcg.Mesh(Plane(), 
+    #                         material=mcg.MeshBasicMaterial(
+    #                             opacity=1.0,
+    #                             color=0x00FF00))
+    # vis["hp"].set_object(hp)
+    # vis["hp"].set_transform(plane_transform(ppos, n, 0))
+
+    # # Corrected for robot size
+    # Fdn = Fd / np.linalg.norm(Fd)
+    # v1 = p1 - p2
+    # v1 = v1 / np.linalg.norm(v1)
+    # v4 = Fdn * l1 + v1 * safety_radius
+    # n = np.cross(v4, v3)
+    # n = n / np.linalg.norm(n)
+
+    # hp = mcg.Mesh(Plane(), 
+    #                         material=mcg.MeshBasicMaterial(
+    #                             opacity=1.0,
+    #                             color=0xFF0000))
+    # vis["hp1"].set_object(hp)
+    # vis["hp1"].set_transform(plane_transform(ppos, n, 0))
+
+    # Fdn = Fd / np.linalg.norm(Fd)
+    # v1 = p2 - p1
+    # v1 = v1 / np.linalg.norm(v1)
+    # v4 = Fdn * l2 + v1 * safety_radius
+    # n = np.cross(v4, v3)
+    # n = n / np.linalg.norm(n)
+
+    # hp = mcg.Mesh(Plane(), 
+    #                         material=mcg.MeshBasicMaterial(
+    #                             opacity=1.0,
+    #                             color=0x0000FF))
+    # vis["hp2"].set_object(hp)
+    # vis["hp2"].set_transform(plane_transform(ppos, n, 0))
+
+    # cvxpy
+    # distance point x to hyperplane (n,b) is: d: (n.x - b) / norm(n)
+    # so we have
+    # (n1 . p1 - b1) / |n1| >= safety_radius
+    # (n1 . p2 - b1) / |n1| <= -safety_radius
+
+    n = cp.Variable(3)
+    # prob = cp.Problem(cp.Minimize(cp.sum_squares(n.T @ Fd)),
+    #              [
+    #                 n.T @ p1 >= 1,
+    #               n.T @ p2 <= -1,
+    #               cp.norm(n) >= safety_radius,
+    #               ])
+
+    prob = cp.Problem(cp.Minimize(cp.norm(n) + 50*(n.T @ Fd)**2),
+                 [
+                    n.T @ p1 >= 1,
+                  n.T @ p2 <= -1,
+                  ])
+
+    prob.solve()
+    print(prob.value)
+    print(n.value, Fd, (n.value.T @ Fd) / np.linalg.norm(n.value))
+    print(n.value, p1, (n.value.T @ p1) / np.linalg.norm(n.value))
+    print(n.value, p2, (n.value.T @ p2) / np.linalg.norm(n.value))
+    n = n.value
 
     hp = mcg.Mesh(Plane(), 
                             material=mcg.MeshBasicMaterial(
@@ -114,35 +178,6 @@ def main():
                                 color=0x00FF00))
     vis["hp"].set_object(hp)
     vis["hp"].set_transform(plane_transform(ppos, n, 0))
-
-    # Corrected for robot size
-    Fdn = Fd / np.linalg.norm(Fd)
-    v1 = p1 - p2
-    v1 = v1 / np.linalg.norm(v1)
-    v4 = Fdn * l1 + v1 * safety_radius
-    n = np.cross(v4, v3)
-    n = n / np.linalg.norm(n)
-
-    hp = mcg.Mesh(Plane(), 
-                            material=mcg.MeshBasicMaterial(
-                                opacity=1.0,
-                                color=0xFF0000))
-    vis["hp1"].set_object(hp)
-    vis["hp1"].set_transform(plane_transform(ppos, n, 0))
-
-    Fdn = Fd / np.linalg.norm(Fd)
-    v1 = p2 - p1
-    v1 = v1 / np.linalg.norm(v1)
-    v4 = Fdn * l2 + v1 * safety_radius
-    n = np.cross(v4, v3)
-    n = n / np.linalg.norm(n)
-
-    hp = mcg.Mesh(Plane(), 
-                            material=mcg.MeshBasicMaterial(
-                                opacity=1.0,
-                                color=0x0000FF))
-    vis["hp2"].set_object(hp)
-    vis["hp2"].set_transform(plane_transform(ppos, n, 0))
 
 
     vis.open()
