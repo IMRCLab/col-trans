@@ -449,32 +449,43 @@ def updateNeighbors(leePayload, state, id, uavs, payload):
         #     leePayload.attPoint.z = attPoint[2]
     return leePayload, state
 
-def udpateHpsAndmu(id, uavs, leePayload):
+def udpateHpsAndmu(id, uavs, leePayload, num_neighbors):
     # This is currently fixed for 3 uavs 2 hyperplanes
-    n1 = np.array([leePayload.n1.x, leePayload.n1.y, leePayload.n1.z])
-    n2 = np.array([leePayload.n2.x, leePayload.n2.y, leePayload.n2.z])
-    n3 = np.array([leePayload.n3.x, leePayload.n3.y, leePayload.n3.z])
-    n4 = np.array([leePayload.n4.x, leePayload.n4.y, leePayload.n4.z])
-    n5 = np.array([leePayload.n5.x, leePayload.n5.y, leePayload.n5.z])
-    n6 = np.array([leePayload.n6.x, leePayload.n6.y, leePayload.n6.z])
-    a  = 0
-    ids = list(uavs.keys())
+    if num_neighbors == 2:
+        n1 = np.array([leePayload.n1.x, leePayload.n1.y, leePayload.n1.z])
+        n2 = np.array([leePayload.n2.x, leePayload.n2.y, leePayload.n2.z])
+        n3 = np.array([leePayload.n3.x, leePayload.n3.y, leePayload.n3.z])
+        n4 = np.array([leePayload.n4.x, leePayload.n4.y, leePayload.n4.z])
+        n5 = np.array([leePayload.n5.x, leePayload.n5.y, leePayload.n5.z])
+        n6 = np.array([leePayload.n6.x, leePayload.n6.y, leePayload.n6.z])
+        a  = 0
+        ids = list(uavs.keys())
 
-    hp1 = hyperplane(n1, a)
-    hp2 = hyperplane(n2, a)
-    hp3 = hyperplane(n3, a)
-    hp4 = hyperplane(n4, a)
-    hp5 = hyperplane(n5, a)
-    hp6 = hyperplane(n6, a)
-    
-    uavs[ids[0]].addHp(0 ,hp1)
-    uavs[ids[0]].addHp(1 ,hp2)
-    
-    uavs[ids[1]].addHp(0, hp3)
-    uavs[ids[1]].addHp(1, hp4)
-    
-    uavs[ids[2]].addHp(0, hp5)
-    uavs[ids[2]].addHp(1, hp6)
+        hp1 = hyperplane(n1, a)
+        hp2 = hyperplane(n2, a)
+        hp3 = hyperplane(n3, a)
+        hp4 = hyperplane(n4, a)
+        hp5 = hyperplane(n5, a)
+        hp6 = hyperplane(n6, a)
+        
+        uavs[ids[0]].addHp(0 ,hp1)
+        uavs[ids[0]].addHp(1 ,hp2)
+        
+        uavs[ids[1]].addHp(0, hp3)
+        uavs[ids[1]].addHp(1, hp4)
+        
+        uavs[ids[2]].addHp(0, hp5)
+        uavs[ids[2]].addHp(1, hp6)
+    else:
+        n1 = np.array([leePayload.n1.x, leePayload.n1.y, leePayload.n1.z])
+        n2 = np.array([leePayload.n2.x, leePayload.n2.y, leePayload.n2.z])
+
+        hp1 = hyperplane(n1, 0)
+        hp2 = hyperplane(n2, 0)
+
+        ids = list(uavs.keys())
+        uavs[ids[0]].addHp(0 ,hp1)
+        uavs[ids[1]].addHp(0, hp2)
 
     desVirtInp = leePayload.desVirtInp
     return uavs, desVirtInp
@@ -721,7 +732,7 @@ def main(args, animateOrPlotdict, params):
                             try:
                                 leePayload, state = updateNeighbors(leePayload, state, id, uavs, payload)
                                 cffirmware.controllerLeePayload(leePayload, control, setpoint, sensors, state, tick)
-                                uavs, desVirtInp_i = udpateHpsAndmu(id, uavs, leePayload)
+                                uavs, desVirtInp_i = udpateHpsAndmu(id, uavs, leePayload, payload.numOfquads-1)
                                 desVirtInp.append(desVirtInp_i)
                             except Exception as e:
                                 print('tick: ',tick)
@@ -830,6 +841,10 @@ def main(args, animateOrPlotdict, params):
         configData = {}
         configData['robots'] = {}
         configData['payload'] = 'payload.csv'
+        if payload.pointmass:
+            configData['payload_type'] = 'pointmass'
+        else:
+            configData['payload_type'] = 'rigid'
         Ids = []
         for id in uavs.keys():
             uavID = id.replace("uav_", "")
