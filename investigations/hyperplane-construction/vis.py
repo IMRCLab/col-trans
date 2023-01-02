@@ -12,7 +12,7 @@ import meshcat.transformations as mctf
 uav1 = [0.6, 20, 0]
 uav2 = [0.9, -20, 45]
 
-optimization = True
+optimization = False
 
 # uav1 = [0.5, 10, 0]
 # uav2 = [0.9, -10, 0]
@@ -151,18 +151,47 @@ def main():
 
         n = np.cross(Fd, v3)
         # n = n / np.linalg.norm(n)
+        print(n)
+
+        # check if hyperplane is between UAVs
+        n_normalized = n / np.linalg.norm(n)
+        d1 = np.dot(n_normalized, p1)
+        d2 = np.dot(n_normalized, p2)
+        print(d1, d2)
+        if d1 > 0 or d2 < 0:
+            print("hyperplane not between UAVs!")
+
+            # project p1 on plane
+            p1_proj = p1 - d1 * n_normalized
+            p2_proj = p2 = d2 * n_normalized
+
+            v1_proj = p2_proj - p1_proj
+            v1_proj_normalized = v1_proj / np.linalg.norm(v1_proj)
+
+            axis = np.cross(n, v1)
+            d = np.linalg.norm((p1 - ppos) - (v1_proj_normalized*l1 - ppos))
+            print(d)
+            angle = 2 * np.arcsin(d / l1) + np.arcsin(safety_radius / l1)
+
+            q = rowan.from_axis_angle(axis, angle)
+            n = rowan.rotate(q, n)
 
 
 
     # tilt resulting hyperplanes
     axis = np.cross(n, np.array([0,0,1]))
-    angle1 = np.arcsin(safety_radius / l1)
-    q1 = rowan.from_axis_angle(axis, angle1)
-    n1 = rowan.rotate(q1, n)
 
-    angle2 = np.arcsin(safety_radius / l2)
-    q2 = rowan.from_axis_angle(axis, -angle2)
-    n2 = rowan.rotate(q2, n)
+    if np.linalg.norm(axis) > 1e-6:
+        angle1 = np.arcsin(safety_radius / l1)
+        q1 = rowan.from_axis_angle(axis, angle1)
+        n1 = rowan.rotate(q1, n)
+
+        angle2 = np.arcsin(safety_radius / l2)
+        q2 = rowan.from_axis_angle(axis, -angle2)
+        n2 = rowan.rotate(q2, n)
+    else:
+        n1 = None
+        n2 = None
 
     # w points
     # p0
@@ -188,19 +217,21 @@ def main():
     vis["hp"].set_object(hp)
     vis["hp"].set_transform(plane_transform(ppos, n, 0))
 
-    hp = mcg.Mesh(Plane(), 
-                            material=mcg.MeshBasicMaterial(
-                                opacity=1.0,
-                                color=0xFF0000))
-    vis["hp1"].set_object(hp)
-    vis["hp1"].set_transform(plane_transform(ppos, n1, 0))
+    if n1 is not None:
+        hp = mcg.Mesh(Plane(), 
+                                material=mcg.MeshBasicMaterial(
+                                    opacity=1.0,
+                                    color=0xFF0000))
+        vis["hp1"].set_object(hp)
+        vis["hp1"].set_transform(plane_transform(ppos, n1, 0))
 
-    hp = mcg.Mesh(Plane(), 
-                            material=mcg.MeshBasicMaterial(
-                                opacity=1.0,
-                                color=0x0000FF))
-    vis["hp2"].set_object(hp)
-    vis["hp2"].set_transform(plane_transform(ppos, n2, 0))
+    if n2 is not None:
+        hp = mcg.Mesh(Plane(), 
+                                material=mcg.MeshBasicMaterial(
+                                    opacity=1.0,
+                                    color=0x0000FF))
+        vis["hp2"].set_object(hp)
+        vis["hp2"].set_transform(plane_transform(ppos, n2, 0))
 
 
     vis.open()
