@@ -573,7 +573,7 @@ def main(args, animateOrPlotdict, params):
     # initState: initial state
     # set it as 1 tick: i.e: 1 ms
     # pload: payload flag, enabled: with payload, otherwise: no payload 
-    filename = args.filename
+    filename = (args.config).replace("config/","")
     initUavs = args.initUavs
     simtime  = float(params['simtime'])
     sample   = int(params['sample'])
@@ -906,14 +906,14 @@ def main(args, animateOrPlotdict, params):
 if __name__ == '__main__':
     try: 
         parser = argparse.ArgumentParser()
-        parser.add_argument('filename', type=str, help="Name of the CSV file in trajectoriescsv directory")
+        parser.add_argument('config', type=str, help="Path of the config file")
         parser.add_argument('--animate', default=False, action='store_true', help='Set true to save a gif in Videos directory')
         parser.add_argument('--plot', default=False, action='store_true', help='Set true to save plots in a pdf  format')
         parser.add_argument('--initUavs', default=False, action='store_true', help='Set true to initialize the conditions of the UAVs and then compute the payload initial condition')
         args   = parser.parse_args()   
         animateOrPlotdict = {'animate':args.animate, 'plot':args.plot}
     
-        with open('config/initialize.yaml') as f:
+        with open(args.config) as f:
             params = yaml.load(f, Loader=yaml.FullLoader)
         main(args, animateOrPlotdict, params)
     except ImportError as imp:
