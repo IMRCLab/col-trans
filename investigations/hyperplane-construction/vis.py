@@ -68,6 +68,12 @@ class UAV(typing.NamedTuple):
     inclination: float # deg
     azimuth: float # deg
     safety_radius: float # m
+    attached: int
+
+class Payload(typing.NamedTuple):
+    model: str
+    rotation: list[int]
+    attachementpoints: list[list[float]]
 
 def main():
     # load config
@@ -78,7 +84,8 @@ def main():
 
     uav1 = UAV(**cfg["uavs"][0])
     uav2 = UAV(**cfg["uavs"][1])
-    ppos = np.asarray(cfg["payload"]["position"])
+    payload = Payload(**cfg["payload"])
+    ppos = np.asarray([0,0,0])
     Fd = np.asarray(cfg["Fd"])
 
     l1 = uav1.cable_length
@@ -101,18 +108,32 @@ def main():
         material=mcg.LineBasicMaterial(linewidth=6, color=0x00ff00)))
 
     # draw UAVs (as spheres)
-
-    p1 = ppos + sphericalToCartCoord(uav1.cable_length, uav1.inclination, uav1.azimuth)
+    p1a = payload.attachementpoints[uav1.attached]
+    p1 = p1a + sphericalToCartCoord(uav1.cable_length, uav1.inclination, uav1.azimuth)
 
     vis["uav1"].set_object(mcg.Mesh(mcg.Sphere(uav1.safety_radius),
                             material=mcg.MeshLambertMaterial(opacity=1.0, color=0xFF0000)))
     vis["uav1"].set_transform(mctf.translation_matrix(p1))
 
-    p2 = ppos + sphericalToCartCoord(uav2.cable_length, uav2.inclination, uav2.azimuth)
+    p2a = payload.attachementpoints[uav2.attached]
+    p2 = p2a + sphericalToCartCoord(uav2.cable_length, uav2.inclination, uav2.azimuth)
 
     vis["uav2"].set_object(mcg.Mesh(mcg.Sphere(uav2.safety_radius),
                             material=mcg.MeshLambertMaterial(opacity=1.0, color=0x0000FF)))
     vis["uav2"].set_transform(mctf.translation_matrix(p2))
+
+    # draw payload
+    vis["payload"].set_object(mcg.StlMeshGeometry.from_file(payload.model))
+
+    # draw cables
+
+    vertices = np.array([p1a, p1]).T
+    vis["cable1"].set_object(mcg.Line(mcg.PointsGeometry(vertices), 
+        material=mcg.LineBasicMaterial(linewidth=6, color=0xffffff)))
+
+    vertices = np.array([p2a, p2]).T
+    vis["cable2"].set_object(mcg.Line(mcg.PointsGeometry(vertices), 
+        material=mcg.LineBasicMaterial(linewidth=6, color=0xffffff)))
 
     if optimization:
         # approach 1: use a QP to find the initial hyperplane
