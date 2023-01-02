@@ -55,7 +55,7 @@ if __name__ == '__main__':
     muShape      = meshcatdata['robot']['mu']
     cableShape   = meshcatdata['robot']['cable']
     constrShape  = meshcatdata['robot']['constrSphere']
-    ploadShape   = meshcatdata['payload']
+    ploadShape   = data['payload_type']
 
     vis = meshcat.Visualizer()
     if visProps['openWindow'] == True:
@@ -123,7 +123,7 @@ if __name__ == '__main__':
     plstatePath = payload
     plstates     = np.loadtxt('output/' + plstatePath, delimiter=',')
     plproperties = meshcatdata['payload']
-    if ploadShape['rigid'] == True:
+    if ploadShape == 'rigid':
         loadshape   = meshcatdata['payload']['shape']
         vis["payload"].set_object(g.StlMeshGeometry.from_file(loadshape), g.MeshLambertMaterial(color=plproperties['color']))
     else:
@@ -133,7 +133,7 @@ if __name__ == '__main__':
         tick = 0
         for plstate in plstates:
             ppos = plstate[0:3]
-            if ploadShape['rigid'] == True:
+            if ploadShape == 'rigid':
                 vis["payload"].set_transform(
                             tf.translation_matrix(ppos).dot(
                 tf.quaternion_matrix([plstate[6],plstate[7],plstate[8],plstate[9]])))
@@ -158,7 +158,7 @@ if __name__ == '__main__':
                 vis["contrSph"+id].set_transform(tf.translation_matrix(state[0:3]).dot(
                 tf.quaternion_matrix(state[6:10])))
 
-                if ploadShape['rigid'] == True:
+                if ploadShape == 'rigid':
                     pRot = rn.to_matrix(plstate[6:10])
                     p0 = ppos + pRot@uavs[id]['att']
                 else:

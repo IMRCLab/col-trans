@@ -27,6 +27,5 @@ robot:
  
 payload:
     radius: 0.02
-    rigid: true
     shape: Animator/Triangle_meteres_centered.stl
     color: 0xff11dd
