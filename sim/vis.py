@@ -137,7 +137,8 @@ if __name__ == '__main__':
                 vis["payload"].set_transform(
                             tf.translation_matrix(ppos).dot(
                 tf.quaternion_matrix([plstate[6],plstate[7],plstate[8],plstate[9]])))
-
+            else:
+                 vis["payload"].set_transform(tf.translation_matrix(ppos))
             for id in uavs.keys():
                 quadsphere  = Quadspheres[id]
                 constSphere = constSpheres[id]
