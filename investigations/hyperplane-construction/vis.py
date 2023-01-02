@@ -44,7 +44,7 @@ class Plane(mcg.Geometry):
 
 # Compute the transformation for a plane with given norman n and offset a
 # to be shown as close as possible to p0
-# The plane fulfills n . p + a = 0
+# The plane fulfills n . p - a = 0
 def plane_transform(p0, n, a):
 
     R = mctf.identity_matrix()
@@ -57,11 +57,37 @@ def plane_transform(p0, n, a):
     R[:3, 2] = R1[:,2]
 
     # project p0 onto the plane
-    p_on_plane = p0 - (np.dot(p0, z) + a) * z
-    # print(np.dot(z, p_on_plane) + a)
+    p_on_plane = project_point_on_plane(n, a, p0)
     R[:3, 3] = p_on_plane
 
     return R
+
+# projects point p onto plane (given by n.p = a)
+def project_point_on_plane(n, a, p):
+    # compute signed distance sphere -> hyperplane
+    length = np.linalg.norm(n)
+    dist = (np.dot(n,p) - a) / length
+    p_on_plane = p - dist * n / length
+    return p_on_plane
+
+
+# Computes the circle that is created when intersecting a plane given as (n.p = a)
+# with a sphere at center c with radius r
+# See https://math.stackexchange.com/questions/943383/determine-circle-of-intersection-of-plane-and-sphere
+def plane_sphere_intersection(n, a, c, r):
+    # compute signed distance sphere -> hyperplane
+    length = np.linalg.norm(n)
+    dist = (np.dot(n,c) - a) / length
+
+    # if the minimum distance is greater than r, there is no intersection
+    if np.abs(dist) > r:
+        return None
+
+    # otherwise, compute the center point (on the plane) and radius of the resulting circle
+    center = c - dist * n / length
+    radius = np.sqrt(r**2 - dist**2)
+
+    return center, radius
 
 class UAV(typing.NamedTuple):
     cable_length: float # m
@@ -80,7 +106,7 @@ def main():
     with open("config.yaml", 'r') as ymlfile:
         cfg = yaml.safe_load(ymlfile)
 
-    cfg = cfg[0]
+    cfg = cfg[1]
 
     uav1 = UAV(**cfg["uavs"][0])
     uav2 = UAV(**cfg["uavs"][1])
@@ -94,11 +120,6 @@ def main():
 
     vis = mc.Visualizer()
 
-    vis["workspace1"].set_object(mcg.Mesh(mcg.Sphere(l1),
-                            material=mcg.MeshLambertMaterial(opacity=0.1, color=0xFF0000)))
-
-    vis["workspace2"].set_object(mcg.Mesh(mcg.Sphere(l2),
-                            material=mcg.MeshLambertMaterial(opacity=0.1, color=0x0000FF)))
 
     # draw Fd
     # normalize mu because they are very small in values
@@ -111,6 +132,10 @@ def main():
     p1a = payload.attachementpoints[uav1.attached]
     p1 = p1a + sphericalToCartCoord(uav1.cable_length, uav1.inclination, uav1.azimuth)
 
+    vis["workspace1"].set_object(mcg.Mesh(mcg.Sphere(l1),
+                            material=mcg.MeshLambertMaterial(opacity=0.1, color=0xFF0000)))
+    vis["workspace1"].set_transform(mctf.translation_matrix(p1a))
+    
     vis["uav1"].set_object(mcg.Mesh(mcg.Sphere(uav1.safety_radius),
                             material=mcg.MeshLambertMaterial(opacity=1.0, color=0xFF0000)))
     vis["uav1"].set_transform(mctf.translation_matrix(p1))
@@ -118,12 +143,17 @@ def main():
     p2a = payload.attachementpoints[uav2.attached]
     p2 = p2a + sphericalToCartCoord(uav2.cable_length, uav2.inclination, uav2.azimuth)
 
+    vis["workspace2"].set_object(mcg.Mesh(mcg.Sphere(l2),
+                            material=mcg.MeshLambertMaterial(opacity=0.1, color=0x0000FF)))
+    vis["workspace2"].set_transform(mctf.translation_matrix(p2a))
+
     vis["uav2"].set_object(mcg.Mesh(mcg.Sphere(uav2.safety_radius),
                             material=mcg.MeshLambertMaterial(opacity=1.0, color=0x0000FF)))
     vis["uav2"].set_transform(mctf.translation_matrix(p2))
 
     # draw payload
-    vis["payload"].set_object(mcg.StlMeshGeometry.from_file(payload.model))
+    if payload.model != "pointmass":
+        vis["payload"].set_object(mcg.StlMeshGeometry.from_file(payload.model))
 
     # draw cables
 
@@ -192,7 +222,7 @@ def main():
 
             # project p1 on plane
             p1_proj = p1 - d1 * n_normalized
-            p2_proj = p2 = d2 * n_normalized
+            p2_proj = p2 - d2 * n_normalized
 
             v1_proj = p2_proj - p1_proj
             v1_proj_normalized = v1_proj / np.linalg.norm(v1_proj)
@@ -207,20 +237,71 @@ def main():
 
 
 
-    # tilt resulting hyperplanes
+    # tilt resulting hyperplanes (point mass case)
     axis = np.cross(n, np.array([0,0,1]))
 
     if np.linalg.norm(axis) > 1e-6:
         angle1 = np.arcsin(uav1.safety_radius / l1)
         q1 = rowan.from_axis_angle(axis, angle1)
         n1 = rowan.rotate(q1, n)
+        a1 = 0
 
         angle2 = np.arcsin(uav2.safety_radius / l2)
         q2 = rowan.from_axis_angle(axis, -angle2)
         n2 = rowan.rotate(q2, n)
+        a2 = 0
     else:
         n1 = None
         n2 = None
+
+    # compute per-robot hyperplanes using three points
+    point0 = p1a
+    point1 = p1a + np.cross(n1, np.array([0,0,1]))
+
+    # find the minimum intersection of plane and robot movement sphere
+    intersection = plane_sphere_intersection(n1, 0, p1a, l1)
+    if intersection is not None:
+        center, radius = intersection
+        print("intersection", center, radius)
+        # compute the intersection point with the highest z-value
+        v = project_point_on_plane(n1, 0, center + np.array([0,0,1])) - center
+        print("v", v)
+        v_normalized = v / np.linalg.norm(v)
+        point2 = center + v_normalized * radius
+        print(point2)
+
+        n1 = np.cross(point0-point1, point0-point2)
+        # n1 = n
+        a1 = np.dot(n1, p1a)
+        print(point0, point1, point2)
+    else:
+        n1 = None
+
+    point0 = p2a
+    point1 = p2a + np.cross(n2, np.array([0,0,1]))
+
+    # find the minimum intersection of plane and robot movement sphere
+    intersection = plane_sphere_intersection(n2, 0, p2a, l2)
+    if intersection is not None:
+        center, radius = intersection
+        print("intersection", center, radius)
+        # compute the intersection point with the highest z-value
+        v = project_point_on_plane(n2, 0, center + np.array([0,0,1])) - center
+        print("v", v)
+        v_normalized = v / np.linalg.norm(v)
+        point2 = center + v_normalized * radius
+        print(point2)
+
+        n2 = np.cross(point0-point1, point0-point2)
+        # n1 = n
+        a2 = np.dot(n2, p2a)
+        print(point0, point1, point2)
+    else:
+        n2 = None
+
+
+
+    # point2 = 
 
     # w points
     # p0
@@ -252,7 +333,7 @@ def main():
                                     opacity=1.0,
                                     color=0xFF0000))
         vis["hp1"].set_object(hp)
-        vis["hp1"].set_transform(plane_transform(ppos, n1, 0))
+        vis["hp1"].set_transform(plane_transform(p1a, n1, a1))
 
     if n2 is not None:
         hp = mcg.Mesh(Plane(), 
@@ -260,7 +341,7 @@ def main():
                                     opacity=1.0,
                                     color=0x0000FF))
         vis["hp2"].set_object(hp)
-        vis["hp2"].set_transform(plane_transform(ppos, n2, 0))
+        vis["hp2"].set_transform(plane_transform(p2a, n2, a2))
 
 
     vis.open()
