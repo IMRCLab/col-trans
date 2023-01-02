@@ -450,9 +450,8 @@ def qp(uavs, payload, Ud, P, tick):
             mu_des = mu_des.value 
         elif payload.qp_tool == 'osqp':
             A     = sparse.vstack((P, sparse.csc_matrix(Ain)), format='csc') 
-            # print(A)
             Q     = sparse.csc_matrix(Q)
-            q     = -payload.mu_des_prev
+            q     = payload.mu_des_prev
             l     = np.hstack([Ud, -np.inf*np.ones(Ain.shape[0],)])
             u     = np.hstack([Ud, a_s])
             prob = osqp.OSQP()
@@ -564,7 +563,7 @@ def controllerLeePayload(uavs, id, payload, control, setpoint, sensors, state, t
             k+=1
     try:
         if payload.optimize:
-            uavs, payload, desVirtInp = qp(uavs, payload, Ud.reshape(rows,), P, tick)
+            uavs, payload, desVirtInp = qp(uavs, payload, Ud.reshape(rows,), P@R_p_diag.T, tick)
         else:
             P_inv = P.T @ np.linalg.inv(P@P.T)
             desVirtInp = (R_p_diag) @ (P_inv) @ (Ud.reshape(rows,))
