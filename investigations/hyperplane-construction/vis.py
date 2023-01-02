@@ -12,10 +12,13 @@ import meshcat.transformations as mctf
 uav1 = [0.6, 20, 0]
 uav2 = [0.9, -20, 45]
 
+# uav1 = [0.5, 10, 0]
+# uav2 = [0.9, -10, 0]
+
 safety_radius = 0.15
 
 ppos = np.array([0,0,0.0])
-Fd = np.array([0.1,0.0,0.0])
+Fd = np.array([0.0,0.0,0.1])
 
 def sphericalToCartCoord(spherical, use_degrees=True):
     r, inc, azi = spherical
@@ -152,18 +155,21 @@ def main():
     # (n1 . p2 - b1) / |n1| <= -safety_radius
 
     n = cp.Variable(3)
-    # prob = cp.Problem(cp.Minimize(cp.sum_squares(n.T @ Fd)),
-    #              [
-    #                 n.T @ p1 >= 1,
-    #               n.T @ p2 <= -1,
-    #               cp.norm(n) >= safety_radius,
-    #               ])
-
-    prob = cp.Problem(cp.Minimize(cp.norm(n) + 50*(n.T @ Fd)**2),
+    prob = cp.Problem(cp.Minimize(cp.norm(n) + 10*(n.T @ Fd)**2),
                  [
                     n.T @ p1 >= 1,
                   n.T @ p2 <= -1,
+                #   cp.norm(n) >= safety_radius,
                   ])
+
+    # prob = cp.Problem(cp.Minimize(cp.norm(n) + 50000*(n.T @ Fd)**2),
+    #              [
+    #                 n.T @ p1 >= safety_radius * np.sqrt(3),
+    #               n.T @ p2 <= -safety_radius * np.sqrt(3),
+    #               # Maximum norm: sqrt(3)
+    #               n >= -1,
+    #                 n <= 1,
+    #               ])
 
     prob.solve()
     print(prob.value)
@@ -172,12 +178,52 @@ def main():
     print(n.value, p2, (n.value.T @ p2) / np.linalg.norm(n.value))
     n = n.value
 
+    # tilt resulting hyperplanes
+    axis = np.cross(n, np.array([0,0,1]))
+    angle1 = np.arcsin(safety_radius / l1)
+    q1 = rowan.from_axis_angle(axis, -angle1)
+    n1 = rowan.rotate(q1, n)
+
+    angle2 = np.arcsin(safety_radius / l2)
+    q2 = rowan.from_axis_angle(axis, angle2)
+    n2 = rowan.rotate(q2, n)
+
+    # w points
+    # p0
+    # any point between p1 to p2: pm(t) = p1 + t*(p2 - p1); t=0...1
+    # Fd
+
+    # basic idea
+    # first use geometric construction (that includes Fd)
+    # if that doesn't fulfill the hyperplane constraints, switch to SVM formulation (see above) -OR-
+    # switch to original geometric solution
+    # "tilt" the resulting hyperplane two ways to construct the two needed hyperplanes adjusting for the robot size
+    # tilting: 
+    #   a) rotate n around axis of [0,0,1]xn
+    #   b) angle is defined by 2 arcsin(safety_radius/l)
+
+    # how to deal with rigid bodies?
+
     hp = mcg.Mesh(Plane(), 
                             material=mcg.MeshBasicMaterial(
                                 opacity=1.0,
                                 color=0x00FF00))
     vis["hp"].set_object(hp)
     vis["hp"].set_transform(plane_transform(ppos, n, 0))
+
+    hp = mcg.Mesh(Plane(), 
+                            material=mcg.MeshBasicMaterial(
+                                opacity=1.0,
+                                color=0xFF0000))
+    vis["hp1"].set_object(hp)
+    vis["hp1"].set_transform(plane_transform(ppos, n1, 0))
+
+    hp = mcg.Mesh(Plane(), 
+                            material=mcg.MeshBasicMaterial(
+                                opacity=1.0,
+                                color=0x0000FF))
+    vis["hp2"].set_object(hp)
+    vis["hp2"].set_transform(plane_transform(ppos, n2, 0))
 
 
     vis.open()
