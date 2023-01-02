@@ -2,28 +2,18 @@ import numpy as np
 import time
 import rowan
 import cvxpy as cp
+import yaml
+import typing
 
 # Meshcat
 import meshcat as mc
 import meshcat.geometry as mcg
 import meshcat.transformations as mctf
 
-# cable length [m], inclination [deg, 0-180], azimuth [deg, 0-360]
-uav1 = [0.6, 20, 0]
-uav2 = [0.9, -20, 45]
-
 optimization = False
 
-# uav1 = [0.5, 10, 0]
-# uav2 = [0.9, -10, 0]
-
-safety_radius = 0.15
-
-ppos = np.array([0,0,0.0])
-Fd = np.array([0.0,0.0,0.1])
-
-def sphericalToCartCoord(spherical, use_degrees=True):
-    r, inc, azi = spherical
+def sphericalToCartCoord(r, inc, azi, use_degrees=True):
+    # r, inc, azi = spherical
     if use_degrees:
         inc = np.radians(inc)
         azi = np.radians(azi)
@@ -73,11 +63,29 @@ def plane_transform(p0, n, a):
 
     return R
 
-def main():
-    vis = mc.Visualizer()
+class UAV(typing.NamedTuple):
+    cable_length: float # m
+    inclination: float # deg
+    azimuth: float # deg
+    safety_radius: float # m
 
-    l1 = uav1[0]
-    l2 = uav2[0]
+def main():
+    # load config
+    with open("config.yaml", 'r') as ymlfile:
+        cfg = yaml.safe_load(ymlfile)
+
+    cfg = cfg[0]
+
+    uav1 = UAV(**cfg["uavs"][0])
+    uav2 = UAV(**cfg["uavs"][1])
+    ppos = np.asarray(cfg["payload"]["position"])
+    Fd = np.asarray(cfg["Fd"])
+
+    l1 = uav1.cable_length
+    l2 = uav2.cable_length
+
+
+    vis = mc.Visualizer()
 
     vis["workspace1"].set_object(mcg.Mesh(mcg.Sphere(l1),
                             material=mcg.MeshLambertMaterial(opacity=0.1, color=0xFF0000)))
@@ -94,15 +102,15 @@ def main():
 
     # draw UAVs (as spheres)
 
-    p1 = ppos + sphericalToCartCoord(uav1)
+    p1 = ppos + sphericalToCartCoord(uav1.cable_length, uav1.inclination, uav1.azimuth)
 
-    vis["uav1"].set_object(mcg.Mesh(mcg.Sphere(safety_radius),
+    vis["uav1"].set_object(mcg.Mesh(mcg.Sphere(uav1.safety_radius),
                             material=mcg.MeshLambertMaterial(opacity=1.0, color=0xFF0000)))
     vis["uav1"].set_transform(mctf.translation_matrix(p1))
 
-    p2 = ppos + sphericalToCartCoord(uav2)
+    p2 = ppos + sphericalToCartCoord(uav2.cable_length, uav2.inclination, uav2.azimuth)
 
-    vis["uav2"].set_object(mcg.Mesh(mcg.Sphere(safety_radius),
+    vis["uav2"].set_object(mcg.Mesh(mcg.Sphere(uav2.safety_radius),
                             material=mcg.MeshLambertMaterial(opacity=1.0, color=0x0000FF)))
     vis["uav2"].set_transform(mctf.translation_matrix(p2))
 
@@ -182,11 +190,11 @@ def main():
     axis = np.cross(n, np.array([0,0,1]))
 
     if np.linalg.norm(axis) > 1e-6:
-        angle1 = np.arcsin(safety_radius / l1)
+        angle1 = np.arcsin(uav1.safety_radius / l1)
         q1 = rowan.from_axis_angle(axis, angle1)
         n1 = rowan.rotate(q1, n)
 
-        angle2 = np.arcsin(safety_radius / l2)
+        angle2 = np.arcsin(uav2.safety_radius / l2)
         q2 = rowan.from_axis_angle(axis, -angle2)
         n2 = rowan.rotate(q2, n)
     else:
