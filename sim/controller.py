@@ -437,7 +437,7 @@ def updateNeighbors(leePayload, state, id, uavs, payload):
     for id_ in uavs.keys():
         if id != id_:
             stateofId = uavs[id_].state
-            cffirmware.state_set_neighbor_position(state,  i, cfid, stateofId[0], stateofId[1], stateofId[2])
+            cffirmware.state_set_neighbor_position(state,  i, cfid, stateofId[0], stateofId[1], stateofId[2], int(payload.numOfquads-1))
             i+=1
         attPoint = payload.posFrloaddict[id_]
         cffirmware.controller_lee_payload_set_attachement(leePayload, cfid, cfid, attPoint[0], attPoint[1], attPoint[2])
