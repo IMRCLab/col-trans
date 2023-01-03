@@ -477,7 +477,7 @@ def udpateHpsAndmu(id, uavs, leePayload, num_neighbors):
         
         uavs[ids[2]].addHp(0, hp5)
         uavs[ids[2]].addHp(1, hp6)
-    elif num_neighbors == 3:
+    elif num_neighbors == 1:
         n1 = np.array([leePayload.n1.x, leePayload.n1.y, leePayload.n1.z])
         n2 = np.array([leePayload.n2.x, leePayload.n2.y, leePayload.n2.z])
 
@@ -738,7 +738,6 @@ def main(args, animateOrPlotdict, params):
                             try:
                                 leePayload, state = updateNeighbors(leePayload, state, id, uavs, payload)
                                 cffirmware.controllerLeePayload(leePayload, control, setpoint, sensors, state, tick)
-                                print(control.thrustSI, control.torque[0], control.torque[1], control.torque[2])
                                 uavs, desVirtInp_i = udpateHpsAndmu(id, uavs, leePayload, payload.numOfquads-1)
                                 desVirtInp.append(desVirtInp_i)
                             except Exception as e:
