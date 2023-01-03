@@ -477,7 +477,7 @@ def udpateHpsAndmu(id, uavs, leePayload, num_neighbors):
         
         uavs[ids[2]].addHp(0, hp5)
         uavs[ids[2]].addHp(1, hp6)
-    else:
+    elif num_neighbors == 3:
         n1 = np.array([leePayload.n1.x, leePayload.n1.y, leePayload.n1.z])
         n2 = np.array([leePayload.n2.x, leePayload.n2.y, leePayload.n2.z])
 
@@ -508,6 +508,11 @@ def updatePlstate(state, payload):
         state.payload_omega.x = plstate[10]
         state.payload_omega.y = plstate[11]
         state.payload_omega.z = plstate[12]
+    else: 
+        state.payload_quat.w = np.nan
+        state.payload_quat.x = np.nan
+        state.payload_quat.y = np.nan
+        state.payload_quat.z = np.nan   
     return state
 
 
@@ -733,6 +738,7 @@ def main(args, animateOrPlotdict, params):
                             try:
                                 leePayload, state = updateNeighbors(leePayload, state, id, uavs, payload)
                                 cffirmware.controllerLeePayload(leePayload, control, setpoint, sensors, state, tick)
+                                print(control.thrustSI, control.torque[0], control.torque[1], control.torque[2])
                                 uavs, desVirtInp_i = udpateHpsAndmu(id, uavs, leePayload, payload.numOfquads-1)
                                 desVirtInp.append(desVirtInp_i)
                             except Exception as e:
@@ -781,6 +787,7 @@ def main(args, animateOrPlotdict, params):
                 payload.cursorUp() 
                 # Evolve the payload states
                 uavs, loadState =  payload.stateEvolution(ctrlInputs, uavs, uavs_params, floor.interactionForce(payload.state[0:3], payload.state[3:6]))    
+                # print(id,uavs[id].state[6:10])     
                 if payload.lead:
                     payload.stackStateandRef(plref_state)
                 else:
