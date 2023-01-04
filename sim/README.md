@@ -26,13 +26,13 @@ Add _cffirmware-firmware/_ to your `PYTHONPATH`. Open a terminal in the `pyCrazy
 * [ ] For each mode, it is possible to choose the type of controller to use, whether it is the same controller used on the firmware through the python bindings, or a python-based controller saved in `controlllers/` directory.
 * [ ] Please follow the comments in the config file to know the available options.
 ### Main File: `controller.py`
-* [ ] To run the simulator, open the terminal in `pyCrazyflie/` directory and type the following command, providing an argument as the name of the pdf and video file that will be created after he simulation finishes running (i.e., choose a name for the file instead `name_of_the_file` )
+* [ ] To run the simulator, open the terminal in `pyCrazyflie/` directory and type the following command, providing an the path of config file that will be used to set the configuration for the simulation,
   ```bash
-    python3 controller.py name_of_the_file
+    python3 controller.py config/name_of_the_config.yaml
     ```    
 * [ ] In order to animate the simulation in a *.gif* format or save the generated plots in a pdf type this command
     ```bash
-    python3 controller.py name_of_the_file --animate --plot
+    python3 controller.py config/name_of_the_config.yaml --animate --plot
     ``` 
 * [ ] `--animate` and `--plot` are flags. Their defaults are both False. 
 * [ ] The animation will be saved in the `Videos` Directory, while the pdf will be saved in the main `pyCrazyflie` directory.

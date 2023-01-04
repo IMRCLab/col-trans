@@ -437,6 +437,7 @@ def updateNeighbors(leePayload, state, id, uavs, payload):
     for id_ in uavs.keys():
         if id != id_:
             stateofId = uavs[id_].state
+            state.num_neighbors = payload.numOfquads-1
             cffirmware.state_set_neighbor_position(state,  i, cfid, stateofId[0], stateofId[1], stateofId[2])
             i+=1
         attPoint = payload.posFrloaddict[id_]
@@ -449,32 +450,43 @@ def updateNeighbors(leePayload, state, id, uavs, payload):
         #     leePayload.attPoint.z = attPoint[2]
     return leePayload, state
 
-def udpateHpsAndmu(id, uavs, leePayload):
+def udpateHpsAndmu(id, uavs, leePayload, num_neighbors):
     # This is currently fixed for 3 uavs 2 hyperplanes
-    n1 = np.array([leePayload.n1.x, leePayload.n1.y, leePayload.n1.z])
-    n2 = np.array([leePayload.n2.x, leePayload.n2.y, leePayload.n2.z])
-    n3 = np.array([leePayload.n3.x, leePayload.n3.y, leePayload.n3.z])
-    n4 = np.array([leePayload.n4.x, leePayload.n4.y, leePayload.n4.z])
-    n5 = np.array([leePayload.n5.x, leePayload.n5.y, leePayload.n5.z])
-    n6 = np.array([leePayload.n6.x, leePayload.n6.y, leePayload.n6.z])
-    a  = 0
-    ids = list(uavs.keys())
+    if num_neighbors == 2:
+        n1 = np.array([leePayload.n1.x, leePayload.n1.y, leePayload.n1.z])
+        n2 = np.array([leePayload.n2.x, leePayload.n2.y, leePayload.n2.z])
+        n3 = np.array([leePayload.n3.x, leePayload.n3.y, leePayload.n3.z])
+        n4 = np.array([leePayload.n4.x, leePayload.n4.y, leePayload.n4.z])
+        n5 = np.array([leePayload.n5.x, leePayload.n5.y, leePayload.n5.z])
+        n6 = np.array([leePayload.n6.x, leePayload.n6.y, leePayload.n6.z])
+        a  = 0
+        ids = list(uavs.keys())
 
-    hp1 = hyperplane(n1, a)
-    hp2 = hyperplane(n2, a)
-    hp3 = hyperplane(n3, a)
-    hp4 = hyperplane(n4, a)
-    hp5 = hyperplane(n5, a)
-    hp6 = hyperplane(n6, a)
-    
-    uavs[ids[0]].addHp(0 ,hp1)
-    uavs[ids[0]].addHp(1 ,hp2)
-    
-    uavs[ids[1]].addHp(0, hp3)
-    uavs[ids[1]].addHp(1, hp4)
-    
-    uavs[ids[2]].addHp(0, hp5)
-    uavs[ids[2]].addHp(1, hp6)
+        hp1 = hyperplane(n1, a)
+        hp2 = hyperplane(n2, a)
+        hp3 = hyperplane(n3, a)
+        hp4 = hyperplane(n4, a)
+        hp5 = hyperplane(n5, a)
+        hp6 = hyperplane(n6, a)
+        
+        uavs[ids[0]].addHp(0 ,hp1)
+        uavs[ids[0]].addHp(1 ,hp2)
+        
+        uavs[ids[1]].addHp(0, hp3)
+        uavs[ids[1]].addHp(1, hp4)
+        
+        uavs[ids[2]].addHp(0, hp5)
+        uavs[ids[2]].addHp(1, hp6)
+    elif num_neighbors == 1:
+        n1 = np.array([leePayload.n1.x, leePayload.n1.y, leePayload.n1.z])
+        n2 = np.array([leePayload.n2.x, leePayload.n2.y, leePayload.n2.z])
+
+        hp1 = hyperplane(n1, 0)
+        hp2 = hyperplane(n2, 0)
+
+        ids = list(uavs.keys())
+        uavs[ids[0]].addHp(0 ,hp1)
+        uavs[ids[1]].addHp(0, hp2)
 
     desVirtInp = leePayload.desVirtInp
     return uavs, desVirtInp
@@ -496,6 +508,11 @@ def updatePlstate(state, payload):
         state.payload_omega.x = plstate[10]
         state.payload_omega.y = plstate[11]
         state.payload_omega.z = plstate[12]
+    else: 
+        state.payload_quat.w = np.nan
+        state.payload_quat.x = np.nan
+        state.payload_quat.y = np.nan
+        state.payload_quat.z = np.nan   
     return state
 
 
@@ -573,7 +590,7 @@ def main(args, animateOrPlotdict, params):
     # initState: initial state
     # set it as 1 tick: i.e: 1 ms
     # pload: payload flag, enabled: with payload, otherwise: no payload 
-    filename = args.filename
+    filename = (args.config).replace("config/","")
     initUavs = args.initUavs
     simtime  = float(params['simtime'])
     sample   = int(params['sample'])
@@ -721,7 +738,7 @@ def main(args, animateOrPlotdict, params):
                             try:
                                 leePayload, state = updateNeighbors(leePayload, state, id, uavs, payload)
                                 cffirmware.controllerLeePayload(leePayload, control, setpoint, sensors, state, tick)
-                                uavs, desVirtInp_i = udpateHpsAndmu(id, uavs, leePayload)
+                                uavs, desVirtInp_i = udpateHpsAndmu(id, uavs, leePayload, payload.numOfquads-1)
                                 desVirtInp.append(desVirtInp_i)
                             except Exception as e:
                                 print('tick: ',tick)
@@ -748,7 +765,6 @@ def main(args, animateOrPlotdict, params):
                     
                     control_inp    = np.array([control.thrustSI, control.torque[0], control.torque[1], control.torque[2]])
                     ctrlInp        = np.array([control.u_all[0], control.u_all[1], control.u_all[2]])
-                    # fullCtrlInps.append(list(ctrlInp))
                     uavs[id].state = StatefromSharedPayload(id, payload, uavs[id].state[6::], uavs[id].lc, j)
                     ctrlInputs     = np.vstack((ctrlInputs, control_inp.reshape(1,4)))
                     payload.stackCtrl(ctrlInp.reshape(1,3))  
@@ -830,6 +846,16 @@ def main(args, animateOrPlotdict, params):
         configData = {}
         configData['robots'] = {}
         configData['payload'] = 'payload.csv'
+        if payload.shape == 'point':
+            configData['payload_type'] = 'point'
+        elif payload.shape == 'triangle':
+            configData['payload_type'] = 'triangle'
+        elif payload.shape == 'rod':
+            configData['payload_type'] = 'rod'
+        else:
+            print('please add the right shape!')
+            exit()
+
         Ids = []
         for id in uavs.keys():
             uavID = id.replace("uav_", "")
@@ -906,14 +932,14 @@ def main(args, animateOrPlotdict, params):
 if __name__ == '__main__':
     try: 
         parser = argparse.ArgumentParser()
-        parser.add_argument('filename', type=str, help="Name of the CSV file in trajectoriescsv directory")
+        parser.add_argument('config', type=str, help="Path of the config file")
         parser.add_argument('--animate', default=False, action='store_true', help='Set true to save a gif in Videos directory')
         parser.add_argument('--plot', default=False, action='store_true', help='Set true to save plots in a pdf  format')
         parser.add_argument('--initUavs', default=False, action='store_true', help='Set true to initialize the conditions of the UAVs and then compute the payload initial condition')
         args   = parser.parse_args()   
         animateOrPlotdict = {'animate':args.animate, 'plot':args.plot}
     
-        with open('config/initialize.yaml') as f:
+        with open(args.config) as f:
             params = yaml.load(f, Loader=yaml.FullLoader)
         main(args, animateOrPlotdict, params)
     except ImportError as imp:
