@@ -1,5 +1,6 @@
 from functools import partial
 import numpy as np
+import rowan
 
 import rclpy
 from rclpy.node import Node
@@ -39,6 +40,36 @@ class Plane(mcg.Geometry):
         }
 
 
+# Compute the transformation for a plane with given norman n and offset a
+# to be shown as close as possible to p0
+# The plane fulfills n . p - a = 0
+def plane_transform(p0, n, a):
+
+    R = mctf.identity_matrix()
+    z_fixed = [0,0,1]
+    if np.linalg.norm(n) < 1e-6:
+        return R
+    z = n / np.linalg.norm(n)
+    q = rowan.vector_vector_rotation(z_fixed, z)
+    R1 = rowan.to_matrix(q)
+    R[:3, 0] = R1[:,0]
+    R[:3, 1] = R1[:,1]
+    R[:3, 2] = R1[:,2]
+
+    # project p0 onto the plane
+    p_on_plane = project_point_on_plane(n, a, p0)
+    R[:3, 3] = p_on_plane
+
+    return R
+
+# projects point p onto plane (given by n.p = a)
+def project_point_on_plane(n, a, p):
+    # compute signed distance sphere -> hyperplane
+    length = np.linalg.norm(n)
+    dist = (np.dot(n,p) - a) / length
+    p_on_plane = p - dist * n / length
+    return p_on_plane
+
 class VisualizationNode(Node):
 
     def __init__(self):
@@ -46,7 +77,7 @@ class VisualizationNode(Node):
 
         print(self.get_topic_names_and_types())
 
-        cfs = ['cf231', 'cf5', 'cf6']
+        cfs = ['cf5', 'cf6']
         self.cfs = cfs
         
         # initalize meshcat
@@ -62,7 +93,7 @@ class VisualizationNode(Node):
 
         # for each crazyflie, generate a 3D model, a sphere, and a hyperplane
         for cf in cfs:
-            model = mcg.StlMeshGeometry.from_file("/home/khaledwahba94/imrc/visualization-examples/meshes/cf2_assembly.stl")
+            model = mcg.StlMeshGeometry.from_file("/home/whoenig/projects/tuberlin/col-trans/sim/Animator/cf2_assembly.stl")
             self.vis["{}_model".format(cf)].set_object(model)
 
             sphere = mcg.Mesh(mcg.Sphere(0.1), 
@@ -140,8 +171,6 @@ class VisualizationNode(Node):
         # self.get_logger().info('I heard: "%s"' % msg)
 
         # draw hyperplane
-        n = np.array(msg.values[0:3])
-        a = 0
         try:
 
             trans = self.tf_buffer.lookup_transform("world", "payload", rclpy.time.Time())
@@ -150,15 +179,10 @@ class VisualizationNode(Node):
             self.get_logger().error('failed to get transform {} \n'.format(repr(e)))
             return
 
-        x = np.array([1,0,0])
-        z = n / np.linalg.norm(n)
-        y = np.cross(z, x)
-        R = mctf.identity_matrix()
-        R[:3, 0] = x
-        R[:3, 1] = y
-        R[:3, 2] = z
-        R[:3, 3] = ppos
+        n = np.array(msg.values[0:3])
+        a = np.dot(n, ppos)
 
+        R = plane_transform(ppos, n, a)
         self.vis["{}_hp".format(name)].set_transform(R)
 
         # draw normal
@@ -183,8 +207,6 @@ class VisualizationNode(Node):
         # self.get_logger().info('I heard: "%s"' % msg)
 
         # draw hyperplane
-        n = np.array(msg.values[0:3])
-        a = 0
         try:
 
             trans = self.tf_buffer.lookup_transform("world", "payload", rclpy.time.Time())
@@ -193,14 +215,11 @@ class VisualizationNode(Node):
             self.get_logger().error('failed to get transform {} \n'.format(repr(e)))
             return
 
-        x = np.array([1,0,0])
-        z = n / np.linalg.norm(n)
-        y = np.cross(z, x)
-        R = mctf.identity_matrix()
-        R[:3, 0] = x
-        R[:3, 1] = y
-        R[:3, 2] = z
-        R[:3, 3] = ppos
+        n = np.array(msg.values[0:3])
+        a = np.dot(n, ppos)
+
+        R = plane_transform(ppos, n, a)
+        self.vis["{}_hp".format(name)].set_transform(R)
 
         self.vis["{}_hp2".format(name)].set_transform(R)
 
@@ -210,11 +229,11 @@ class VisualizationNode(Node):
             mcg.PointsGeometry(vertices),
             material=mcg.LineBasicMaterial(linewidth=2, color=0xff0000, opacity=0.1)))
 
-        # draw desVirtInput
+        # draw Fd
         # normalize mu because they are very small in values
-        desVirtInput = np.array(msg.values[3:6])
+        Fd = np.array(msg.values[3:6])
         # normmu = np.linalg.norm(mu)
-        vertices = np.array([ppos,ppos+desVirtInput*15]).T
+        vertices = np.array([ppos,ppos+Fd*15]).T
         self.vis["{}_Fd".format(name)].set_object(mcg.Line(mcg.PointsGeometry(vertices), 
             material=mcg.LineBasicMaterial(linewidth=6, color=0x00ff00)))
 
