@@ -52,9 +52,9 @@ class TeleopNode(Node):
                 req.parameters = [Parameter(name=param_name, value=param_value)]
                 self.setParamsServiceServer.call_async(req)
 
-            # # switch to manual teleoperation after some time
-            # if self.timer is None:
-            #     self.timer = self.create_timer(2.0, self.timer_callback)
+            # switch to manual teleoperation after some time
+            if self.timer is None:
+                self.timer = self.create_timer(2.0, self.timer_callback)
 
 
         # land: switch back to regular lee controller!
