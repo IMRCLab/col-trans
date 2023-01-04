@@ -287,7 +287,7 @@ def perpindicularComp(desAcc, desVirtInp, uavModel, payload, kq, kw, ki, j, tick
     if tick == 0: 
         payload.qdi_prevdict[uavModel.id] = np.zeros(3,)
     dt = 1/500 #attitude rate
-    qdidot = (qdi - payload.qdi_prevdict[uavModel.id])/dt
+    qdidot = np.zeros(3,)  #(qdi - payload.qdi_prevdict[uavModel.id])/dt
     payload.qdi_prevdict[uavModel.id] = qdi.copy()
     
     m   = uavModel.m
@@ -339,7 +339,7 @@ def qlimit(uavs, payload, numofquads, tick):
             if payload.pointmass:
                 p0 = payload.state[0:3]
             else:
-                p0 = payload.state[0:3] + payload.posFrloaddict[id]
+                p0 = payload.state[0:3] + rn.to_matrix(payload.state[6:10])@payload.posFrloaddict[id]
             for topair, hplaneId in zip(toPairwith, range(numsofHplaneperId)):
                 pair = [id, topair]
                 pos1 = uavs[pair[0]].state[0:3] 
@@ -358,7 +358,6 @@ def qlimit(uavs, payload, numofquads, tick):
                     p1_dot_p2 = pos1_r.dot(pos2_r)
                     normPos1  = np.linalg.norm(pos1_r)
                     normPos2  = np.linalg.norm(pos2_r)
-
                     angle_12      = np.arccos((p1_dot_p2/(normPos1*normPos2)))
                     pos1_r_proj   = np.array([pos1_r[0], pos1_r[1], 0])
                     normp1_r_proj = np.linalg.norm(pos1_r_proj)
@@ -466,6 +465,7 @@ def qp(uavs, payload, Ud, P, tick):
         else:
             print('Please choose either cvxpy framework or osqp solver in the mode of the payloadCtrl')
             sys.exit()
+        print(mu_des)
         return uavs, payload, mu_des
 
     except Exception as e:
@@ -583,7 +583,9 @@ def controllerLeePayload(uavs, id, payload, control, setpoint, sensors, state, t
     u_perpind  = perpindicularComp(desAcc, desVirtInp, uavModel, payload, kq, kwc, ki, j, tick)
     control.u_all = u_parallel + u_perpind
     torquesTick, des_w, des_wd = torqueCtrlwPayload(uavModel, control.u_all, payload, setpoint, tick*1e-3)
-    
+    print(u_parallel)
+    print(u_perpind)
+    exit()
     control.thrustSI = np.linalg.norm(control.u_all)
     control.torque = np.array([torquesTick[0], torquesTick[1], torquesTick[2]])
 
