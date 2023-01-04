@@ -852,6 +852,8 @@ def main(args, animateOrPlotdict, params):
             configData['payload_type'] = 'triangle'
         elif payload.shape == 'rod':
             configData['payload_type'] = 'rod'
+        elif payload.shape == 'cuboid':
+            configData['payload_type'] = 'cuboid'
         else:
             print('please add the right shape!')
             exit()

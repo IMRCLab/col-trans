@@ -38,3 +38,6 @@ rod:
   height: 0.2
   color: 0xff11dd
   
+cuboid: 
+  size: [0.03, 0.6, 0.005]
+  color: 0xff11dd
