@@ -765,7 +765,6 @@ def main(args, animateOrPlotdict, params):
                     
                     control_inp    = np.array([control.thrustSI, control.torque[0], control.torque[1], control.torque[2]])
                     ctrlInp        = np.array([control.u_all[0], control.u_all[1], control.u_all[2]])
-                    # fullCtrlInps.append(list(ctrlInp))
                     uavs[id].state = StatefromSharedPayload(id, payload, uavs[id].state[6::], uavs[id].lc, j)
                     ctrlInputs     = np.vstack((ctrlInputs, control_inp.reshape(1,4)))
                     payload.stackCtrl(ctrlInp.reshape(1,3))  
@@ -786,7 +785,6 @@ def main(args, animateOrPlotdict, params):
                 payload.cursorUp() 
                 # Evolve the payload states
                 uavs, loadState =  payload.stateEvolution(ctrlInputs, uavs, uavs_params, floor.interactionForce(payload.state[0:3], payload.state[3:6]))    
-                # print(id,uavs[id].state[6:10])     
                 if payload.lead:
                     payload.stackStateandRef(plref_state)
                 else:
@@ -848,10 +846,16 @@ def main(args, animateOrPlotdict, params):
         configData = {}
         configData['robots'] = {}
         configData['payload'] = 'payload.csv'
-        if payload.pointmass:
-            configData['payload_type'] = 'pointmass'
+        if payload.shape == 'point':
+            configData['payload_type'] = 'point'
+        elif payload.shape == 'triangle':
+            configData['payload_type'] = 'triangle'
+        elif payload.shape == 'rod':
+            configData['payload_type'] = 'rod'
         else:
-            configData['payload_type'] = 'rigid'
+            print('please add the right shape!')
+            exit()
+
         Ids = []
         for id in uavs.keys():
             uavID = id.replace("uav_", "")
