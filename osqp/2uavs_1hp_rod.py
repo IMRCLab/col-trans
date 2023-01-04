@@ -31,7 +31,6 @@ Where,
 #                            [ 0, 0, 0, -0.01938242, 0.10992316, 0.04000876]])
 
 Aineq = sparse.csc_matrix(np.ones((2,6)))
-
 allocMatrix = np.zeros((6, 6)) # AllocMatrix@mu = Fd
 attachmentPoints = [
     [-0.041,  0.0355, 1],
@@ -39,8 +38,8 @@ attachmentPoints = [
 ]
 k = 0
 for i in range(0,6,3):
-    allocMatrix[0:3,i:i+3] = np.eye(3)
-    allocMatrix[3::,i:i+3] = skew(np.array(attachmentPoints[k]))
+    allocMatrix[0:3,i:i+3] = np.ones((3,3))
+    allocMatrix[3::,i:i+3] = np.ones((3,3))
     k+=1
 Aeq   = allocMatrix
 # A matrix
