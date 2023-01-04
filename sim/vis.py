@@ -132,12 +132,15 @@ if __name__ == '__main__':
         loadshape   = meshcatdata['rod']
         vis["payload"].set_object(g.Mesh(g.Cylinder(loadshape['height'], radius=loadshape['radius']),
          g.MeshLambertMaterial(color=loadshape['color'])))
-        
+    elif ploadShape == 'cuboid':
+         loadshape   = meshcatdata['cuboid']
+         vis["payload"].set_object(g.Mesh(g.Box(loadshape['size']),
+         g.MeshLambertMaterial(color=loadshape['color'])))
     while True:    
         tick = 0
         for plstate in plstates:
             ppos = plstate[0:3]
-            if ploadShape == 'triangle' or ploadShape == 'rod':
+            if ploadShape == 'triangle' or ploadShape == 'rod' or ploadShape == 'cuboid':
                 vis["payload"].set_transform(
                             tf.translation_matrix(ppos).dot(
                 tf.quaternion_matrix([plstate[6],plstate[7],plstate[8],plstate[9]])))
@@ -165,7 +168,7 @@ if __name__ == '__main__':
                 vis["contrSph"+id].set_transform(tf.translation_matrix(state[0:3]).dot(
                 tf.quaternion_matrix(state[6:10])))
 
-                if ploadShape == 'triangle' or ploadShape == 'rod':
+                if ploadShape == 'triangle' or ploadShape == 'rod' or ploadShape == 'cuboid':
                     pRot = rn.to_matrix(plstate[6:10])
                     p0 = ppos + pRot@uavs[id]['att']
                 elif ploadShape == 'point':
@@ -176,7 +179,6 @@ if __name__ == '__main__':
                 cablePos = np.linspace(p0, state[0:3], num=2).T
                 vis["cable"+id].set_object(g.Line(g.PointsGeometry(cablePos), material=cable))
 
-                # normalize mu because they are very small in values
                 try: 
                     muvec = np.linspace(p0, p0 + muShape['scale']*(mu), num=2).T
                 except:
