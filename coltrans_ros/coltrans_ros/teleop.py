@@ -16,7 +16,7 @@ class TeleopNode(Node):
     def __init__(self):
         super().__init__('teleop_aug')
 
-        self.cfs = ["cf5", "cf6", "cf231"]
+        self.cfs = ["cf5", "cf6"]
 
         self.setParamsServiceServer = self.create_client(SetParameters, "/crazyflie_server/set_parameters")
 

@@ -12,7 +12,7 @@ def generate_launch_description():
     crazyflies_yaml = os.path.join(
         get_package_share_directory('coltrans_ros'),
         'config',
-        'crazyflies.yaml')
+        'crazyflies_2cfs_pointmass.yaml')
 
     with open(crazyflies_yaml, 'r') as ymlfile:
         crazyflies = yaml.safe_load(ymlfile)
@@ -111,11 +111,11 @@ def generate_launch_description():
             executable='teleop',
             name='teleop_coltrans'
         ),
-        # Node(
-        #     package='rviz2',
-        #     namespace='',
-        #     executable='rviz2',
-        #     name='rviz2',
-        #     arguments=['-d' + rviz_config]
-        # ),
+        Node(
+            package='rviz2',
+            namespace='',
+            executable='rviz2',
+            name='rviz2',
+            arguments=['-d' + rviz_config]
+        ),
     ])
