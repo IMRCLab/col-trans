@@ -3,7 +3,7 @@
 log   # file name
 0     # enable on startup (0/1)
 on:fixedFrequency
-400     # frequency in Hz
+100     # frequency in Hz
 1     # mode (0: disabled, 1: synchronous stabilizer, 2: asynchronous)
 # CF states compressed
 stateEstimateZ.x
@@ -32,7 +32,6 @@ stateEstimate.pqw
 stateEstimate.pwx
 stateEstimate.pwy
 stateEstimate.pwz
-stateEstimate.pww
 
 # Desired states of cf
 ctrltargetZ.x
