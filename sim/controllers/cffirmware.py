@@ -583,9 +583,6 @@ def controllerLeePayload(uavs, id, payload, control, setpoint, sensors, state, t
     u_perpind  = perpindicularComp(desAcc, desVirtInp, uavModel, payload, kq, kwc, ki, j, tick)
     control.u_all = u_parallel + u_perpind
     torquesTick, des_w, des_wd = torqueCtrlwPayload(uavModel, control.u_all, payload, setpoint, tick*1e-3)
-    print(u_parallel)
-    print(u_perpind)
-    exit()
     control.thrustSI = np.linalg.norm(control.u_all)
     control.torque = np.array([torquesTick[0], torquesTick[1], torquesTick[2]])
 
