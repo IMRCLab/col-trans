@@ -21,7 +21,7 @@ stateEstimateZ.pvx
 stateEstimateZ.pvy
 stateEstimateZ.pvz
 
-# Payload rotational states
+# Payload rotational states (not compressed)
 # quaternions 
 stateEstimate.pqx
 stateEstimate.pqy
