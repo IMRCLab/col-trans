@@ -1,0 +1,78 @@
+1     # version
+512   # buffer size in bytes
+log   # file name
+0     # enable on startup (0/1)
+on:fixedFrequency
+400     # frequency in Hz
+1     # mode (0: disabled, 1: synchronous stabilizer, 2: asynchronous)
+# CF states compressed
+stateEstimateZ.x
+stateEstimateZ.y
+stateEstimateZ.z
+stateEstimateZ.vx
+stateEstimateZ.vy
+stateEstimateZ.vz
+
+# Payload position and velocity states compressed
+stateEstimateZ.px
+stateEstimateZ.py
+stateEstimateZ.pz
+stateEstimateZ.pvx
+stateEstimateZ.pvy
+stateEstimateZ.pvz
+
+# Payload rotational states
+# quaternions 
+stateEstimate.pqx
+stateEstimate.pqy
+stateEstimate.pqz
+stateEstimate.pqw
+
+# omega
+stateEstimate.pwx
+stateEstimate.pwy
+stateEstimate.pwz
+stateEstimate.pww
+
+# Desired states of cf
+ctrltargetZ.x
+ctrltargetZ.y
+ctrltargetZ.z
+
+# attitude states of cf
+ctrlLeeP.rpyx
+ctrlLeeP.rpyy
+ctrlLeeP.rpyz
+
+# control inp of cf
+ctrlLeeP.thrustSI
+ctrlLeeP.torquex
+ctrlLeeP.torquey
+ctrlLeeP.torquez
+
+# control inp of payload dynamics
+ctrlLeeP.ux
+ctrlLeeP.uy
+ctrlLeeP.uz
+
+# QP input
+ctrlLeeP.n1x
+ctrlLeeP.n1y
+ctrlLeeP.n1z
+
+ctrlLeeP.n2x
+ctrlLeeP.n2y
+ctrlLeeP.n2z
+
+ctrlLeeP.Fdx
+ctrlLeeP.Fdy
+ctrlLeeP.Fdz
+
+ctrlLeeP.Mdx
+ctrlLeeP.Mdy
+ctrlLeeP.Mdz
+
+# QP output
+ctrlLeeP.desVirtInpx
+ctrlLeeP.desVirtInpy
+ctrlLeeP.desVirtInpz
