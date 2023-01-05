@@ -15,7 +15,7 @@ robots:
   payload:
       enabled: true
       initial_position: [0.0, 0.0, 0.0]
-      type: marker  # see robot_types
+      type: mocap_rigidbody  # see robot_types
       id: 255
 
 
@@ -140,6 +140,12 @@ robot_types:
           marker: default_single_marker
           dynamics: default
 
+  # An object tracked by the mocap, not a robot to connect to
+  mocap_rigidbody:
+      connection: none
+      motion_capture:
+          enabled: false
+
 # global settings for all robots
 all:
   # firmware parameters for all drones (use robot_types/type_name to set per type, or
@@ -217,15 +223,16 @@ all:
       # payload properties
       # massP: 0.017
       massP: 0.01 #0.0054 # 2 UAV cuboid case
-      # ap0id: 231
-      # ap0x: -0.02
-      # ap0y: 0.033
-      # ap0z: 0.0
 
-      # ap1id: 5
-      # ap1x: 0.04
-      # ap1y: 0.0
-      # ap1z: 0.0
+      ap0id: 5
+      ap0x: 0.0
+      ap0y: 0.3
+      ap0z: 0.0
+
+      ap1id: 6
+      ap1x: 0.0
+      ap1y: -0.3
+      ap1z: 0.0
 
       # ap2id: 6
       # ap2x: -0.02
@@ -237,32 +244,6 @@ all:
       radius: 0.2
 
       # lambda: 0.0
-
-      # ## 6 planes rpy and yaw 
-      # r11: 25.0
-      # p11: 0.0
-      # y11: 0.0
-      # r12: 30.0
-      # p12: 0.0
-      # y12: 0.0
-      # r21: 25.0
-      # p21: 0.0
-      # y21: 180.0
-      # r22: 30.0
-      # p22: 0.0
-      # y22: 180.0
-      # r31: 25.0
-      # p31: 0.0
-      # y31: 240.0
-      # r32: 30.0
-      # p32: 0.0
-      # y32: 240.0
-      # yawp11: 180.0
-      # yawp12: 0.0
-      # yawp21: 300.0
-      # yawp22: 120.0
-      # yawp31: 420.0
-      # yawp32: 240.0
     # ring:
     #   effect: 16 # 6: double spinner, 7: solid color, 16: packetRate
     #   solidBlue: 255 # if set to solid color
@@ -287,16 +268,15 @@ all:
         frequency: 1 # Hz
     custom_topics:
       ctrlLeeP:
-       frequency: 10 # Hz
-       vars: ["ctrlLeeP.n1x", "ctrlLeeP.n1y", "ctrlLeeP.n1z", "ctrlLeeP.desVirtInpx", "ctrlLeeP.desVirtInpy", "ctrlLeeP.desVirtInpz"]
+        frequency: 10 # Hz
+        vars: ["ctrlLeeP.n1x", "ctrlLeeP.n1y", "ctrlLeeP.n1z", "ctrlLeeP.desVirtInpx", "ctrlLeeP.desVirtInpy", "ctrlLeeP.desVirtInpz"]
       ctrlLeeP2:
-       frequency: 10 # Hz
-       vars: ["ctrlLeeP.n2x", "ctrlLeeP.n2y", "ctrlLeeP.n2z", 'ctrlLeeP.Fdx', "ctrlLeeP.Fdy", "ctrlLeeP.Fdz"]
-      # payloadDbg:
-      #  frequency: 10 # Hz
-      #  vars: ["ctrlLeeP.Mdx", "ctrlLeeP.Mdy", "ctrlLeeP.Mdz"]
-      #   #  vars: ["stateEstimate.pwx", "stateEstimate.pwy", "stateEstimate.pwz"]
-      # #  vars: ["ctrlLeeP.profQP"]
+        frequency: 10 # Hz
+        vars: ["ctrlLeeP.n2x", "ctrlLeeP.n2y", "ctrlLeeP.n2z", 'ctrlLeeP.Fdx', "ctrlLeeP.Fdy", "ctrlLeeP.Fdz"]
+      payloadDbg:
+        frequency: 100 # Hz
+        vars: ["stateEstimate.pqx", "stateEstimate.pqy", "stateEstimate.pqz", "stateEstimate.pwx", "stateEstimate.pwy", "stateEstimate.pwz"]
+      #  vars: ["ctrlLeeP.profQP"]
 
       # setpoint:
       #  frequency: 100 # Hz
