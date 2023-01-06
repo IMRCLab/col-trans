@@ -465,7 +465,6 @@ def qp(uavs, payload, Ud, P, tick):
         else:
             print('Please choose either cvxpy framework or osqp solver in the mode of the payloadCtrl')
             sys.exit()
-        print(mu_des)
         return uavs, payload, mu_des
 
     except Exception as e:
@@ -528,7 +527,7 @@ def controllerLeePayload(uavs, id, payload, control, setpoint, sensors, state, t
     gravComp = np.array([0,0,9.81]).reshape((3,1))
 
     Fd = mp * (- kp @ ep - kd @ ev + desAcc + gravComp)
-
+    payload.Fd = Fd.reshape(3,)
     qi = payload.state[j:j+3]
     wi = payload.state[j+3*payload.numOfquads:j+3+3*payload.numOfquads]
 
