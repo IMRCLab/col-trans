@@ -7,7 +7,8 @@ import meshcat
 import meshcat.geometry as g
 import meshcat.transformations as tf
 np.set_printoptions(suppress=True)
-
+import pathlib
+currPath = pathlib.Path(__file__).parent.resolve()
 
 def normVec(n):
     return n / np.linalg.norm(n)
@@ -38,10 +39,10 @@ class Plane(g.Geometry):
 
 
 if __name__ == '__main__':
-    with open('config/vis.yaml') as f:
+    with open(str(currPath)+'/config/vis.yaml') as f:
         meshcatdata = yaml.load(f, Loader=yaml.FullLoader)
 
-    with open('output/configData.yaml') as f:
+    with open(str(currPath)+'/output/configData.yaml') as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
         
     uavs         = data['robots']
@@ -49,7 +50,7 @@ if __name__ == '__main__':
     payload      = data['payload']
     
     visProps     = meshcatdata['meshcat']
-    robotshape   = meshcatdata['robot']['shape']
+    robotshape   = str(currPath) + '/' + meshcatdata['robot']['shape']
     colors       = meshcatdata['robot']['colors']
     hpShape      = meshcatdata['robot']['hps']
     muShape      = meshcatdata['robot']['mu']
@@ -71,6 +72,8 @@ if __name__ == '__main__':
     states = {}
     hps    = {}
     mus    = {}
+    Fds    = {}
+
     # shapes
     Quadspheres  = {}
     constSpheres = {}
@@ -78,16 +81,19 @@ if __name__ == '__main__':
     normals      = {}
     cables       = {}
     mushape      = {}
+    Fdshape      = {}
     quadNums     = len(uavs.keys())
     for id, uav, qNum in zip(uavs.keys(), uavs.values(), range(quadNums)):
         # File paths for states
         stateFilePath = uav['state']
         hpsFilePaths  = uav['hps']
         musFilePath   = uav['mu']
+        FdFilePath    = uav['Fd']
 
         
         # Add states for uav
-        states[id]    = np.loadtxt('output/' + stateFilePath, delimiter=',')
+        states[id]    = np.loadtxt(str(currPath)+'/output/' + stateFilePath, delimiter=',')
+        Fds[id]       = np.loadtxt(str(currPath)+'/output/' + FdFilePath, delimiter=',')
         # Add shape for uav and its constraint sphere
         
         Quadspheres[id]    = g.StlMeshGeometry.from_file(robotshape)
@@ -99,7 +105,7 @@ if __name__ == '__main__':
         normaltmp      = {}
         for i, hpFilePath in zip(range(len(hpsFilePaths)), hpsFilePaths):
             # Add states for hyperplane
-            hptmp[i]       = np.loadtxt('output/' + hpFilePath, delimiter=',')
+            hptmp[i]       = np.loadtxt(str(currPath)+'/output/' + hpFilePath, delimiter=',')
             hps[id]        = hptmp.copy()
             # Add materials for hyperplanes and normals
             hpcolor        = colors[qNum]
@@ -114,14 +120,15 @@ if __name__ == '__main__':
             normals[id]    = normaltmp
         ##
         # Add state for mu vector
-        mus[id]            = np.loadtxt('output/' + musFilePath, delimiter=',')
+        mus[id]            = np.loadtxt(str(currPath)+'/output/' + musFilePath, delimiter=',')
         # Add shape for mu vector 
         mushape[id]        =  g.LineBasicMaterial(linewidth=muShape['linewidth'], color=colors[qNum])
+        Fdshape[id]        =  g.LineBasicMaterial(linewidth=muShape['linewidth'], color=colors[qNum])
         # Add shape for cable 
         cables[id]         = g.LineBasicMaterial(linewidth=cableShape['linewidth'], color=cableShape['color'])
     
     plstatePath = payload
-    plstates     = np.loadtxt('output/' + plstatePath, delimiter=',')
+    plstates     = np.loadtxt(str(currPath)+'/output/' + plstatePath, delimiter=',')
     if ploadShape == 'triangle':
         loadshape   = meshcatdata['triangle']
         vis["payload"].set_object(g.StlMeshGeometry.from_file(loadshape['shape']), g.MeshLambertMaterial(color=loadshape['color']))
@@ -154,11 +161,13 @@ if __name__ == '__main__':
                 constSphere = constSpheres[id]
                 cable       = cables[id]
                 muMaterial  = mushape[id]
+                FdMaterial  = Fdshape[id]
                 hplanePerId = hplanes[id]
                 hpsPerId    = hps[id]
                 normal      = normals[id]
-                state       = states[id][tick,:]
-                mu          = mus[id][tick,:]
+                state       = states[id][tick]
+                mu          = mus[id][tick]
+                Fd          = Fds[id][tick]
 
                 vis["Quad"+id].set_object(quadsphere)
                 vis["Quad"+id].set_transform(tf.translation_matrix(state[0:3]).dot(
@@ -168,6 +177,9 @@ if __name__ == '__main__':
                 vis["contrSph"+id].set_transform(tf.translation_matrix(state[0:3]).dot(
                 tf.quaternion_matrix(state[6:10])))
 
+                Fdpos  = np.linspace(ppos, ppos+2*Fd[0:3], num=2).T
+                vis["Fd"+id].set_object(g.Line(g.PointsGeometry(Fdpos), material=FdMaterial))
+                
                 if ploadShape == 'triangle' or ploadShape == 'rod' or ploadShape == 'cuboid':
                     pRot = rn.to_matrix(plstate[6:10])
                     p0 = ppos + pRot@uavs[id]['att']
