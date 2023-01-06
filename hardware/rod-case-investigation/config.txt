@@ -1,5 +1,5 @@
 1     # version
-512   # buffer size in bytes
+768   # buffer size in bytes
 log   # file name
 0     # enable on startup (0/1)
 on:fixedFrequency
@@ -12,10 +12,10 @@ stateEstimateZ.z
 stateEstimateZ.vx
 stateEstimateZ.vy
 stateEstimateZ.vz
-stateEstimate.qw   
-stateEstimate.qx 
-stateEstimate.qy 
-stateEstimate.qz 
+stateEstimate.qw
+stateEstimate.qx
+stateEstimate.qy
+stateEstimate.qz
 gyro.x
 gyro.y
 gyro.z
@@ -96,4 +96,3 @@ ctrlLeeP.Fdz
 ctrlLeeP.Mdx
 ctrlLeeP.Mdy
 ctrlLeeP.Mdz
-
