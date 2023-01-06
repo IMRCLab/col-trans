@@ -199,13 +199,13 @@ all:
       Kprot_Dy: 0.0015
       Kprot_Dz: 0.0015
       # P cable
-      Kqx:  8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
-      Kqy:  8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
-      Kqz:  8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
+      Kqx:  14.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
+      Kqy:  14.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
+      Kqz:  14.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
       # D cable
-      Kwx: 7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
-      Kwy: 7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
-      Kwz: 7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
+      Kwx: 12.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
+      Kwy: 12.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
+      Kwz: 12.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
       # P angle
       KRx: 0.008 #0.0055 #0.008
       KRy: 0.008 #0.0055 #0.008
@@ -222,7 +222,7 @@ all:
       
       # payload properties
       # massP: 0.017
-      massP: 0.01 #0.0054 # 2 UAV cuboid case
+      massP: 0.0115 # 2 UAV cuboid case
 
       ap0id: 5
       ap0x: 0.0
@@ -273,9 +273,9 @@ all:
       ctrlLeeP2:
         frequency: 10 # Hz
         vars: ["ctrlLeeP.n2x", "ctrlLeeP.n2y", "ctrlLeeP.n2z", 'ctrlLeeP.Fdx', "ctrlLeeP.Fdy", "ctrlLeeP.Fdz"]
-      payloadDbg:
-        frequency: 100 # Hz
-        vars: ["stateEstimate.pqx", "stateEstimate.pqy", "stateEstimate.pqz", "stateEstimate.pwx", "stateEstimate.pwy", "stateEstimate.pwz"]
+      # payloadDbg:
+      #   frequency: 100 # Hz
+      #   vars: ["stateEstimate.pqx", "stateEstimate.pqy", "stateEstimate.pqz", "stateEstimate.pwx", "stateEstimate.pwy", "stateEstimate.pwz"]
       #  vars: ["ctrlLeeP.profQP"]
 
       # setpoint:
