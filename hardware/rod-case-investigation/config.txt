@@ -5,15 +5,36 @@ log   # file name
 on:fixedFrequency
 100     # frequency in Hz
 1     # mode (0: disabled, 1: synchronous stabilizer, 2: asynchronous)
-# CF states compressed
+# CF states 
 stateEstimateZ.x
 stateEstimateZ.y
 stateEstimateZ.z
 stateEstimateZ.vx
 stateEstimateZ.vy
 stateEstimateZ.vz
+stateEstimate.qw   
+stateEstimate.qx 
+stateEstimate.qy 
+stateEstimate.qz 
+gyro.x
+gyro.y
+gyro.z
 
-# Payload position and velocity states compressed
+# CF rotational desired states
+ctrlLeeP.rpydx
+ctrlLeeP.rpydy
+ctrlLeeP.rpydz
+ctrlLeeP.omegarx
+ctrlLeeP.omegary
+ctrlLeeP.omegarz
+
+# control inp of CF
+ctrlLeeP.thrustSI
+ctrlLeeP.torquex
+ctrlLeeP.torquey
+ctrlLeeP.torquez
+
+# Payload position and velocity states  (Fd)
 stateEstimateZ.px
 stateEstimateZ.py
 stateEstimateZ.pz
@@ -21,7 +42,7 @@ stateEstimateZ.pvx
 stateEstimateZ.pvy
 stateEstimateZ.pvz
 
-# Payload rotational states (not compressed)
+# Payload rotational states (Md)
 # quaternions 
 stateEstimate.pqx
 stateEstimate.pqy
@@ -33,23 +54,28 @@ stateEstimate.pwx
 stateEstimate.pwy
 stateEstimate.pwz
 
-# Desired states of cf
+# Payload desired states
 ctrltargetZ.x
 ctrltargetZ.y
 ctrltargetZ.z
+ctrltargetZ.vx
+ctrltargetZ.vy
+ctrltargetZ.vz
 
-# attitude states of cf
-ctrlLeeP.rpyx
-ctrlLeeP.rpyy
-ctrlLeeP.rpyz
+# Cable states 
+ctrlLeeP.qix
+ctrlLeeP.qiy
+ctrlLeeP.qiz
+ctrlLeeP.qidotx
+ctrlLeeP.qidoty
+ctrlLeeP.qidotz
 
-# control inp of cf
-ctrlLeeP.thrustSI
-ctrlLeeP.torquex
-ctrlLeeP.torquey
-ctrlLeeP.torquez
+# QP output (qi_des=mu_des/||mu_des||)
+ctrlLeeP.desVirtInpx
+ctrlLeeP.desVirtInpy
+ctrlLeeP.desVirtInpz
 
-# control inp of payload dynamics
+# Control INP of payload dynamics (u_par + u_perp)
 ctrlLeeP.ux
 ctrlLeeP.uy
 ctrlLeeP.uz
@@ -71,7 +97,3 @@ ctrlLeeP.Mdx
 ctrlLeeP.Mdy
 ctrlLeeP.Mdz
 
-# QP output
-ctrlLeeP.desVirtInpx
-ctrlLeeP.desVirtInpy
-ctrlLeeP.desVirtInpz
