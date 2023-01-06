@@ -676,7 +676,10 @@ def main(args, animateOrPlotdict, params):
                 setpoints[id] = setpoint
                 sensors_[id]  = sensors
                 states[id]    = state 
-         # fullCtrlInps = []
+                
+        Fddict = {}
+        for id in uavs.keys():
+            Fddict[id] = []
         for tick in range(0, int(tf_sim)+1):
             j = plStSize
             ctrlInputs = np.zeros((1,4))
@@ -723,6 +726,7 @@ def main(args, animateOrPlotdict, params):
                         if payload.ctrlType == 'lee': # Python
                             try:
                                 uavs, payload, control, des_w, des_wd = cffirmware.controllerLeePayload(uavs, id, payload, control, setpoint, sensors, state, tick, j)
+                                Fddict[id].append(payload.Fd)
                                 ref_state = np.append(ref_state, np.array([des_w, des_wd]).reshape(6,), axis=0)
                             except Exception as e:
                                 print('tick: ',tick)
@@ -738,6 +742,7 @@ def main(args, animateOrPlotdict, params):
                             try:
                                 leePayload, state = updateNeighbors(leePayload, state, id, uavs, payload)
                                 cffirmware.controllerLeePayload(leePayload, control, setpoint, sensors, state, tick)
+                                Fddict[id].append(np.array([leePayload.F_d.x, leePayload.F_d.y, leePayload.F_d.z]))
                                 uavs, desVirtInp_i = udpateHpsAndmu(id, uavs, leePayload, payload.numOfquads-1)
                                 desVirtInp.append(desVirtInp_i)
                             except Exception as e:
@@ -807,6 +812,7 @@ def main(args, animateOrPlotdict, params):
         mufilePathsperId = []
         muDict = {}
         stDict = {}
+        FdfilePaths = {}
 
         # Payload csv file
         with open("output/payload.csv", "w") as f:
@@ -827,7 +833,11 @@ def main(args, animateOrPlotdict, params):
         for id in uavs.keys():
             uavID = id.replace("uav_", "")
             fName = uavID + ".csv"
-
+            num    = uavID.replace("cf","")
+            Fdname = 'Fd'+num
+            FdfilePaths[id] = Fdname
+            with open("output/"+Fdname, "w") as f:
+                np.savetxt(f, Fddict[id], delimiter=",")
             with open("output/" + fName, "w") as f:
                 np.savetxt(f, uavs[id].fullState, delimiter=",")    
             stDict[uavID] = fName
@@ -868,6 +878,8 @@ def main(args, animateOrPlotdict, params):
             robot['state'] = stDict[id]
             robot['hps']   = hpsDict[id]
             robot['mu']    = muDict[id]
+            FdidName       = id.replace("cf", 'uav_cf')
+            robot['Fd']    = FdfilePaths[FdidName]
             if not payload.pointmass:
                 att = payload.posFrloaddict['uav_'+id]
                 robot['att']   = att.tolist()

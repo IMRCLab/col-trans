@@ -37,7 +37,7 @@ def main(args=None):
                          logDatas[0]['stateEstimate.pqz']]).T
 
 
-    with open("output/payload.csv", "w") as f:
+    with open("../../sim/output/payload.csv", "w") as f:
             np.savetxt(f,loadPos, delimiter=",")
     
     # cf5
@@ -53,7 +53,7 @@ def main(args=None):
                          logDatas[0]['stateEstimateZ.vz']/1000,
                          quatcf5[:,0],quatcf5[:,1], quatcf5[:,2], quatcf5[:,3]]).T
 
-    with open("output/cf5.csv", "w") as f:
+    with open("../../sim/output/cf5.csv", "w") as f:
             np.savetxt(f,cf5, delimiter=",")    
 
     # cf6
@@ -82,10 +82,10 @@ def main(args=None):
         elif np.size(Fd5) > np.size(Fd6):
             Fd6 = np.append(Fd6, [Fd6[-1,:]], axis=0)
     
-    with open("output/Fd5.csv", "w") as f:
+    with open("../../sim/output/Fd5.csv", "w") as f:
             np.savetxt(f,Fd5, delimiter=",")
 
-    with open("output/Fd6.csv", "w") as f:
+    with open("../../sim/output/Fd6.csv", "w") as f:
         np.savetxt(f,Fd6, delimiter=",")
 
     while np.size(cf5) != np.size(cf6):
@@ -94,7 +94,7 @@ def main(args=None):
         elif np.size(cf5) > np.size(cf6):
             cf6 = np.append(cf6, [cf6[-1,:]], axis=0)
         
-    with open("output/cf6.csv", "w") as f:
+    with open("../../sim/output/cf6.csv", "w") as f:
             np.savetxt(f,cf6, delimiter=",")    
 
     mucf5 = np.array([
@@ -125,17 +125,17 @@ def main(args=None):
         elif np.size(cf5hp) > np.size(cf6hp):
             cf6hp = np.append(cf6hp, [cf6hp[-1,:]], axis=0)
         
-    with open('output/mu_cf5.csv', "w") as f:
+    with open('../../sim/output/mu_cf5.csv', "w") as f:
         np.savetxt(f, mucf5, delimiter=",")
 
 
-    with open('output/mu_cf6.csv', "w") as f:
+    with open('../../sim/output/mu_cf6.csv', "w") as f:
         np.savetxt(f, mucf6, delimiter=",")
 
-    with open('output/hp1_cf5.csv', "w") as f:
+    with open('../../sim/output/hp1_cf5.csv', "w") as f:
         np.savetxt(f, cf5hp, delimiter=",")
 
-    with open('output/hp1_cf6.csv', "w") as f:
+    with open('../../sim/output/hp1_cf6.csv', "w") as f:
         np.savetxt(f, cf6hp, delimiter=",")
     
     robots = {
@@ -156,7 +156,7 @@ def main(args=None):
     }
     configData['robots'] = robots
 
-    with open("output/configData.yaml", 'w') as f:
+    with open("../../sim/output/configData.yaml", 'w') as f:
             yaml.dump(configData, f)
 if __name__ == '__main__':
     main()

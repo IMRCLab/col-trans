@@ -115,7 +115,7 @@ class SharedPayload:
         self.shape = payload_params['shape']
         self.posFrload = np.empty((1,3))
         self.posFrloaddict = {}
-
+        self.Fd = []
         if self.optimize == 'enabled':
             self.optimize == True
         else: 
