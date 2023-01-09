@@ -44,7 +44,6 @@ def setlimits(ax, full_state):
 def plotPayloadStates(payload, posq, tf_sim, shared):
     """This function plots the states of the payload"""
     full_state = payload.plFullState
-    
     if shared and payload.lead:
         ref_state  = payload.plref_state
     # PL_states = [xl, vl, p, wl]
@@ -64,13 +63,28 @@ def plotPayloadStates(payload, posq, tf_sim, shared):
     fig12.tight_layout()
     
     time   = np.linspace(0, tf_sim*1e-3, num=len(full_state)) 
+    ts = 'time [s]'
     pos    = full_state[:,0:3]
     linVel = full_state[:,3:6]
 
     if shared and payload.lead:
         fig13, ax16 = plt.subplots(2, 3, sharex=True)
         fig13.tight_layout()
-    
+        mufigs = []
+        numofquads = payload.numOfquads
+        for i in range(numofquads):
+            mufigs.append(plt.subplots(3, 1, sharex=True))
+        for i,j in zip(range(numofquads), range(0, 3*numofquads, 3)):
+            mudes = payload.mu_des_stack[:,j:j+3]
+            mufig, muax = mufigs[i]
+            muax[0].plot(time, mudes[:,0], c='r', lw=0.75)
+            muax[1].plot(time, mudes[:,1], c='g', lw=0.75)
+            muax[2].plot(time, mudes[:,2], c='b', lw=0.75)
+            muax[0].set_ylabel('mux [N]',), muax[1].set_ylabel('muy [N]'), muax[2].set_ylabel('muz [N]')
+            grid = plt.GridSpec(3,1)
+            mufig.supxlabel(ts, fontsize='small')
+            create_subtitle(mufig, grid[0, ::], 'mu_des for uav ' + str(i+1))
+            mufigs[i] = (mufig, muax)
         posdes    = ref_state[:,0:3]
         linVeldes = ref_state[:,3:6]
 
@@ -83,7 +97,6 @@ def plotPayloadStates(payload, posq, tf_sim, shared):
         numOfquads = payload.numOfquads
         p  = full_state[:, 6:6+3*numOfquads]
         angVel = full_state[:,6+3*numOfquads::]
-    ts = 'time [s]'
 ###############################################################################################
    
     ax11[0].plot(time, pos[:,0], c='k', lw=0.75, label='Actual'), ax11[1].plot(time, pos[:,1], lw=0.75, c='k'), ax11[2].plot(time, pos[:,2], lw=0.75, c='k')
@@ -167,7 +180,7 @@ def plotPayloadStates(payload, posq, tf_sim, shared):
         create_subtitle(fig13, grid[0, ::], 'Positional errors')
         create_subtitle(fig13, grid[1, ::], 'Linear Velocities errors')
     if shared and payload.lead:
-        return fig8, fig9, fig10, fig11, fig12, fig13
+        return fig8, fig9, fig10, fig11, fig12, fig13, mufigs
     else:
         return fig8, fig9, fig10, fig11, fig12
 
@@ -342,7 +355,7 @@ def outputPlots(uavs, payloads, tf_sim, pdfName, shared):
 
         if uav_.pload:
             if shared and payload.lead:
-                fig8, fig9, fig10, fig11, fig12, fig14 = plotPayloadStates(payload, pos, tf_sim, shared)
+                fig8, fig9, fig10, fig11, fig12, fig14, mufigs = plotPayloadStates(payload, pos, tf_sim, shared)
             else:   
                  fig8, fig9, fig10, fig11, fig12 = plotPayloadStates(payload, pos, tf_sim, shared)
         textfig.savefig(f, format='pdf', bbox_inches='tight')
@@ -361,6 +374,9 @@ def outputPlots(uavs, payloads, tf_sim, pdfName, shared):
             fig9.savefig(f, format='pdf', bbox_inches='tight')
             if shared and payload.lead:
                 fig14.savefig(f,  format='pdf', bbox_inches='tight')
+                for fig in mufigs:
+                    mufig, muax = fig
+                    mufig.savefig(f, format='pdf', bbox_inches='tight')
             fig10.savefig(f, format='pdf', bbox_inches='tight')
             fig11.savefig(f, format='pdf', bbox_inches='tight')
             fig12.savefig(f, format='pdf', bbox_inches='tight')

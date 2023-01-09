@@ -591,6 +591,7 @@ def main(args, animateOrPlotdict, params):
     # set it as 1 tick: i.e: 1 ms
     # pload: payload flag, enabled: with payload, otherwise: no payload 
     filename = (args.config).replace("config/","")
+    filename = (args.config).replace(".yaml","")
     initUavs = args.initUavs
     simtime  = float(params['simtime'])
     sample   = int(params['sample'])
