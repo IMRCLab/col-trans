@@ -3,13 +3,15 @@ robots:
   cf5:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E705
-    initial_position: [0.5, 0.0, 0.0]
+    # initial_position: [0.5, 0.0, 0.0]
+    initial_position: [0.0, -0.5, 0.0]
     type: cf21 # see robot_types
 
   cf6:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E706
-    initial_position: [0.0, -0.5, 0.0]
+    # initial_position: [0.0, -0.5, 0.0]
+    initial_position: [0.5, 0.0, 0.0]
     type: cf21 # see robot_types
 
   payload:
@@ -179,33 +181,33 @@ all:
       mass: 0.0333
     ctrlLeeP:
       # P load
-      Kpos_Px: 20.0     #18.0 #15.0 #20.0 #15.0 #100.0 #60.0
-      Kpos_Py: 20.0     #18.0 #15.0 #20.0 #15.0 #100.0 #60.0
-      Kpos_Pz: 30.0     #18.0 #20.0 #15.0 #160.0 #90.0
+      Kpos_Px:  8.0     #18.0 #15.0 #20.0 #15.0 #100.0 #60.0
+      Kpos_Py:  8.0     #18.0 #15.0 #20.0 #15.0 #100.0 #60.0
+      Kpos_Pz:  15.0     #18.0 #20.0 #15.0 #160.0 #90.0
       # D load
-      Kpos_Dx: 15.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
-      Kpos_Dy: 15.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
-      Kpos_Dz: 15.0      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
+      Kpos_Dx:  4.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
+      Kpos_Dy:  4.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
+      Kpos_Dz:  4.0      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
       # I load
       Kpos_Ix: 0.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
       Kpos_Iy: 0.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
       Kpos_Iz: 0.0      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
       # # P attitude Load: 
-      Kprot_Px: 0.002
-      Kprot_Py: 0.002
+      Kprot_Px: 0.004
+      Kprot_Py: 0.004
       Kprot_Pz: 0.0058
-      # #D attitude Load: 
+      # #D attitude Load 
       Kprot_Dx: 0.0008
       Kprot_Dy: 0.0008
       Kprot_Dz: 0.0015
       # P cable
-      Kqx:  6.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
-      Kqy:  6.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
-      Kqz:  6.0 #10.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
+      Kqx:  6.0 #12.0 #6.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
+      Kqy:  6.0 #12.0 #6.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
+      Kqz:  6.0 #12.0 #6.0 #10.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
       # D cable
-      Kwx:  3.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
-      Kwy:  3.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
-      Kwz:  3.0 #7.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
+      Kwx:  3.0 #10.0 #3.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
+      Kwy:  3.0 #10.0 #3.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
+      Kwz:  3.0 #10.0 #3.0 #7.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
       # P angle
       KRx: 0.008 #0.0055 #0.008
       KRy: 0.008 #0.0055 #0.008
@@ -219,17 +221,19 @@ all:
       KI_y: 0.02        #0.05 #0.01 #0.009 #0.015
       KI_z: 0.05        #0.05 #0.01 #0.009 #0.015
       mass: 0.034 
+
+      en_qdidot: 1 # enable qdidot computation
       
       # payload properties
       # massP: 0.017
       massP: 0.0115 # 2 UAV cuboid case
 
-      ap0id: 5
+      ap0id: 6
       ap0x: 0.0
       ap0y: 0.3
       ap0z: 0.0
 
-      ap1id: 6
+      ap1id: 5
       ap1x: 0.0
       ap1y: -0.3
       ap1z: 0.0
