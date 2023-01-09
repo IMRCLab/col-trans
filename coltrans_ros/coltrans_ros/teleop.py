@@ -52,9 +52,17 @@ class TeleopNode(Node):
                 req.parameters = [Parameter(name=param_name, value=param_value)]
                 self.setParamsServiceServer.call_async(req)
 
-            # switch to manual teleoperation after some time
-            if self.timer is None:
-                self.timer = self.create_timer(2.0, self.timer_callback)
+                param_name = "{}/params/usd/logging".format(cf)
+                value = 1
+                param_type = ParameterType.PARAMETER_INTEGER
+                param_value = ParameterValue(type=param_type, integer_value=int(value))
+                req = SetParameters.Request()
+                req.parameters = [Parameter(name=param_name, value=param_value)]
+                self.setParamsServiceServer.call_async(req)
+
+            # # switch to manual teleoperation after some time
+            # if self.timer is None:
+            #     self.timer = self.create_timer(2.0, self.timer_callback)
 
 
         # land: switch back to regular lee controller!
@@ -62,6 +70,14 @@ class TeleopNode(Node):
             for cf in self.cfs:
                 param_name = "{}/params/stabilizer/controller".format(cf)
                 value = 6
+                param_type = ParameterType.PARAMETER_INTEGER
+                param_value = ParameterValue(type=param_type, integer_value=int(value))
+                req = SetParameters.Request()
+                req.parameters = [Parameter(name=param_name, value=param_value)]
+                self.setParamsServiceServer.call_async(req)
+
+                param_name = "{}/params/usd/logging".format(cf)
+                value = 0
                 param_type = ParameterType.PARAMETER_INTEGER
                 param_value = ParameterValue(type=param_type, integer_value=int(value))
                 req = SetParameters.Request()

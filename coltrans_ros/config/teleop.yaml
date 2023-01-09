@@ -22,20 +22,20 @@
     cmd_vel_world:
       x_velocity:
         axis: 5
-        max: 1.0 # m/s
+        max: 0.5 # m/s
         deadband: 0.1 # m/s
       y_velocity:
         axis: 4
-        max: 1.0 # m/s
+        max: 0.5 # m/s
         deadband: 0.1 # m/s
       z_velocity:
         axis: 2
-        max: 1.0 # m/s
+        max: 0.5 # m/s
         deadband: 0.1 # m/s
       yaw_velocity:
         axis: 1
-        max: 2.0 # rad/s
-        deadband: 0.1 # rad/s
+        max: 0.2 # rad/s
+        deadband: 0.05 # rad/s
       # workspace limits
       x_limit: [-1.2, 1.2] # m
       y_limit: [-1.2, 1.2] # m

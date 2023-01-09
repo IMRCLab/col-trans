@@ -169,7 +169,7 @@ def plotcable(states, qd, time, cf):
 
 def main(args=None):
     
-    files = ["cf5_00", "cf6_00"]
+    files = ["cf5_04", "cf6_04"]
     att_points = [[0,-0.3,0], [0,0.3,0]]
     shape = 'cuboid'
     logDatas = [cfusdlog.decode(f)['fixedFrequency'] for f in files]
@@ -188,9 +188,12 @@ def main(args=None):
     else:
         print('please add the right shape!')
         exit()
+
+    f = PdfPages('results.pdf')
+
+
     # payload
-    time1 = (logDatas[0]['timestamp'][-1]-logDatas[0]['timestamp'][0])/1000
-    time1 = np.linspace(0, time1, num=len(logDatas[0]['stateEstimateZ.px']))
+    time1 = (logDatas[0]['timestamp']-logDatas[0]['timestamp'][0])/1000
     loadstates = np.array([ logDatas[0]['stateEstimateZ.px']/1000,
                             logDatas[0]['stateEstimateZ.py']/1000, 
                             logDatas[0]['stateEstimateZ.pz']/1000,
@@ -222,6 +225,79 @@ def main(args=None):
         fig1, fig2, fig3, fig4  = plotload(loadstates, loadstatesDes, time1)
     else: 
         fig1, fig2 = plotload(loadstates, loadstatesDes, time1)
+
+    fig1.savefig(f, format='pdf', bbox_inches='tight')
+    fig2.savefig(f, format='pdf', bbox_inches='tight')
+    if not np.isnan((loadstates[:,6:10])).any():
+        fig3.savefig(f, format='pdf', bbox_inches='tight')    
+        fig4.savefig(f, format='pdf', bbox_inches='tight')  
+
+    # Fd
+    fig, ax = plt.subplots(3, 1, sharex=True)
+    fig.tight_layout()
+
+    for k, filename in enumerate(files):
+        time = (logDatas[k]['timestamp']-logDatas[k]['timestamp'][0])/1000
+
+        Fd = np.array([logDatas[k]['ctrlLeeP.Fdx'],
+                                logDatas[k]['ctrlLeeP.Fdy'], 
+                                logDatas[k]['ctrlLeeP.Fdz'],
+                                ]).T
+        for i in range(0,3):
+            ax[i].plot(time, Fd[:,i], lw=0.75,label=filename)
+        ax[0].set_ylabel('x [N]',)
+        ax[1].set_ylabel('y [N]')
+        ax[2].set_ylabel('z [N]')
+        ax[0].legend()
+        fig.supxlabel("time [s]",fontsize='small')
+        grid = plt.GridSpec(3,1)
+        create_subtitle(fig, grid[0, ::], 'Fd')
+    fig.savefig(f, format='pdf', bbox_inches='tight')
+
+    # Md
+    fig, ax = plt.subplots(3, 1, sharex=True)
+    fig.tight_layout()
+
+    for k, filename in enumerate(files):
+        time = (logDatas[k]['timestamp']-logDatas[k]['timestamp'][0])/1000
+
+        Md = np.array([logDatas[k]['ctrlLeeP.Mdx'],
+                                logDatas[k]['ctrlLeeP.Mdy'], 
+                                logDatas[k]['ctrlLeeP.Mdz'],
+                                ]).T
+        for i in range(0,3):
+            ax[i].plot(time, Md[:,i], lw=0.75,label=filename)
+        ax[0].set_ylabel('x [Nm]',)
+        ax[1].set_ylabel('y [Nm]')
+        ax[2].set_ylabel('z [Nm]')
+        ax[0].legend()
+        fig.supxlabel("time [s]",fontsize='small')
+        grid = plt.GridSpec(3,1)
+        create_subtitle(fig, grid[0, ::], 'Md')
+    fig.savefig(f, format='pdf', bbox_inches='tight')
+
+    # mus
+    fig, ax = plt.subplots(3, 1, sharex=True)
+    fig.tight_layout()
+
+    for k, filename in enumerate(files):
+        time = (logDatas[k]['timestamp']-logDatas[k]['timestamp'][0])/1000
+
+        mu = np.array([logDatas[k]['ctrlLeeP.desVirtInpx'],
+                                logDatas[k]['ctrlLeeP.desVirtInpy'], 
+                                logDatas[k]['ctrlLeeP.desVirtInpz'],
+                                ]).T
+        for i in range(0,3):
+            ax[i].plot(time, mu[:,i], lw=0.75,label=filename)
+        ax[0].set_ylabel('x [N]',)
+        ax[1].set_ylabel('y [N]')
+        ax[2].set_ylabel('z [N]')
+        ax[0].legend()
+        fig.supxlabel("time [s]",fontsize='small')
+        grid = plt.GridSpec(3,1)
+        create_subtitle(fig, grid[0, ::], 'mu')
+    fig.savefig(f, format='pdf', bbox_inches='tight')
+
     # cable states
     mucf5 = np.array([
       logDatas[0]['ctrlLeeP.desVirtInpx'], logDatas[0]['ctrlLeeP.desVirtInpy'], logDatas[0]['ctrlLeeP.desVirtInpz'] ]).T
@@ -320,12 +396,7 @@ def main(args=None):
     fig9, fig10, fig11 = plotuav(cf5, cf5des,time1, 'cf5')
     fig12, fig13, fig14 = plotuav(cf6, cf6des, time2, 'cf6')
    
-    f = PdfPages('results.pdf')
-    fig1.savefig(f, format='pdf', bbox_inches='tight')
-    fig2.savefig(f, format='pdf', bbox_inches='tight')
-    if not np.isnan((loadstates[:,6:10])).any():
-        fig3.savefig(f, format='pdf', bbox_inches='tight')    
-        fig4.savefig(f, format='pdf', bbox_inches='tight')    
+  
     fig5.savefig(f, format='pdf', bbox_inches='tight')        
     fig6.savefig(f, format='pdf', bbox_inches='tight')        
     fig7.savefig(f, format='pdf', bbox_inches='tight')        

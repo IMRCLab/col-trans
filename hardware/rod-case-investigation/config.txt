@@ -1,5 +1,5 @@
 1     # version
-768   # buffer size in bytes
+1024  # buffer size in bytes
 log   # file name
 0     # enable on startup (0/1)
 on:fixedFrequency
