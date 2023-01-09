@@ -50,9 +50,9 @@ def plotload(states ,dstates, time):
         fig3, ax3 = plt.subplots(3, 1, sharex=True)
         fig3.tight_layout()
         rpy = rn.to_euler(states[:,6:10])
-        ax3[0].plot(time, np.degrees(rpy[:,0]), c='k',lw=0.5,label='Actual')
-        ax3[1].plot(time, np.degrees(rpy[:,1]), c='k',lw=0.5,label='Actual')
-        ax3[2].plot(time, np.degrees(rpy[:,2]), c='k',lw=0.5,label='Actual')
+        ax3[0].plot(time, np.degrees(rpy[:,0]), c='b',lw=0.5,label='Actual')
+        ax3[1].plot(time, np.degrees(rpy[:,1]), c='b',lw=0.5,label='Actual')
+        ax3[2].plot(time, np.degrees(rpy[:,2]), c='b',lw=0.5,label='Actual')
 
         ax3[0].set_ylabel('r [deg]',labelpad=-2), ax3[1].set_ylabel('p [deg]',labelpad=-2), ax3[2].set_ylabel('y [deg]',labelpad=-2)
         fig3.supxlabel(ts,fontsize='small')
@@ -65,15 +65,15 @@ def plotload(states ,dstates, time):
         omega = states[:,10:13]
         # omegar = dstates[:,10:13]
 
-        ax4[0].plot(time, np.degrees(omega[:,0]), c='k',lw=0.5,label='Actual')
-        ax4[1].plot(time, np.degrees(omega[:,1]), c='k',lw=0.5,label='Actual')
-        ax4[2].plot(time, np.degrees(omega[:,2]), c='k',lw=0.5,label='Actual')
+        ax4[0].plot(time, np.degrees(omega[:,0]), c='b',lw=0.5,label='Actual')
+        ax4[1].plot(time, np.degrees(omega[:,1]), c='b',lw=0.5,label='Actual')
+        ax4[2].plot(time, np.degrees(omega[:,2]), c='b',lw=0.5,label='Actual')
 
         # ax4[0].plot(time, np.degrees(omegar[:,0]), c='k',lw=0.5,label='Ref')
         # ax4[1].plot(time, np.degrees(omegar[:,1]), c='k',lw=0.5,label='Ref')
         # ax4[2].plot(time, np.degrees(omegar[:,2]), c='k',lw=0.5,label='Ref')
 
-        ax4[0].set_ylabel('wx [deg/s]',labelpad=-2), ax4[1].set_ylabel('wy [deg/s]',labelpad=-2), ax4[2].set_ylabel('wy [deg/s]',labelpad=-2)
+        ax4[0].set_ylabel('wx [deg/s]',labelpad=-2), ax4[1].set_ylabel('wy [deg/s]',labelpad=-2), ax4[2].set_ylabel('wz [deg/s]',labelpad=-2)
         fig4.supxlabel(ts,fontsize='small')
 
         grid = plt.GridSpec(3,1)
@@ -104,9 +104,9 @@ def plotuav(states, dstates, time ,name):
     fig3.tight_layout()
     rpy = rn.to_euler((states[:,6:10]))
     rpydes = rn.to_euler(dstates[:,0:4])
-    ax2[0].plot(time, np.degrees(rpy[:,0]), c='k',lw=0.5,label='Actual')
-    ax2[1].plot(time, np.degrees(rpy[:,1]), c='k',lw=0.5,label='Actual')
-    ax2[2].plot(time, np.degrees(rpy[:,2]), c='k',lw=0.5,label='Actual')
+    ax2[0].plot(time, np.degrees(rpy[:,0]), c='b',lw=0.5,label='Actual')
+    ax2[1].plot(time, np.degrees(rpy[:,1]), c='b',lw=0.5,label='Actual')
+    ax2[2].plot(time, np.degrees(rpy[:,2]), c='b',lw=0.5,label='Actual')
     ax2[0].plot(time, np.degrees(rpydes[:,0]) ,lw=0.5, c='darkgreen',label='Reference')
     ax2[1].plot(time, np.degrees(rpydes[:,1]) ,lw=0.5, c='darkgreen',label='Reference')
     ax2[2].plot(time, np.degrees(rpydes[:,2]) ,lw=0.5, c='darkgreen',label='Reference')
@@ -119,9 +119,9 @@ def plotuav(states, dstates, time ,name):
 
     angVel = states[:, 10::]
     angVeldes = dstates[:, 3::]
-    ax3[0].plot(time, np.degrees(angVel[:,0]), c='k',lw=0.5,label='Actual')
-    ax3[1].plot(time, np.degrees(angVel[:,1]), c='k',lw=0.5,label='Actual')
-    ax3[2].plot(time, np.degrees(angVel[:,2]), c='k',lw=0.5,label='Actual')
+    ax3[0].plot(time, np.degrees(angVel[:,0]), c='b',lw=0.5,label='Actual')
+    ax3[1].plot(time, np.degrees(angVel[:,1]), c='b',lw=0.5,label='Actual')
+    ax3[2].plot(time, np.degrees(angVel[:,2]), c='b',lw=0.5,label='Actual')
     ax3[0].plot(time, np.degrees(angVeldes[:,0]), lw=0.5, c='darkgreen',label='Reference')
     ax3[1].plot(time, np.degrees(angVeldes[:,1]), lw=0.5, c='darkgreen',label='Reference')
     ax3[2].plot(time, np.degrees(angVeldes[:,2]), lw=0.5, c='darkgreen',label='Reference')
@@ -152,12 +152,12 @@ def plotcable(states, qd, time, cf):
     create_subtitle(fig1, grid[0, ::], 'qi cable directions of '+ cf)
     fig2, ax2 = plt.subplots(3, 1, sharex=True)
     fig2.tight_layout()
-    ax2[0].plot(time, states[:,3], c='k',lw=0.5,label='Actual')
-    ax2[0].plot(time, states[:,6], c='g',lw=0.5,label='Ref')
-    ax2[1].plot(time, states[:,4], c='k',lw=0.5,label='Actual')
-    ax2[1].plot(time, states[:,7], c='g',lw=0.5,label='Ref')
-    ax2[2].plot(time, states[:,5], c='k',lw=0.5,label='Actual')
-    ax2[2].plot(time, states[:,8], c='g',lw=0.5,label='Ref')
+    ax2[0].plot(time, states[:,3], c='b',lw=0.5,label='Actual')
+    ax2[0].plot(time, states[:,6], c='darkgreen',lw=0.5,label='Ref')
+    ax2[1].plot(time, states[:,4], c='b',lw=0.5,label='Actual')
+    ax2[1].plot(time, states[:,7], c='darkgreen',lw=0.5,label='Ref')
+    ax2[2].plot(time, states[:,5], c='b',lw=0.5,label='Actual')
+    ax2[2].plot(time, states[:,8], c='darkgreen',lw=0.5,label='Ref')
 
     ax2[0].set_ylabel('qidotx',labelpad=-2), ax2[1].set_ylabel('qidoty',labelpad=-2), ax2[2].set_ylabel('qidotz',labelpad=-2)
     fig2.supxlabel(ts,fontsize='small')
@@ -169,7 +169,7 @@ def plotcable(states, qd, time, cf):
 
 def main(args=None):
     
-    files = ["cf5_78", "cf6_78"]
+    files = ["cf5_00", "cf6_00"]
     att_points = [[0,-0.3,0], [0,0.3,0]]
     shape = 'cuboid'
     logDatas = [cfusdlog.decode(f)['fixedFrequency'] for f in files]
