@@ -32,7 +32,7 @@ def plotload(states ,dstates, time):
     ax1[0].legend()
     fig1.supxlabel(ts,fontsize='small')
     grid = plt.GridSpec(3,1)
-    create_subtitle(fig1, grid[0, ::], 'Actual vs Reference Positions of the load')
+    create_subtitle(fig1, grid[0, ::], 'Positions of the load')
 
     fig2, ax2 = plt.subplots(3, 1, sharex=True)
     fig2.tight_layout()
@@ -44,7 +44,7 @@ def plotload(states ,dstates, time):
     ax2[0].legend()
     fig2.supxlabel(ts,fontsize='small')
     grid = plt.GridSpec(3,1)
-    create_subtitle(fig2, grid[0, ::], 'Actual vs Reference Linear Velocities of the load')
+    create_subtitle(fig2, grid[0, ::], 'Linear Velocities of the load')
 
     if not np.isnan((states[:,6:10])).any():
         fig3, ax3 = plt.subplots(3, 1, sharex=True)
@@ -58,9 +58,27 @@ def plotload(states ,dstates, time):
         fig3.supxlabel(ts,fontsize='small')
 
         grid = plt.GridSpec(3,1)
-        create_subtitle(fig3, grid[0, ::], 'Actual vs Reference Angular Velocities of the load')
+        create_subtitle(fig3, grid[0, ::], 'rpy of the load')
+        
+        fig4, ax4 = plt.subplots(3, 1, sharex=True)
+        fig4.tight_layout()
+        omega = states[:,10:13]
+        # omegar = dstates[:,10:13]
 
-        return fig1, fig2, fig3
+        ax4[0].plot(time, np.degrees(omega[:,0]), c='k',lw=0.5,label='Actual')
+        ax4[1].plot(time, np.degrees(omega[:,1]), c='k',lw=0.5,label='Actual')
+        ax4[2].plot(time, np.degrees(omega[:,2]), c='k',lw=0.5,label='Actual')
+
+        # ax4[0].plot(time, np.degrees(omegar[:,0]), c='k',lw=0.5,label='Ref')
+        # ax4[1].plot(time, np.degrees(omegar[:,1]), c='k',lw=0.5,label='Ref')
+        # ax4[2].plot(time, np.degrees(omegar[:,2]), c='k',lw=0.5,label='Ref')
+
+        ax4[0].set_ylabel('wx [deg/s]',labelpad=-2), ax4[1].set_ylabel('wy [deg/s]',labelpad=-2), ax4[2].set_ylabel('wy [deg/s]',labelpad=-2)
+        fig4.supxlabel(ts,fontsize='small')
+
+        grid = plt.GridSpec(3,1)
+        create_subtitle(fig4, grid[0, ::], 'omega of the load')
+        return fig1, fig2, fig3, fig4
     else:
         return fig1, fig2
 
@@ -76,7 +94,7 @@ def plotuav(states, dstates, time ,name):
     ax1[0].legend()
     fig1.supxlabel(ts,fontsize='small')
     grid = plt.GridSpec(3,1)
-    create_subtitle(fig1, grid[0, ::], 'Actual vs Reference Positions of '+ name)
+    create_subtitle(fig1, grid[0, ::], 'UAV Positions of '+ name)
     
     
     fig2, ax2 = plt.subplots(3, 1, sharex=True)
@@ -97,7 +115,7 @@ def plotuav(states, dstates, time ,name):
     fig2.supxlabel(ts,fontsize='small')
 
     grid = plt.GridSpec(3,1)
-    create_subtitle(fig2, grid[0, ::], 'Actual vs Reference rpy of ' + name)
+    create_subtitle(fig2, grid[0, ::], 'rpy of UAV: ' + name)
 
     angVel = states[:, 10::]
     angVeldes = dstates[:, 3::]
@@ -113,7 +131,7 @@ def plotuav(states, dstates, time ,name):
     max_x = abs(max(np.degrees(angVel[:,0]),key=abs))
     max_y = abs(max(np.degrees(angVel[:,1]),key=abs))
     max_z = abs(max(np.degrees(angVel[:,2]),key=abs))
-    create_subtitle(fig3, grid[0, ::], 'Actual vs Reference Angular Velocities of '+ name)
+    create_subtitle(fig3, grid[0, ::], 'Angular Velocities (omega) of '+ name)
 
     return fig1, fig2, fig3
 
@@ -131,7 +149,7 @@ def plotcable(states, qd, time, cf):
     ax1[0].legend()
     fig1.supxlabel(ts,fontsize='small')
     grid = plt.GridSpec(3,1)
-    create_subtitle(fig1, grid[0, ::], 'Actual vs Reference cable directions of '+ cf)
+    create_subtitle(fig1, grid[0, ::], 'qi cable directions of '+ cf)
     fig2, ax2 = plt.subplots(3, 1, sharex=True)
     fig2.tight_layout()
     ax2[0].plot(time, states[:,3], c='k',lw=0.5,label='Actual')
@@ -145,13 +163,13 @@ def plotcable(states, qd, time, cf):
     fig2.supxlabel(ts,fontsize='small')
 
     grid = plt.GridSpec(3,1)
-    create_subtitle(fig2, grid[0, ::], 'Actual vs Ref qidot of ' + cf)
+    create_subtitle(fig2, grid[0, ::], 'qidot of ' + cf)
     return fig1, fig2
 
 
 def main(args=None):
     
-    files = ["cf5_63", "cf6_63"]
+    files = ["cf5_78", "cf6_78"]
     att_points = [[0,-0.3,0], [0,0.3,0]]
     shape = 'cuboid'
     logDatas = [cfusdlog.decode(f)['fixedFrequency'] for f in files]
@@ -193,9 +211,15 @@ def main(args=None):
                               logDatas[0]['ctrltargetZ.z']/1000,
                               logDatas[0]['ctrltargetZ.vx']/1000,
                               logDatas[0]['ctrltargetZ.vy']/1000, 
-                              logDatas[0]['ctrltargetZ.vz']/1000]).T
+                              logDatas[0]['ctrltargetZ.vz']/1000,
+                             ]).T
+
+                            #   logDatas[0]['ctrlLeeP.omega_prx'],
+                            #   logDatas[0]['ctrlLeeP.omega_pry'],
+                            #   logDatas[0]['ctrlLeeP.omega_prz']
+
     if not np.isnan((loadstates[:,6:10])).any():
-        fig1, fig2, fig3  = plotload(loadstates, loadstatesDes, time1)
+        fig1, fig2, fig3, fig4  = plotload(loadstates, loadstatesDes, time1)
     else: 
         fig1, fig2 = plotload(loadstates, loadstatesDes, time1)
     # cable states
@@ -290,16 +314,18 @@ def main(args=None):
                         logDatas[1]['ctrlLeeP.omegary'], 
                         logDatas[1]['ctrlLeeP.omegarz'],
                       ]).T
-    fig4, fig5 = plotcable(cablestates1, qd1, time1, 'cf5')
-    fig6, fig7, fig8 = plotuav(cf5, cf5des,time1, 'cf5')
-    fig9, fig10 = plotcable(cablestates2, qd2, time2, 'cf6')
-    fig11, fig12, fig13 = plotuav(cf6, cf6des, time2, 'cf6')
+   
+    fig5, fig6 = plotcable(cablestates1, qd1, time1, 'cf5')
+    fig7, fig8 = plotcable(cablestates2, qd2, time2, 'cf6')
+    fig9, fig10, fig11 = plotuav(cf5, cf5des,time1, 'cf5')
+    fig12, fig13, fig14 = plotuav(cf6, cf6des, time2, 'cf6')
+   
     f = PdfPages('results.pdf')
     fig1.savefig(f, format='pdf', bbox_inches='tight')
     fig2.savefig(f, format='pdf', bbox_inches='tight')
     if not np.isnan((loadstates[:,6:10])).any():
-        fig3.savefig(f, format='pdf', bbox_inches='tight')        
-    fig4.savefig(f, format='pdf', bbox_inches='tight')        
+        fig3.savefig(f, format='pdf', bbox_inches='tight')    
+        fig4.savefig(f, format='pdf', bbox_inches='tight')    
     fig5.savefig(f, format='pdf', bbox_inches='tight')        
     fig6.savefig(f, format='pdf', bbox_inches='tight')        
     fig7.savefig(f, format='pdf', bbox_inches='tight')        
@@ -309,6 +335,7 @@ def main(args=None):
     fig11.savefig(f, format='pdf', bbox_inches='tight')        
     fig12.savefig(f, format='pdf', bbox_inches='tight')        
     fig13.savefig(f, format='pdf', bbox_inches='tight')        
+    fig14.savefig(f, format='pdf', bbox_inches='tight')        
     f.close()
 
 
