@@ -45,22 +45,24 @@ def plotload(states ,dstates, time):
     fig2.supxlabel(ts,fontsize='small')
     grid = plt.GridSpec(3,1)
     create_subtitle(fig2, grid[0, ::], 'Actual vs Reference Linear Velocities of the load')
-    
-    fig3, ax3 = plt.subplots(3, 1, sharex=True)
-    fig3.tight_layout()
-    rpy = rn.to_euler(states[:,6:10])
-    ax3[0].plot(time, np.degrees(rpy[:,0]), c='k',lw=0.5,label='Actual')
-    ax3[1].plot(time, np.degrees(rpy[:,1]), c='k',lw=0.5,label='Actual')
-    ax3[2].plot(time, np.degrees(rpy[:,2]), c='k',lw=0.5,label='Actual')
 
-    ax3[0].set_ylabel('r [deg]',labelpad=-2), ax3[1].set_ylabel('p [deg]',labelpad=-2), ax3[2].set_ylabel('y [deg]',labelpad=-2)
-    fig3.supxlabel(ts,fontsize='small')
+    if not np.isnan((states[:,6:10])).any():
+        fig3, ax3 = plt.subplots(3, 1, sharex=True)
+        fig3.tight_layout()
+        rpy = rn.to_euler(states[:,6:10])
+        ax3[0].plot(time, np.degrees(rpy[:,0]), c='k',lw=0.5,label='Actual')
+        ax3[1].plot(time, np.degrees(rpy[:,1]), c='k',lw=0.5,label='Actual')
+        ax3[2].plot(time, np.degrees(rpy[:,2]), c='k',lw=0.5,label='Actual')
 
-    grid = plt.GridSpec(3,1)
-    create_subtitle(fig3, grid[0, ::], 'Actual vs Reference Angular Velocities of the load')
+        ax3[0].set_ylabel('r [deg]',labelpad=-2), ax3[1].set_ylabel('p [deg]',labelpad=-2), ax3[2].set_ylabel('y [deg]',labelpad=-2)
+        fig3.supxlabel(ts,fontsize='small')
 
-    return fig1, fig2, fig3
+        grid = plt.GridSpec(3,1)
+        create_subtitle(fig3, grid[0, ::], 'Actual vs Reference Angular Velocities of the load')
 
+        return fig1, fig2, fig3
+    else:
+        return fig1, fig2
 
 def plotuav(states, dstates, time ,name):
     fig1, ax1 = plt.subplots(3, 1, sharex=True)
@@ -147,9 +149,9 @@ def plotcable(states, qd, time, cf):
 
 def main(args=None):
     
-    files = ["cf5_12", "cf6_12"]
+    files = ["cf5_43", "cf6_43"]
     att_points = [[0,0.3,0], [0,-0.3,0]]
-    shape = 'cuboid'
+    shape = 'point'
     logDatas = [cfusdlog.decode(f)['fixedFrequency'] for f in files]
 
     configData = {}
@@ -190,8 +192,10 @@ def main(args=None):
                               logDatas[0]['ctrltargetZ.vx']/1000,
                               logDatas[0]['ctrltargetZ.vy']/1000, 
                               logDatas[0]['ctrltargetZ.vz']/1000,]).T
-    fig1, fig2, fig3  = plotload(loadstates, loadstatesDes, time1)
-   
+    if not np.isnan((loadstates[:,6:10])).any():
+        fig1, fig2, fig3  = plotload(loadstates, loadstatesDes, time1)
+    else: 
+        fig1, fig2 = plotload(loadstates, loadstatesDes, time1)
     # cable states
     mucf5 = np.array([
       logDatas[0]['ctrlLeeP.desVirtInpx'], logDatas[0]['ctrlLeeP.desVirtInpy'], logDatas[0]['ctrlLeeP.desVirtInpz'] ]).T
@@ -285,7 +289,8 @@ def main(args=None):
     f = PdfPages('results.pdf')
     fig1.savefig(f, format='pdf', bbox_inches='tight')
     fig2.savefig(f, format='pdf', bbox_inches='tight')
-    fig3.savefig(f, format='pdf', bbox_inches='tight')        
+    if not np.isnan((loadstates[:,6:10])).any():
+        fig3.savefig(f, format='pdf', bbox_inches='tight')        
     fig4.savefig(f, format='pdf', bbox_inches='tight')        
     fig5.savefig(f, format='pdf', bbox_inches='tight')        
     fig6.savefig(f, format='pdf', bbox_inches='tight')        
