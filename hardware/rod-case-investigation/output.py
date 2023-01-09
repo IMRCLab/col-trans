@@ -132,26 +132,28 @@ def plotcable(states, qd, time, cf):
     fig1.supxlabel(ts,fontsize='small')
     grid = plt.GridSpec(3,1)
     create_subtitle(fig1, grid[0, ::], 'Actual vs Reference cable directions of '+ cf)
-
     fig2, ax2 = plt.subplots(3, 1, sharex=True)
     fig2.tight_layout()
     ax2[0].plot(time, states[:,3], c='k',lw=0.5,label='Actual')
+    ax2[0].plot(time, states[:,6], c='g',lw=0.5,label='Ref')
     ax2[1].plot(time, states[:,4], c='k',lw=0.5,label='Actual')
+    ax2[1].plot(time, states[:,7], c='g',lw=0.5,label='Ref')
     ax2[2].plot(time, states[:,5], c='k',lw=0.5,label='Actual')
+    ax2[2].plot(time, states[:,8], c='g',lw=0.5,label='Ref')
 
     ax2[0].set_ylabel('qidotx',labelpad=-2), ax2[1].set_ylabel('qidoty',labelpad=-2), ax2[2].set_ylabel('qidotz',labelpad=-2)
     fig2.supxlabel(ts,fontsize='small')
 
     grid = plt.GridSpec(3,1)
-    create_subtitle(fig2, grid[0, ::], 'Actual qidot of ' + cf)
+    create_subtitle(fig2, grid[0, ::], 'Actual vs Ref qidot of ' + cf)
     return fig1, fig2
 
 
 def main(args=None):
     
-    files = ["cf5_43", "cf6_43"]
-    att_points = [[0,0.3,0], [0,-0.3,0]]
-    shape = 'point'
+    files = ["cf5_63", "cf6_63"]
+    att_points = [[0,-0.3,0], [0,0.3,0]]
+    shape = 'cuboid'
     logDatas = [cfusdlog.decode(f)['fixedFrequency'] for f in files]
 
     configData = {}
@@ -191,7 +193,7 @@ def main(args=None):
                               logDatas[0]['ctrltargetZ.z']/1000,
                               logDatas[0]['ctrltargetZ.vx']/1000,
                               logDatas[0]['ctrltargetZ.vy']/1000, 
-                              logDatas[0]['ctrltargetZ.vz']/1000,]).T
+                              logDatas[0]['ctrltargetZ.vz']/1000]).T
     if not np.isnan((loadstates[:,6:10])).any():
         fig1, fig2, fig3  = plotload(loadstates, loadstatesDes, time1)
     else: 
@@ -211,6 +213,9 @@ def main(args=None):
                               logDatas[0]['ctrlLeeP.qidotx'],
                               logDatas[0]['ctrlLeeP.qidoty'], 
                               logDatas[0]['ctrlLeeP.qidotz'],
+                              logDatas[0]['ctrlLeeP.qdidotx'],
+                              logDatas[0]['ctrlLeeP.qdidoty'],
+                              logDatas[0]['ctrlLeeP.qdidotz'],
                             ]).T
     mucf6 = np.array([
       logDatas[1]['ctrlLeeP.desVirtInpx'], logDatas[1]['ctrlLeeP.desVirtInpy'], logDatas[1]['ctrlLeeP.desVirtInpz'] ]).T
@@ -228,6 +233,9 @@ def main(args=None):
                               logDatas[1]['ctrlLeeP.qidotx'],
                               logDatas[1]['ctrlLeeP.qidoty'],
                               logDatas[1]['ctrlLeeP.qidotz'],
+                              logDatas[1]['ctrlLeeP.qdidotx'],
+                              logDatas[1]['ctrlLeeP.qdidoty'],
+                              logDatas[1]['ctrlLeeP.qdidotz'],
                             ]).T
 
     time2 = (logDatas[1]['timestamp'][-1]-logDatas[1]['timestamp'][0])/1000
