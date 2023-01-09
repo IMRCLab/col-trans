@@ -179,33 +179,33 @@ all:
       mass: 0.0333
     ctrlLeeP:
       # P load
-      Kpos_Px: 5.0 #15.0     #18.0 #15.0 #20.0 #15.0 #100.0 #60.0
-      Kpos_Py: 5.0 #15.0     #18.0 #15.0 #20.0 #15.0 #100.0 #60.0
-      Kpos_Pz: 5.0 #15.0     #18.0 #20.0 #15.0 #160.0 #90.0
+      Kpos_Px: 20.0     #18.0 #15.0 #20.0 #15.0 #100.0 #60.0
+      Kpos_Py: 20.0     #18.0 #15.0 #20.0 #15.0 #100.0 #60.0
+      Kpos_Pz: 30.0     #18.0 #20.0 #15.0 #160.0 #90.0
       # D load
-      Kpos_Dx: 2.5 #12.5      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
-      Kpos_Dy: 2.5 #12.5      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
-      Kpos_Dz: 2.5 #12.5      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
+      Kpos_Dx: 15.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
+      Kpos_Dy: 15.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
+      Kpos_Dz: 15.0      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
       # I load
       Kpos_Ix: 0.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
       Kpos_Iy: 0.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
       Kpos_Iz: 0.0      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
       # # P attitude Load: 
-      Kprot_Px: 0.0058
-      Kprot_Py: 0.0058
+      Kprot_Px: 0.002
+      Kprot_Py: 0.002
       Kprot_Pz: 0.0058
       # #D attitude Load: 
-      Kprot_Dx: 0.0015
-      Kprot_Dy: 0.0015
+      Kprot_Dx: 0.0008
+      Kprot_Dy: 0.0008
       Kprot_Dz: 0.0015
       # P cable
-      Kqx:  14.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
-      Kqy:  14.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
-      Kqz:  14.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
+      Kqx:  6.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
+      Kqy:  6.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
+      Kqz:  6.0 #10.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
       # D cable
-      Kwx: 12.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
-      Kwy: 12.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
-      Kwz: 12.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
+      Kwx:  3.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
+      Kwy:  3.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
+      Kwz:  3.0 #7.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
       # P angle
       KRx: 0.008 #0.0055 #0.008
       KRy: 0.008 #0.0055 #0.008
