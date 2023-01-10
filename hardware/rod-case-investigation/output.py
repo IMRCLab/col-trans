@@ -377,6 +377,34 @@ def main(args=None):
         create_subtitle(fig, grid[0, ::], 'cable length')
     fig.savefig(f, format='pdf', bbox_inches='tight')
 
+    # qidot
+    fig, ax = plt.subplots(3, 1, sharex=True)
+    fig.tight_layout()
+
+    for k, filename in enumerate(files):
+        time = (logDatas[k]['timestamp']-logDatas[k]['timestamp'][0])/1000
+
+        pi_dot = np.array([ logDatas[k]['stateEstimateZ.vx']/1000,
+                            logDatas[k]['stateEstimateZ.vy']/1000, 
+                            logDatas[k]['stateEstimateZ.vz']/1000]).T
+
+        p0_dot = np.array([ logDatas[k]['stateEstimateZ.pvx']/1000,
+                            logDatas[k]['stateEstimateZ.pvy']/1000, 
+                            logDatas[k]['stateEstimateZ.pvz']/1000]).T
+
+        qi_dot = (p0_dot - pi_dot)/0.5
+
+        for i in range(0,3):
+            ax[i].plot(time, qi_dot[:,i], lw=0.75,label=filename)
+        ax[0].set_ylabel('x [N]',)
+        ax[1].set_ylabel('y [N]')
+        ax[2].set_ylabel('z [N]')
+        ax[0].legend()
+        fig.supxlabel("time [s]",fontsize='small')
+        grid = plt.GridSpec(3,1)
+        create_subtitle(fig, grid[0, ::], 'qidot')
+    fig.savefig(f, format='pdf', bbox_inches='tight')
+
     # cable states
     mucf5 = np.array([
       logDatas[0]['ctrlLeeP.desVirtInpx'], logDatas[0]['ctrlLeeP.desVirtInpy'], logDatas[0]['ctrlLeeP.desVirtInpz'] ]).T
