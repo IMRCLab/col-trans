@@ -191,15 +191,19 @@ all:
       # I load
       Kpos_Ix: 0.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
       Kpos_Iy: 0.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
-      Kpos_Iz: 4.0 # 2.0      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
+      Kpos_Iz: 0.0 #4.0 # 2.0      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
       # # P attitude Load: 
-      Kprot_Px: 0.02
-      Kprot_Py: 0.02
-      Kprot_Pz: 0.02
+      Kprot_Px: 0.01
+      Kprot_Py: 0.01
+      Kprot_Pz: 0.01
       # #D attitude Load 
       Kprot_Dx: 0.02
       Kprot_Dy: 0.02
       Kprot_Dz: 0.02
+      # I attitude Load
+      Kprot_Ix: 0.005
+      Kprot_Iy: 0.005
+      Kprot_Iz: 0.005
       # P cable
       Kqx:  6.0 #12.0 #6.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
       Kqy:  6.0 #12.0 #6.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0

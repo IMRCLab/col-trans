@@ -7,9 +7,9 @@ from pathlib import Path
 
 import numpy as np
 
-TIMESCALE = 2.0
-UAVSHEIGHT = 0.8
-HEIGHT = 0.4
+TIMESCALE = 2.5
+UAVSHEIGHT = 1.2
+HEIGHT = 0.75
 
 
 def main():
@@ -19,7 +19,7 @@ def main():
     # allcfs.emergency()
 
     traj1 = Trajectory()
-    traj1.loadcsv("/home/khaledwahba94/imrc/col-trans/coltrans_ros/data/figure8.csv")
+    traj1.loadcsv("/home/whoenig/projects/crazyflie/crazyswarm2/src/coltrans_ros/data/figure8.csv")
 
     print("Upload trajectory")
     for cf in allcfs.crazyflies:
@@ -31,8 +31,8 @@ def main():
     for cf in allcfs.crazyflies:
         cf.setParam('stabilizer.controller', 6)
     ## take off 
-    allcfs.takeoff(targetHeight=UAVSHEIGHT, duration=2.0)
-    timeHelper.sleep(10.0)
+    allcfs.takeoff(targetHeight=UAVSHEIGHT, duration=3.0)
+    timeHelper.sleep(5.0)
     ####
 
     ## start the QP lee Payload controller for hovering
@@ -40,28 +40,32 @@ def main():
     print('start hovering with QP lee payload')
     for cf in allcfs.crazyflies:
         cf.setParam('stabilizer.controller', 7)
+        cf.setParam("usd.logging", 1)
     
-    timeHelper.sleep(5.0)
+    # timeHelper.sleep(20.0)
+    # print("WARNING")
+    # timeHelper.sleep(2.0)
 
     # allcfs.takeoff(targetHeight=HEIGHT, duration=5.0)
     # timeHelper.sleep(6.0)
 
     # go to origin
-    # for cf in allcfs.crazyflies:
-    #     cf.goTo([0.0,0.0,HEIGHT],0,4.0)
-    # timeHelper.sleep(5.0)
+    for cf in allcfs.crazyflies:
+        cf.goTo([0.0,0.0,HEIGHT],0,4.0)
+    timeHelper.sleep(10.0)
 
-    # # start trajectory
-    # allcfs.startTrajectory(0, timescale=TIMESCALE)
-    # timeHelper.sleep(traj1.duration * TIMESCALE + 2.0)
+    # start trajectory
+    allcfs.startTrajectory(0, timescale=TIMESCALE)
+    timeHelper.sleep(traj1.duration * TIMESCALE + 2.0)
 
     # Land the payload
     for cf in allcfs.crazyflies:
-        cf.goTo([0.0,0.0,-0.1],0,4.0)
+        cf.goTo([0.0,0.0,0.1],0,4.0)
     timeHelper.sleep(5.0)
 
     # Switch to another controller, so that the setpoint is not the payload
     for cf in allcfs.crazyflies:
+        cf.setParam("usd.logging", 0)
         cf.setParam('stabilizer.controller', 6)
     timeHelper.sleep(2.0)
 
