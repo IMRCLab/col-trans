@@ -50,9 +50,13 @@ def plotload(states ,dstates, time):
         fig3, ax3 = plt.subplots(3, 1, sharex=True)
         fig3.tight_layout()
         rpy = rn.to_euler(states[:,6:10])
+        rpydes = rn.to_euler(dstates[:,6:10])
         ax3[0].plot(time, np.degrees(rpy[:,0]), c='b',lw=0.5,label='Actual')
+        ax3[0].plot(time, np.degrees(rpydes[:,0]), c='darkgreen',lw=0.5,label='Ref')
         ax3[1].plot(time, np.degrees(rpy[:,1]), c='b',lw=0.5,label='Actual')
+        ax3[1].plot(time, np.degrees(rpydes[:,1]), c='darkgreen',lw=0.5,label='Ref')
         ax3[2].plot(time, np.degrees(rpy[:,2]), c='b',lw=0.5,label='Actual')
+        ax3[2].plot(time, np.degrees(rpydes[:,2]), c='darkgreen',lw=0.5,label='Ref')
 
         ax3[0].set_ylabel('r [deg]',labelpad=-2), ax3[1].set_ylabel('p [deg]',labelpad=-2), ax3[2].set_ylabel('y [deg]',labelpad=-2)
         fig3.supxlabel(ts,fontsize='small')
@@ -179,7 +183,7 @@ def plotcable(states, qd, time, cf):
 
 def main(args=None):
     
-    files = ["cf5_11", "cf6_11"]
+    files = ["cf5_16", "cf6_16"]
     att_points = [[0,-0.3,0], [0,0.3,0]]
     shape = 'cuboid'
 
@@ -226,6 +230,10 @@ def main(args=None):
                               logDatas[0]['ctrltargetZ.vx']/1000,
                               logDatas[0]['ctrltargetZ.vy']/1000, 
                               logDatas[0]['ctrltargetZ.vz']/1000,
+                              logDatas[0]['ctrlLeeP.qp_desx'],
+                              logDatas[0]['ctrlLeeP.qp_desy'],
+                              logDatas[0]['ctrlLeeP.qp_desz'],
+                              logDatas[0]['ctrlLeeP.qp_desw'],
                              ]).T
 
                             #   logDatas[0]['ctrlLeeP.omega_prx'],
@@ -368,6 +376,7 @@ def main(args=None):
 
         li = np.linalg.norm(pi - plStPos, axis=1)
         ax[0,0].plot(time, li, lw=0.75,label=filename)
+        ax[0,0].plot(time, li, lw=0.75,label=filename)
         # ax[0].set_ylabel('x [N]',)
         # ax[1].set_ylabel('y [N]')
         # ax[2].set_ylabel('z [N]')
@@ -377,33 +386,58 @@ def main(args=None):
         create_subtitle(fig, grid[0, ::], 'cable length')
     fig.savefig(f, format='pdf', bbox_inches='tight')
 
-    # qidot
-    fig, ax = plt.subplots(3, 1, sharex=True)
-    fig.tight_layout()
+    # # qidot
+    # fig, ax = plt.subplots(3, 1, sharex=True)
+    # fig.tight_layout()
 
-    for k, filename in enumerate(files):
-        time = (logDatas[k]['timestamp']-logDatas[k]['timestamp'][0])/1000
+    # for k, filename in enumerate(files):
+    #     time = (logDatas[k]['timestamp']-logDatas[k]['timestamp'][0])/1000
 
-        pi_dot = np.array([ logDatas[k]['stateEstimateZ.vx']/1000,
-                            logDatas[k]['stateEstimateZ.vy']/1000, 
-                            logDatas[k]['stateEstimateZ.vz']/1000]).T
+    #     pi_dot = np.array([ logDatas[k]['stateEstimateZ.vx']/1000,
+    #                         logDatas[k]['stateEstimateZ.vy']/1000, 
+    #                         logDatas[k]['stateEstimateZ.vz']/1000]).T
 
-        p0_dot = np.array([ logDatas[k]['stateEstimateZ.pvx']/1000,
-                            logDatas[k]['stateEstimateZ.pvy']/1000, 
-                            logDatas[k]['stateEstimateZ.pvz']/1000]).T
+    #     p0_dot = np.array([ logDatas[k]['stateEstimateZ.pvx']/1000,
+    #                         logDatas[k]['stateEstimateZ.pvy']/1000, 
+    #                         logDatas[k]['stateEstimateZ.pvz']/1000]).T
 
-        qi_dot = (p0_dot - pi_dot)/0.5
+    #     pi = np.array([ logDatas[k]['stateEstimateZ.x']/1000,
+    #                         logDatas[k]['stateEstimateZ.y']/1000, 
+    #                         logDatas[k]['stateEstimateZ.z']/1000]).T
 
-        for i in range(0,3):
-            ax[i].plot(time, qi_dot[:,i], lw=0.75,label=filename)
-        ax[0].set_ylabel('x [N]',)
-        ax[1].set_ylabel('y [N]')
-        ax[2].set_ylabel('z [N]')
-        ax[0].legend()
-        fig.supxlabel("time [s]",fontsize='small')
-        grid = plt.GridSpec(3,1)
-        create_subtitle(fig, grid[0, ::], 'qidot')
-    fig.savefig(f, format='pdf', bbox_inches='tight')
+    #     p0 = np.array([ logDatas[k]['stateEstimateZ.px']/1000,
+    #                         logDatas[k]['stateEstimateZ.py']/1000, 
+    #                         logDatas[k]['stateEstimateZ.pz']/1000]).T
+
+    #     q = np.array([logDatas[k]['stateEstimate.pqw'],
+    #                         logDatas[k]['stateEstimate.pqx'],
+    #                         logDatas[k]['stateEstimate.pqy'],
+    #                         logDatas[k]['stateEstimate.pqz']]).T
+
+    #     plStPos = p0 + rn.rotate(q, att_points[k])
+
+    #     li = np.linalg.norm(pi - plStPos, axis=1)
+    #     qi_dot = p0_dot - pi_dot
+    #     for t in range(li.shape[0]):
+    #         qi_dot[t] /= li[t]
+
+    #     qi_dot_fw = np.array([logDatas[k]['ctrlLeeP.qidotx'],
+    #                         logDatas[k]['ctrlLeeP.qidoty'],
+    #                         logDatas[k]['ctrlLeeP.qidotz']]).T
+
+    #     # qi_dot = np.divide(p0_dot - pi_dot, li)
+
+    #     for i in range(0,3):
+    #         ax[i].plot(time, qi_dot[:,i], lw=0.75,label=filename)
+    #         ax[i].plot(time, qi_dot_fw[:,i], lw=0.75,label=filename + " FW")
+    #     ax[0].set_ylabel('x [N]',)
+    #     ax[1].set_ylabel('y [N]')
+    #     ax[2].set_ylabel('z [N]')
+    #     ax[0].legend()
+    #     fig.supxlabel("time [s]",fontsize='small')
+    #     grid = plt.GridSpec(3,1)
+    #     create_subtitle(fig, grid[0, ::], 'qidot')
+    # fig.savefig(f, format='pdf', bbox_inches='tight')
 
     # cable states
     mucf5 = np.array([

@@ -64,6 +64,10 @@ ctrltargetZ.vz
 ctrlLeeP.omega_prx
 ctrlLeeP.omega_pry
 ctrlLeeP.omega_prz
+ctrlLeeP.qp_desx
+ctrlLeeP.qp_desy
+ctrlLeeP.qp_desz
+ctrlLeeP.qp_desw
 
 # Cable states 
 ctrlLeeP.qix
