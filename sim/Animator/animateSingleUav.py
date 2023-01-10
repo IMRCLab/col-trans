@@ -62,6 +62,9 @@ def plotPayloadStates(payload, posq, tf_sim, shared):
     fig12, ax15 = plt.subplots(1, 1)
     fig12.tight_layout()
     
+    fig15, ax17 = plt.subplots(3, 1)
+    fig15.tight_layout()
+    
     time   = np.linspace(0, tf_sim*1e-3, num=len(full_state)) 
     ts = 'time [s]'
     pos    = full_state[:,0:3]
@@ -85,6 +88,7 @@ def plotPayloadStates(payload, posq, tf_sim, shared):
             mufig.supxlabel(ts, fontsize='small')
             create_subtitle(mufig, grid[0, ::], 'mu_des for uav ' + str(i+1))
             mufigs[i] = (mufig, muax)
+
         posdes    = ref_state[:,0:3]
         linVeldes = ref_state[:,3:6]
 
@@ -95,8 +99,20 @@ def plotPayloadStates(payload, posq, tf_sim, shared):
         angVel = full_state[:,9:12]
     else:
         numOfquads = payload.numOfquads
-        p  = full_state[:, 6:6+3*numOfquads]
-        angVel = full_state[:,6+3*numOfquads::]
+        qidot = []
+        if payload.pointmass:
+            p  = full_state[:, 6:6+3*numOfquads]
+            angVel = full_state[:,6+3*numOfquads::]
+        else:
+            p  = full_state[:, 13:13+3*numOfquads]
+            angVel = full_state[:,13+3*numOfquads::]
+            for i in range(p.shape[0]):
+                qidottmp = []
+                for j in range(0,3*payload.numOfquads,3):
+                    qidottmp.append(np.cross(angVel[i,j:j+3], p[i,j:j+3]))
+                qidot.append(np.array(qidottmp).reshape(3*payload.numOfquads))
+            qidot = np.array(qidot)
+
 ###############################################################################################
    
     ax11[0].plot(time, pos[:,0], c='k', lw=0.75, label='Actual'), ax11[1].plot(time, pos[:,1], lw=0.75, c='k'), ax11[2].plot(time, pos[:,2], lw=0.75, c='k')
@@ -108,7 +124,7 @@ def plotPayloadStates(payload, posq, tf_sim, shared):
 
     grid = plt.GridSpec(3,1)
     if shared and payload.lead:
-        create_subtitle(fig8, grid[0, ::], 'Actual vs References Payload Linear Velocities')
+        create_subtitle(fig8, grid[0, ::], 'Payload Positions')
     else:
         create_subtitle(fig8, grid[0, ::], 'Actual Payload Linear Velocities')
 ###############################################################################################
@@ -123,49 +139,54 @@ def plotPayloadStates(payload, posq, tf_sim, shared):
 
     grid = plt.GridSpec(3,1)
     if shared and payload.lead:
-        create_subtitle(fig9, grid[0, ::], 'Actual vs References Payload Linear Velocities')
+        create_subtitle(fig9, grid[0, ::], 'Payload Linear Velocities')
     else:
         create_subtitle(fig9, grid[0, ::], 'Actual Payload Linear Velocities')
 
 ###############################################################################################
+    c = ['g','b','k', 'm']
     if shared:
+        j= 0
         for i in range(0, numOfquads*3,3):
-            ax13[0].plot(time, angVel[:,i],c='k',lw=1, label='Actual'),  ax13[1].plot(time, angVel[:,i+1],c='k',lw=1), ax13[2].plot(time, angVel[:,i+2],c='k',lw=1)
+            ax13[0].plot(time, angVel[:,i],c=c[j],lw=1, label='Actual of '+str(j)),  ax13[1].plot(time, angVel[:,i+1],c=c[j],lw=1), ax13[2].plot(time, angVel[:,i+2],c=c[j],lw=1)
             ax13[0].set_ylabel('wx [deg/s]',labelpad=-5), ax13[1].set_ylabel('wy [deg/s]',labelpad=-5), ax13[2].set_ylabel('wz [deg/s]',labelpad=-5)
             fig10.supxlabel(ts,fontsize='small')
+            ax13[0].legend()
+            j+=1
     else:
-        ax13[0].plot(time, angVel[:,0],c='k',lw=1, label='Actual'),  ax13[1].plot(time, angVel[:,1],c='k',lw=1), ax13[2].plot(time, angVel[:,2],c='k',lw=1)
+        ax13[0].plot(time, angVel[:,0],c=c[j],lw=1, label='Actual'),  ax13[1].plot(time, angVel[:,1],c=c[j],lw=1), ax13[2].plot(time, angVel[:,2],c=c[j],lw=1)
         ax13[0].set_ylabel('wx [deg/s]',labelpad=-5), ax13[1].set_ylabel('wy [deg/s]',labelpad=-5), ax13[2].set_ylabel('wz [deg/s]',labelpad=-5)
         fig10.supxlabel(ts,fontsize='small')
         
     grid = plt.GridSpec(3,1)
-    create_subtitle(fig10, grid[0, ::], ' Actual Payload Angular Velocities')
+    create_subtitle(fig10, grid[0, ::], ' Cable Angular Velocities (wi)')
+    if shared: 
+        j = 0
+        for i in range(0, numOfquads*3,3):
+            ax17[0].plot(time, qidot[:,i],c=c[j],lw=1, label='Actual of '+str(j)),  ax17[1].plot(time, qidot[:,i+1],c=c[j],lw=1), ax17[2].plot(time, qidot[:,i+2],c=c[j],lw=1)
+            ax17[0].set_ylabel('qidotx',labelpad=-5), ax17[1].set_ylabel('qidoty',labelpad=-5), ax17[2].set_ylabel('qidotz',labelpad=-5)
+            fig15.supxlabel(ts,fontsize='small')
+            ax17[0].legend()
+            j+=1
+    grid = plt.GridSpec(3,1)
+    create_subtitle(fig15, grid[0, ::], ' qidot = cross(wi, qi)')
 
 ###############################################################################################
     if shared:
+        j = 0
         for i in range(0, numOfquads*3,3):    
-            ax14[0].plot(time, p[:,i],c='k',lw=1, label='Actual'), ax14[1].plot(time, p[:,i+1],c='k',lw=1), ax14[2].plot(time, p[:,i+2],c='k',lw=1)
-            ax14[0].set_ylabel('px',labelpad=-5), ax14[1].set_ylabel('py',labelpad=-5), ax14[2].set_ylabel('pz',labelpad=-5)
+            ax14[0].plot(time, p[:,i],c=c[j],lw=1, label='Actual of' +str(j)), ax14[1].plot(time, p[:,i+1],c=c[j],lw=1), ax14[2].plot(time, p[:,i+2],c=c[j],lw=1)
+            ax14[0].set_ylabel('qix',labelpad=-5), ax14[1].set_ylabel('qiy',labelpad=-5), ax14[2].set_ylabel('qiz',labelpad=-5)
             fig11.supxlabel(ts,fontsize='small')
+            j+=1
+            ax14[0].legend()
     else:
         ax14[0].plot(time, p[:,0],c='k',lw=1, label='Actual'), ax14[1].plot(time, p[:,1],c='k',lw=1), ax14[2].plot(time, p[:,2],c='k',lw=1)
-        ax14[0].set_ylabel('px',labelpad=-5), ax14[1].set_ylabel('py',labelpad=-5), ax14[2].set_ylabel('pz',labelpad=-5)
+        ax14[0].set_ylabel('qix',labelpad=-5), ax14[1].set_ylabel('qiy',labelpad=-5), ax14[2].set_ylabel('qiz',labelpad=-5)
         fig11.supxlabel(ts,fontsize='small')
         
     grid = plt.GridSpec(3,1)
-    create_subtitle(fig11, grid[0, ::], 'Cable Directional Unit Vector')
-
-###############################################################################################
-    norm_x = np.zeros((len(full_state),))
-    for i in range(0, len(norm_x)):
-        norm_x[i] = np.linalg.norm(pos[i,:] - posq[i,:])
-    ax15.plot(time, norm_x,c='k',lw=1, label='Norm')
-    ax15.set_ylabel('||xq - xp||',labelpad=-2)    
-    ax15.set_ylim([round(min(norm_x), 7),round(max(norm_x)+0.000001, 7)])
-    fig12.supxlabel(ts,fontsize='small')
-
-    grid = plt.GridSpec(3,1)
-    create_subtitle(fig12, grid[0, ::], 'Diff between Quadrotor and Payload Positions (Norm)')
+    create_subtitle(fig11, grid[0, ::], 'qi Cable Directional Unit Vector')
 
 ###################################################################################################
     if shared and payload.lead:
@@ -179,8 +200,29 @@ def plotPayloadStates(payload, posq, tf_sim, shared):
         grid = plt.GridSpec(2,3)
         create_subtitle(fig13, grid[0, ::], 'Positional errors')
         create_subtitle(fig13, grid[1, ::], 'Linear Velocities errors')
+
+        u_figs = []
+        u_is = payload.ui_s
+        numofquads = payload.numOfquads
+        for i in range(numofquads):
+            u_figs.append(plt.subplots(3, 1, sharex=True))
+        i = 0
+        for id in u_is.keys():    
+            u_i = np.array(u_is[id])
+            ufig, uax = u_figs[i]
+            uax[0].plot(time, u_i[:,0], c='r', lw=0.75)
+            uax[1].plot(time, u_i[:,1], c='g', lw=0.75)
+            uax[2].plot(time, u_i[:,2], c='b', lw=0.75)
+            uax[0].set_ylabel('uix [N]',), uax[1].set_ylabel('uiy [N]'), uax[2].set_ylabel('uiz [N]')
+            grid = plt.GridSpec(3,1)
+            ufig.supxlabel(ts, fontsize='small')
+            create_subtitle(ufig, grid[0, ::], 'u_i for cable: '+ id)
+            u_figs[i] = (ufig, uax)
+            i+=1
+
+
     if shared and payload.lead:
-        return fig8, fig9, fig10, fig11, fig12, fig13, mufigs
+        return fig8, fig9, fig10, fig11, fig13, mufigs, u_figs, fig15
     else:
         return fig8, fig9, fig10, fig11, fig12
 
@@ -261,7 +303,7 @@ def outputPlots(uavs, payloads, tf_sim, pdfName, shared):
         fig1.supxlabel(ts,fontsize='small')
 
         grid = plt.GridSpec(3,1)
-        create_subtitle(fig1, grid[0, ::], 'Actual vs Reference Positions')
+        create_subtitle(fig1, grid[0, ::], 'Positions of UAV')
 
         ###################################
         
@@ -272,7 +314,7 @@ def outputPlots(uavs, payloads, tf_sim, pdfName, shared):
         fig2.supxlabel(ts,fontsize='small')
 
         grid = plt.GridSpec(3,1)
-        create_subtitle(fig2, grid[0, ::], 'Actual vs Reference Linear Velocities')
+        create_subtitle(fig2, grid[0, ::], 'Linear Velocities of UAV')
 
         ###################################
 
@@ -288,7 +330,7 @@ def outputPlots(uavs, payloads, tf_sim, pdfName, shared):
         fig3.supxlabel(ts,fontsize='small')
 
         grid = plt.GridSpec(3,1)
-        create_subtitle(fig3, grid[0, ::], 'Actual vs Reference Angular Velocities')
+        create_subtitle(fig3, grid[0, ::], 'Angular Velocities of UAV')
 
         ###################################
         if uav_.controller['name'] == 'lee':
@@ -299,7 +341,7 @@ def outputPlots(uavs, payloads, tf_sim, pdfName, shared):
             fig13.supxlabel(ts,fontsize='small')
 
             grid = plt.GridSpec(3,1)
-            create_subtitle(fig13, grid[0, ::], 'Actual vs Reference Angular Accelerations')
+            create_subtitle(fig13, grid[0, ::], 'Angular Accelerations')
 
 
         ###################################
@@ -355,7 +397,7 @@ def outputPlots(uavs, payloads, tf_sim, pdfName, shared):
 
         if uav_.pload:
             if shared and payload.lead:
-                fig8, fig9, fig10, fig11, fig12, fig14, mufigs = plotPayloadStates(payload, pos, tf_sim, shared)
+                fig8, fig9, fig10, fig11, fig14, mufigs, u_is, fig15 = plotPayloadStates(payload, pos, tf_sim, shared)
             else:   
                  fig8, fig9, fig10, fig11, fig12 = plotPayloadStates(payload, pos, tf_sim, shared)
         textfig.savefig(f, format='pdf', bbox_inches='tight')
@@ -374,13 +416,16 @@ def outputPlots(uavs, payloads, tf_sim, pdfName, shared):
             fig9.savefig(f, format='pdf', bbox_inches='tight')
             if shared and payload.lead:
                 fig14.savefig(f,  format='pdf', bbox_inches='tight')
-                for fig in mufigs:
+                for u_figi, fig in zip(u_is, mufigs):
                     mufig, muax = fig
+                    ufig, uax = u_figi
                     mufig.savefig(f, format='pdf', bbox_inches='tight')
+                    ufig.savefig(f, format='pdf', bbox_inches='tight')
+                    
             fig10.savefig(f, format='pdf', bbox_inches='tight')
             fig11.savefig(f, format='pdf', bbox_inches='tight')
-            fig12.savefig(f, format='pdf', bbox_inches='tight')
-        
+            fig15.savefig(f, format='pdf', bbox_inches='tight')
+         
     f.close()
 
 

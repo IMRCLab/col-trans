@@ -159,6 +159,7 @@ class SharedPayload:
         self.wdi_prev = np.array([0,0,0])
         self.mu_des_prev = np.zeros(3*self.numOfquads,)
         self.mu_des_stack = np.empty(3*self.numOfquads,)
+        self.ui_s = {}
 
     def getInitState(self, uav_params, payload_params):
         self.state = np.zeros(self.state_size,)

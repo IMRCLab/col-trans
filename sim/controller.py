@@ -679,8 +679,10 @@ def main(args, animateOrPlotdict, params):
                 states[id]    = state 
                 
         Fddict = {}
+        ui_s = {}
         for id in uavs.keys():
             Fddict[id] = []
+            ui_s[id] = []
         for tick in range(0, int(tf_sim)+1):
             j = plStSize
             ctrlInputs = np.zeros((1,4))
@@ -728,6 +730,7 @@ def main(args, animateOrPlotdict, params):
                             try:
                                 uavs, payload, control, des_w, des_wd = cffirmware.controllerLeePayload(uavs, id, payload, control, setpoint, sensors, state, tick, j)
                                 Fddict[id].append(payload.Fd)
+                                ui_s[id].append(np.array([control.u_all[0], control.u_all[1], control.u_all[2]]))
                                 ref_state = np.append(ref_state, np.array([des_w, des_wd]).reshape(6,), axis=0)
                             except Exception as e:
                                 print('tick: ',tick)
@@ -744,6 +747,7 @@ def main(args, animateOrPlotdict, params):
                                 leePayload, state = updateNeighbors(leePayload, state, id, uavs, payload)
                                 cffirmware.controllerLeePayload(leePayload, control, setpoint, sensors, state, tick)
                                 Fddict[id].append(np.array([leePayload.F_d.x, leePayload.F_d.y, leePayload.F_d.z]))
+                                ui_s[id].append(np.array([control.u_all[0], control.u_all[1], control.u_all[2]]))
                                 uavs, desVirtInp_i = udpateHpsAndmu(id, uavs, leePayload, payload.numOfquads-1)
                                 desVirtInp.append(desVirtInp_i)
                             except Exception as e:
@@ -789,6 +793,7 @@ def main(args, animateOrPlotdict, params):
                     payload.mu_des_prev = np.array(desVirtInp).reshape((3*payload.numOfquads,))
                 payload.stackmuDes(payload.mu_des_prev)
                 payload.cursorUp() 
+                payload.ui_s = ui_s
                 # Evolve the payload states
                 uavs, loadState =  payload.stateEvolution(ctrlInputs, uavs, uavs_params, floor.interactionForce(payload.state[0:3], payload.state[3:6]))    
                 if payload.lead:
