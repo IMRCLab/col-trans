@@ -96,6 +96,16 @@ def plotuav(states, dstates, time ,name):
     grid = plt.GridSpec(3,1)
     create_subtitle(fig1, grid[0, ::], 'UAV Positions of '+ name)
     
+    v = states[:,3:6]
+    figv, axv = plt.subplots(3, 1, sharex=True)
+    figv.tight_layout()
+    axv[0].plot(time, v[:,0], c='b', lw=0.75,label='Actual of ' + name), axv[1].plot(time, v[:,1], lw=0.75, c='b'), axv[2].plot(time, v[:,2], lw=0.75, c='b')
+    axv[0].set_ylabel('vx [m/s]',), axv[1].set_ylabel('vy [m/s]'), axv[2].set_ylabel('vz [m/s]')
+    axv[0].legend()
+    figv.supxlabel(ts,fontsize='small')
+    grid = plt.GridSpec(3,1)
+    create_subtitle(figv, grid[0, ::], 'UAV velocity of '+ name)
+    
     
     fig2, ax2 = plt.subplots(3, 1, sharex=True)
     fig2.tight_layout()
@@ -133,7 +143,7 @@ def plotuav(states, dstates, time ,name):
     max_z = abs(max(np.degrees(angVel[:,2]),key=abs))
     create_subtitle(fig3, grid[0, ::], 'Angular Velocities (omega) of '+ name)
 
-    return fig1, fig2, fig3
+    return fig1, fig2, fig3, figv
 
     pass
 
@@ -462,8 +472,8 @@ def main(args=None):
    
     fig5, fig6 = plotcable(cablestates1, qd1, time1, 'cf5')
     fig7, fig8 = plotcable(cablestates2, qd2, time2, 'cf6')
-    fig9, fig10, fig11 = plotuav(cf5, cf5des,time1, 'cf5')
-    fig12, fig13, fig14 = plotuav(cf6, cf6des, time2, 'cf6')
+    fig9, fig10, fig11, figv1 = plotuav(cf5, cf5des,time1, 'cf5')
+    fig12, fig13, fig14, figv2 = plotuav(cf6, cf6des, time2, 'cf6')
    
   
     fig5.savefig(f, format='pdf', bbox_inches='tight')        
@@ -473,9 +483,11 @@ def main(args=None):
     fig9.savefig(f, format='pdf', bbox_inches='tight')        
     fig10.savefig(f, format='pdf', bbox_inches='tight')        
     fig11.savefig(f, format='pdf', bbox_inches='tight')        
+    figv1.savefig(f, format='pdf', bbox_inches='tight')        
     fig12.savefig(f, format='pdf', bbox_inches='tight')        
     fig13.savefig(f, format='pdf', bbox_inches='tight')        
     fig14.savefig(f, format='pdf', bbox_inches='tight')        
+    figv2.savefig(f, format='pdf', bbox_inches='tight')        
     f.close()
 
 
