@@ -158,7 +158,7 @@ all:
     stabilizer:
       estimator: 2 # 1: complementary, 2: kalman
       controller: 6 # 1: PID, 2: mellinger 4: sjc 6: Lee 7: lee payload
-      pAlpha: 0.9
+      pAlpha: 0.8
     ctrlLee:
       Kpos_Px: 9.0 # def: 10.0
       Kpos_Py: 9.0 # def: 10.0
@@ -191,7 +191,7 @@ all:
       # I load
       Kpos_Ix: 0.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
       Kpos_Iy: 0.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
-      Kpos_Iz: 2.0      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
+      Kpos_Iz: 0.0 # 2.0      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
       # # P attitude Load: 
       Kprot_Px: 0.005
       Kprot_Py: 0.005
@@ -209,9 +209,9 @@ all:
       Kwy:  2.0 #10.0 #3.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
       Kwz:  2.0 #10.0 #3.0 #7.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
       # I cable
-      KqIx: 0.05
-      KqIy: 0.05
-      KqIz: 0.05
+      KqIx: 0.0 # 0.05
+      KqIy: 0.0 # 0.05
+      KqIz: 0.0 # 0.05
       # P angle
       KRx: 0.008 #0.0055 #0.008
       KRy: 0.008 #0.0055 #0.008
@@ -226,7 +226,7 @@ all:
       KI_z: 0.05        #0.05 #0.01 #0.009 #0.015
       mass: 0.034 
 
-      en_qdidot: 1 # enable qdidot computation
+      en_qdidot: 0 # enable qdidot computation
       en_accrb: 1
       
       # payload properties
