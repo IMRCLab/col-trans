@@ -169,9 +169,10 @@ def plotcable(states, qd, time, cf):
 
 def main(args=None):
     
-    files = ["cf5_04", "cf6_04"]
+    files = ["cf5_11", "cf6_11"]
     att_points = [[0,-0.3,0], [0,0.3,0]]
     shape = 'cuboid'
+
     logDatas = [cfusdlog.decode(f)['fixedFrequency'] for f in files]
 
     configData = {}
@@ -236,6 +237,9 @@ def main(args=None):
     fig, ax = plt.subplots(3, 1, sharex=True)
     fig.tight_layout()
 
+    # compute common time horizon
+    T = min([len(logDatas[k]['timestamp']) for k in range(len(files))])
+    mu_sum = np.zeros((T, 3))
     for k, filename in enumerate(files):
         time = (logDatas[k]['timestamp']-logDatas[k]['timestamp'][0])/1000
 
@@ -243,15 +247,24 @@ def main(args=None):
                                 logDatas[k]['ctrlLeeP.Fdy'], 
                                 logDatas[k]['ctrlLeeP.Fdz'],
                                 ]).T
+
+        mu_sum += np.array([logDatas[k]['ctrlLeeP.desVirtInpx'],
+                        logDatas[k]['ctrlLeeP.desVirtInpy'], 
+                        logDatas[k]['ctrlLeeP.desVirtInpz'],
+                        ]).T[0:T]
+
         for i in range(0,3):
             ax[i].plot(time, Fd[:,i], lw=0.75,label=filename)
-        ax[0].set_ylabel('x [N]',)
-        ax[1].set_ylabel('y [N]')
-        ax[2].set_ylabel('z [N]')
-        ax[0].legend()
-        fig.supxlabel("time [s]",fontsize='small')
-        grid = plt.GridSpec(3,1)
-        create_subtitle(fig, grid[0, ::], 'Fd')
+    for i in range(0,3):
+        ax[i].plot(time[0:T], mu_sum[:,i], lw=0.75,label="sum of mus")
+    
+    ax[0].set_ylabel('x [N]',)
+    ax[1].set_ylabel('y [N]')
+    ax[2].set_ylabel('z [N]')
+    ax[0].legend()
+    fig.supxlabel("time [s]",fontsize='small')
+    grid = plt.GridSpec(3,1)
+    create_subtitle(fig, grid[0, ::], 'Fd')
     fig.savefig(f, format='pdf', bbox_inches='tight')
 
     # Md
@@ -296,6 +309,62 @@ def main(args=None):
         fig.supxlabel("time [s]",fontsize='small')
         grid = plt.GridSpec(3,1)
         create_subtitle(fig, grid[0, ::], 'mu')
+    fig.savefig(f, format='pdf', bbox_inches='tight')
+
+    # u's
+    fig, ax = plt.subplots(3, 1, sharex=True)
+    fig.tight_layout()
+
+    for k, filename in enumerate(files):
+        time = (logDatas[k]['timestamp']-logDatas[k]['timestamp'][0])/1000
+
+        mu = np.array([logDatas[k]['ctrlLeeP.ux'],
+                                logDatas[k]['ctrlLeeP.uy'], 
+                                logDatas[k]['ctrlLeeP.uz'],
+                                ]).T
+        for i in range(0,3):
+            ax[i].plot(time, mu[:,i], lw=0.75,label=filename)
+        ax[0].set_ylabel('x [N]',)
+        ax[1].set_ylabel('y [N]')
+        ax[2].set_ylabel('z [N]')
+        ax[0].legend()
+        fig.supxlabel("time [s]",fontsize='small')
+        grid = plt.GridSpec(3,1)
+        create_subtitle(fig, grid[0, ::], 'u')
+    fig.savefig(f, format='pdf', bbox_inches='tight')
+
+
+    # cable length
+    fig, ax = plt.subplots(1, 1, sharex=True,squeeze=False)
+    fig.tight_layout()
+
+    for k, filename in enumerate(files):
+        time = (logDatas[k]['timestamp']-logDatas[k]['timestamp'][0])/1000
+
+        pi = np.array([ logDatas[k]['stateEstimateZ.x']/1000,
+                            logDatas[k]['stateEstimateZ.y']/1000, 
+                            logDatas[k]['stateEstimateZ.z']/1000]).T
+
+        p0 = np.array([ logDatas[k]['stateEstimateZ.px']/1000,
+                            logDatas[k]['stateEstimateZ.py']/1000, 
+                            logDatas[k]['stateEstimateZ.pz']/1000]).T
+
+        q = np.array([logDatas[k]['stateEstimate.pqw'],
+                            logDatas[k]['stateEstimate.pqx'],
+                            logDatas[k]['stateEstimate.pqy'],
+                            logDatas[k]['stateEstimate.pqz']]).T
+
+        plStPos = p0 + rn.rotate(q, att_points[k])
+
+        li = np.linalg.norm(pi - plStPos, axis=1)
+        ax[0,0].plot(time, li, lw=0.75,label=filename)
+        # ax[0].set_ylabel('x [N]',)
+        # ax[1].set_ylabel('y [N]')
+        # ax[2].set_ylabel('z [N]')
+        ax[0,0].legend()
+        fig.supxlabel("time [s]",fontsize='small')
+        grid = plt.GridSpec(1,1)
+        create_subtitle(fig, grid[0, ::], 'cable length')
     fig.savefig(f, format='pdf', bbox_inches='tight')
 
     # cable states
