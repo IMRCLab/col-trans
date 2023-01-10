@@ -49,8 +49,8 @@ def plotload(states ,dstates, time):
     if not np.isnan((states[:,6:10])).any():
         fig3, ax3 = plt.subplots(3, 1, sharex=True)
         fig3.tight_layout()
-        rpy = rn.to_euler(states[:,6:10])
-        rpydes = rn.to_euler(dstates[:,6:10])
+        rpy = rn.to_euler(states[:,6:10], convention='xyz')
+        rpydes = rn.to_euler(dstates[:,6:10], convention='xyz')
         ax3[0].plot(time, np.degrees(rpy[:,0]), c='b',lw=0.5,label='Actual')
         ax3[0].plot(time, np.degrees(rpydes[:,0]), c='darkgreen',lw=0.5,label='Ref')
         ax3[1].plot(time, np.degrees(rpy[:,1]), c='b',lw=0.5,label='Actual')
@@ -116,8 +116,8 @@ def plotuav(states, dstates, time ,name):
 
     fig3, ax3 = plt.subplots(3, 1, sharex=True)
     fig3.tight_layout()
-    rpy = rn.to_euler((states[:,6:10]))
-    rpydes = rn.to_euler(dstates[:,0:4])
+    rpy = rn.to_euler((states[:,6:10]), convention='xyz')
+    rpydes = rn.to_euler(dstates[:,0:4], convention='xyz')
     ax2[0].plot(time, np.degrees(rpy[:,0]), c='b',lw=0.5,label='Actual')
     ax2[1].plot(time, np.degrees(rpy[:,1]), c='b',lw=0.5,label='Actual')
     ax2[2].plot(time, np.degrees(rpy[:,2]), c='b',lw=0.5,label='Actual')
@@ -183,7 +183,7 @@ def plotcable(states, qd, time, cf):
 
 def main(args=None):
     
-    files = ["cf5_16", "cf6_16"]
+    files = ["cf5_34", "cf6_34"]
     att_points = [[0,-0.3,0], [0,0.3,0]]
     shape = 'cuboid'
 
@@ -230,10 +230,10 @@ def main(args=None):
                               logDatas[0]['ctrltargetZ.vx']/1000,
                               logDatas[0]['ctrltargetZ.vy']/1000, 
                               logDatas[0]['ctrltargetZ.vz']/1000,
+                              logDatas[0]['ctrlLeeP.qp_desw'],
                               logDatas[0]['ctrlLeeP.qp_desx'],
                               logDatas[0]['ctrlLeeP.qp_desy'],
                               logDatas[0]['ctrlLeeP.qp_desz'],
-                              logDatas[0]['ctrlLeeP.qp_desw'],
                              ]).T
 
                             #   logDatas[0]['ctrlLeeP.omega_prx'],
