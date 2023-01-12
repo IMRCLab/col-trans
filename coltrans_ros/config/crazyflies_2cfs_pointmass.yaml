@@ -234,9 +234,14 @@ all:
 
       Kpos_P_limit: 100.0 #0.5 #0.5
       Kpos_D_limit: 100.0 #0.1 #0.1
-      radius: 0.2
+      radius: 0.15
 
-      # lambda: 0.0
+      gen_hp: 1 # SVM-based hyperplane generation
+      # lambda_svm: 10000.0
+      lambda_svm: 1000.0
+      # lambda: 0.1
+
+      # gen_hp: 0 # geometry-based hyperplane generation
 
       # ## 6 planes rpy and yaw 
       # r11: 25.0

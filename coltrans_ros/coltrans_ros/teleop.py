@@ -1,4 +1,4 @@
-import numpy as np
+import time
 
 import rclpy
 from rclpy.node import Node
@@ -16,7 +16,7 @@ class TeleopNode(Node):
     def __init__(self):
         super().__init__('teleop_aug')
 
-        self.cfs = ["cf5", "cf6"]
+        # self.cfs = ["cf5", "cf6"]
 
         self.setParamsServiceServer = self.create_client(SetParameters, "/crazyflie_server/set_parameters")
 
@@ -33,6 +33,27 @@ class TeleopNode(Node):
 
         self.timer = None
 
+        # # while on the ground, first switch to our controller and then back, to initialize "fast"
+        # time.sleep(10)
+        # param_name = "all.params.stabilizer.controller"
+        # value = 7
+        # param_type = ParameterType.PARAMETER_INTEGER
+        # param_value = ParameterValue(type=param_type, integer_value=int(value))
+        # req = SetParameters.Request()
+        # req.parameters = [Parameter(name=param_name, value=param_value)]
+        # self.setParamsServiceServer.call_async(req)
+
+        # time.sleep(2)
+        # param_name = "all.params.stabilizer.controller"
+        # value = 6
+        # param_type = ParameterType.PARAMETER_INTEGER
+        # param_value = ParameterValue(type=param_type, integer_value=int(value))
+        # req = SetParameters.Request()
+        # req.parameters = [Parameter(name=param_name, value=param_value)]
+        # self.setParamsServiceServer.call_async(req)
+
+        # self.get_logger().info("DONE!")
+
 
     def joy_callback(self, msg: Joy):
         # the expected configuration is
@@ -43,46 +64,48 @@ class TeleopNode(Node):
         # blue button: switch to payload controller
         if msg.buttons[2] == 1:
             # switch to payload controller
-            for cf in self.cfs:
-                param_name = "{}/params/stabilizer/controller".format(cf)
-                value = 7
-                param_type = ParameterType.PARAMETER_INTEGER
-                param_value = ParameterValue(type=param_type, integer_value=int(value))
-                req = SetParameters.Request()
-                req.parameters = [Parameter(name=param_name, value=param_value)]
-                self.setParamsServiceServer.call_async(req)
+            # for cf in self.cfs:
+            param_name = "all.params.stabilizer.controller"
+            value = 7
+            param_type = ParameterType.PARAMETER_INTEGER
+            param_value = ParameterValue(type=param_type, integer_value=int(value))
+            req = SetParameters.Request()
+            req.parameters = [Parameter(name=param_name, value=param_value)]
+            self.setParamsServiceServer.call_async(req)
 
-                param_name = "{}/params/usd/logging".format(cf)
-                value = 1
-                param_type = ParameterType.PARAMETER_INTEGER
-                param_value = ParameterValue(type=param_type, integer_value=int(value))
-                req = SetParameters.Request()
-                req.parameters = [Parameter(name=param_name, value=param_value)]
-                self.setParamsServiceServer.call_async(req)
+            param_name = "all.params.usd.logging"
+            value = 1
+            param_type = ParameterType.PARAMETER_INTEGER
+            param_value = ParameterValue(type=param_type, integer_value=int(value))
+            req = SetParameters.Request()
+            req.parameters = [Parameter(name=param_name, value=param_value)]
+            self.setParamsServiceServer.call_async(req)
 
-            # # switch to manual teleoperation after some time
-            # if self.timer is None:
-            #     self.timer = self.create_timer(2.0, self.timer_callback)
+            # switch to manual teleoperation after some time
+            if self.timer is None:
+                self.timer = self.create_timer(2.0, self.timer_callback)
 
 
         # land: switch back to regular lee controller!
         if msg.buttons[6] == 1:
-            for cf in self.cfs:
-                param_name = "{}/params/stabilizer/controller".format(cf)
-                value = 6
-                param_type = ParameterType.PARAMETER_INTEGER
-                param_value = ParameterValue(type=param_type, integer_value=int(value))
-                req = SetParameters.Request()
-                req.parameters = [Parameter(name=param_name, value=param_value)]
-                self.setParamsServiceServer.call_async(req)
+            # stop logging
+            param_name = "all.params.usd.logging"
+            value = 0
+            param_type = ParameterType.PARAMETER_INTEGER
+            param_value = ParameterValue(type=param_type, integer_value=int(value))
+            req = SetParameters.Request()
+            req.parameters = [Parameter(name=param_name, value=param_value)]
+            self.setParamsServiceServer.call_async(req)
 
-                param_name = "{}/params/usd/logging".format(cf)
-                value = 0
-                param_type = ParameterType.PARAMETER_INTEGER
-                param_value = ParameterValue(type=param_type, integer_value=int(value))
-                req = SetParameters.Request()
-                req.parameters = [Parameter(name=param_name, value=param_value)]
-                self.setParamsServiceServer.call_async(req)
+            # for cf in self.cfs:
+            param_name = "all.params.stabilizer.controller"
+            value = 6
+            param_type = ParameterType.PARAMETER_INTEGER
+            param_value = ParameterValue(type=param_type, integer_value=int(value))
+            req = SetParameters.Request()
+            req.parameters = [Parameter(name=param_name, value=param_value)]
+            self.setParamsServiceServer.call_async(req)
+
 
     def timer_callback(self):
         param_name = "mode"

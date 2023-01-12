@@ -55,7 +55,7 @@ def main():
     timeHelper.sleep(10.0)
 
     # start trajectory
-    allcfs.startTrajectory(0, timescale=TIMESCALE)
+    allcfs.startTrajectory(0, timescale=TIMESCALE, relative=False)
     timeHelper.sleep(traj1.duration * TIMESCALE + 2.0)
 
     # Land the payload

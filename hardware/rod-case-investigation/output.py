@@ -183,9 +183,13 @@ def plotcable(states, qd, time, cf):
 
 def main(args=None):
     
-    files = ["cf5_34", "cf6_34"]
+    # files = ["cf5_48", "cf6_48"]
+    # att_points = [[0,-0.3,0], [0,0.3,0]]
+    # shape = 'cuboid'
+
+    files = ["cf5_99", "cf6_99"]
     att_points = [[0,-0.3,0], [0,0.3,0]]
-    shape = 'cuboid'
+    shape = 'point'
 
     logDatas = [cfusdlog.decode(f)['fixedFrequency'] for f in files]
 
@@ -251,6 +255,76 @@ def main(args=None):
         fig3.savefig(f, format='pdf', bbox_inches='tight')    
         fig4.savefig(f, format='pdf', bbox_inches='tight')  
 
+    starttime = min([logDatas[k]['timestamp'][0] for k in range(len(files))])
+
+    # payload position
+    fig, ax = plt.subplots(3, 1, sharex=True)
+    fig.tight_layout()
+
+    for k, filename in enumerate(files):
+        time = (logDatas[k]['timestamp']-starttime)/1000
+
+        p0 = np.array([logDatas[k]['stateEstimateZ.px']/1000,
+                                logDatas[k]['stateEstimateZ.py']/1000, 
+                                logDatas[k]['stateEstimateZ.pz']/1000,
+                                ]).T
+
+        p0d = np.array([logDatas[k]['ctrltargetZ.x']/1000,
+                                logDatas[k]['ctrltargetZ.y']/1000, 
+                                logDatas[k]['ctrltargetZ.z']/1000,
+                                ]).T
+
+        for i in range(0,3):
+            ax[i].plot(time, p0[:,i], lw=0.75,label=filename)
+            ax[i].plot(time, p0d[:,i], lw=0.75,label=filename + " desired")
+    
+    ax[0].set_ylabel('x [m]')
+    ax[1].set_ylabel('y [m]')
+    ax[2].set_ylabel('z [m]')
+    ax[0].legend()
+    fig.supxlabel("time [s]",fontsize='small')
+    grid = plt.GridSpec(3,1)
+    create_subtitle(fig, grid[0, ::], 'Payload position')
+    fig.savefig(f, format='pdf', bbox_inches='tight')
+
+    # payload velocity
+    fig, ax = plt.subplots(3, 1, sharex=True)
+    fig.tight_layout()
+
+    for k, filename in enumerate(files):
+        time = (logDatas[k]['timestamp']-starttime)/1000
+
+        p0_dot = np.array([logDatas[k]['stateEstimateZ.pvx']/1000,
+                                logDatas[k]['stateEstimateZ.pvy']/1000, 
+                                logDatas[k]['stateEstimateZ.pvz']/1000,
+                                ]).T
+
+        p0 = np.array([logDatas[k]['stateEstimateZ.px']/1000,
+                                logDatas[k]['stateEstimateZ.py']/1000, 
+                                logDatas[k]['stateEstimateZ.pz']/1000,
+                                ]).T
+
+        p0_dot_est = np.diff(p0, axis=0) / np.tile(np.diff(time),(3,1)).T
+
+
+        # numeric estimate
+
+
+        for i in range(0,3):
+            # ax[i].plot(time, p0_dot[:,i], lw=0.75,label=filename)
+            ax[i].plot(time[1:], p0_dot_est[:,i], lw=0.75,label=filename + " finite diff")
+
+    
+    ax[0].set_ylabel('x [m/s]')
+    ax[1].set_ylabel('y [m/s]')
+    ax[2].set_ylabel('z [m/s]')
+    ax[0].legend()
+    fig.supxlabel("time [s]",fontsize='small')
+    grid = plt.GridSpec(3,1)
+    create_subtitle(fig, grid[0, ::], 'Payload velocity')
+    fig.savefig(f, format='pdf', bbox_inches='tight')
+
+
     # Fd
     fig, ax = plt.subplots(3, 1, sharex=True)
     fig.tight_layout()
@@ -259,7 +333,7 @@ def main(args=None):
     T = min([len(logDatas[k]['timestamp']) for k in range(len(files))])
     mu_sum = np.zeros((T, 3))
     for k, filename in enumerate(files):
-        time = (logDatas[k]['timestamp']-logDatas[k]['timestamp'][0])/1000
+        time = (logDatas[k]['timestamp']-starttime)/1000
 
         Fd = np.array([logDatas[k]['ctrlLeeP.Fdx'],
                                 logDatas[k]['ctrlLeeP.Fdy'], 
@@ -290,7 +364,7 @@ def main(args=None):
     fig.tight_layout()
 
     for k, filename in enumerate(files):
-        time = (logDatas[k]['timestamp']-logDatas[k]['timestamp'][0])/1000
+        time = (logDatas[k]['timestamp']-starttime)/1000
 
         Md = np.array([logDatas[k]['ctrlLeeP.Mdx'],
                                 logDatas[k]['ctrlLeeP.Mdy'], 
@@ -307,12 +381,42 @@ def main(args=None):
         create_subtitle(fig, grid[0, ::], 'Md')
     fig.savefig(f, format='pdf', bbox_inches='tight')
 
+    # n1s's
+    fig, ax = plt.subplots(3, 1, sharex=True)
+    fig.tight_layout()
+
+    for k, filename in enumerate(files):
+        time = (logDatas[k]['timestamp']-starttime)/1000
+
+        n1 = np.array([logDatas[k]['ctrlLeeP.n1x'],
+                                logDatas[k]['ctrlLeeP.n1y'], 
+                                logDatas[k]['ctrlLeeP.n1z'],
+                                ]).T
+
+        n2 = np.array([logDatas[k]['ctrlLeeP.n2x'],
+                                logDatas[k]['ctrlLeeP.n2y'], 
+                                logDatas[k]['ctrlLeeP.n2z'],
+                                ]).T
+
+        for i in range(0,3):
+            ax[i].plot(time, n1[:,i], lw=0.75,label=filename + " n1")
+            ax[i].plot(time, n2[:,i], lw=0.75,label=filename + " n2")
+        ax[0].set_ylabel('x [N]',)
+        ax[1].set_ylabel('y [N]')
+        ax[2].set_ylabel('z [N]')
+        ax[0].legend()
+        fig.supxlabel("time [s]",fontsize='small')
+        grid = plt.GridSpec(3,1)
+        create_subtitle(fig, grid[0, ::], 'normals')
+    fig.savefig(f, format='pdf', bbox_inches='tight')
+
+
     # mus
     fig, ax = plt.subplots(3, 1, sharex=True)
     fig.tight_layout()
 
     for k, filename in enumerate(files):
-        time = (logDatas[k]['timestamp']-logDatas[k]['timestamp'][0])/1000
+        time = (logDatas[k]['timestamp']-starttime)/1000
 
         mu = np.array([logDatas[k]['ctrlLeeP.desVirtInpx'],
                                 logDatas[k]['ctrlLeeP.desVirtInpy'], 
@@ -334,7 +438,7 @@ def main(args=None):
     fig.tight_layout()
 
     for k, filename in enumerate(files):
-        time = (logDatas[k]['timestamp']-logDatas[k]['timestamp'][0])/1000
+        time = (logDatas[k]['timestamp']-starttime)/1000
 
         mu = np.array([logDatas[k]['ctrlLeeP.ux'],
                                 logDatas[k]['ctrlLeeP.uy'], 
@@ -357,7 +461,7 @@ def main(args=None):
     fig.tight_layout()
 
     for k, filename in enumerate(files):
-        time = (logDatas[k]['timestamp']-logDatas[k]['timestamp'][0])/1000
+        time = (logDatas[k]['timestamp']-starttime)/1000
 
         pi = np.array([ logDatas[k]['stateEstimateZ.x']/1000,
                             logDatas[k]['stateEstimateZ.y']/1000, 
