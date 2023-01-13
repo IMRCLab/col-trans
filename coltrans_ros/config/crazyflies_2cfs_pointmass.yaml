@@ -241,6 +241,10 @@ all:
       lambda_svm: 1000.0
       # lambda: 0.1
 
+      # manual length (set to <=0 for automatic computation)
+      l1: 0.5
+      l2: 0.28
+
       # gen_hp: 0 # geometry-based hyperplane generation
 
       # ## 6 planes rpy and yaw 
