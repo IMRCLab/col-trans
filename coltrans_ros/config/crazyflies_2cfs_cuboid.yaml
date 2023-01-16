@@ -4,14 +4,14 @@ robots:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E705
     # initial_position: [0.5, 0.0, 0.0]
-    initial_position: [0.0, -0.5, 0.0]
+    initial_position: [0.0, 0.5, 0.0]
     type: cf21 # see robot_types
 
   cf6:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E706
     # initial_position: [0.0, -0.5, 0.0]
-    initial_position: [0.5, 0.0, 0.0]
+    initial_position: [0.0, -0.5, 0.0]
     type: cf21 # see robot_types
 
   payload:
@@ -237,20 +237,17 @@ all:
       # massP: 0.017
       massP: 0.0115 # 2 UAV cuboid case
 
-      ap0id: 6
+      ap0id: 5
       ap0x: 0.0
       ap0y: 0.3
       ap0z: 0.0
+      ap0l: 0.53
 
-      ap1id: 5
+      ap1id: 6
       ap1x: 0.0
       ap1y: -0.3
       ap1z: 0.0
-
-      # ap2id: 6
-      # ap2x: -0.02
-      # ap2y: -0.033
-      # ap2z: 0.0
+      ap1l: 0.53
 
       Kpos_P_limit: 100.0 #0.5 #0.5
       Kpos_D_limit: 100.0 #0.1 #0.1

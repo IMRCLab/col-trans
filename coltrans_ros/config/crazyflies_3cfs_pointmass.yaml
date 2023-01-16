@@ -223,6 +223,24 @@ all:
       # payload properties
       massP: 0.0104 # 3 UAV pointmass case
 
+      ap0id: 5
+      ap0x: 0.0
+      ap0y: 0.0
+      ap0z: 0.0
+      ap0l: 0.51 # manual cable length
+
+      ap1id: 6
+      ap1x: 0.0
+      ap1y: 0.0
+      ap1z: 0.0
+      ap1l: 0.62 # manual cable length
+
+      ap1id: 231
+      ap1x: 0.0
+      ap1y: 0.0
+      ap1z: 0.0
+      ap1l: 0.31 # manual cable length
+
       Kpos_P_limit: 100.0 #0.5 #0.5
       Kpos_D_limit: 100.0 #0.1 #0.1
       radius: 0.15
@@ -230,11 +248,6 @@ all:
       gen_hp: 1 # SVM-based hyperplane generation
       # lambda_svm: 10000.0
       lambda_svm: 1000.0
-
-      # TODO: the order is different for each drone! need to use the ap-framework, if not uniform!
-      l1: 0.5
-      l2: 0.5
-      l3: 0.5
 
       # lambda: 0.0
 
