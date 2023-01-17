@@ -216,6 +216,10 @@ def plotPayloadStates(payload, posq, tf_sim, shared):
         for id in u_is.keys():    
             u_i = np.array(u_is[id])
             ufig, uax = u_figs[i]
+            if len(u_i) < len(time):
+                u_i = np.append(u_i, [u_i[-1,:]], axis=0)
+            elif len(u_i) > len(time):
+                u_i = u_i[0:-1,:]
             uax[0].plot(time, u_i[:,0], c='r', lw=0.75)
             uax[1].plot(time, u_i[:,1], c='g', lw=0.75)
             uax[2].plot(time, u_i[:,2], c='b', lw=0.75)
