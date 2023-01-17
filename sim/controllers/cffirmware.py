@@ -444,23 +444,46 @@ def qp(uavs, payload, Ud, P, tick):
     size = 3*payload.numOfquads
     Q = np.eye(size)
     uavs, Ain, a_s = qlimit(uavs, payload, payload.numOfquads, tick)
-    maxT = 0.5*payload.mp*9.81 
-    factorx = 0.2
-    factory = 0.2
-    factorz = 0.5
-    if tick < 1:
-        print('maxT:', maxT)
-        print('uxmax:', maxT*factorx)
-        print('uymax:', maxT*factory)
-        print('uzmax:', maxT*factorz)
+    loadangles = payload.loadangles
+    loads = payload.load
+    mu_des_min = []
+    mu_des_max = []
+
+    for loadangle, load in zip(loadangles, loads):
+        if load == -1:
+            mu_min_tmp = [-np.inf, -np.inf, -np.inf]
+            mu_max_tmp = [np.inf, np.inf, np.inf]
+        else:
+            fxy_max = load*1e-3*9.81*np.sin(np.radians(loadangle))
+            fxy_min = -fxy_max
+            fz_max = load*1e-3*9.81*np.cos(np.radians(loadangle))
+            fz_min = -fz_max
+            mu_max_tmp = [fxy_max, fxy_max, fz_max]
+            mu_min_tmp = [fxy_min, fxy_min, fz_min]
+        mu_des_max.append(mu_max_tmp)
+        mu_des_min.append(mu_min_tmp)
+    mu_des_max = np.array(mu_des_max).flatten()
+    mu_des_min = np.array(mu_des_min).flatten()
+
+    # maxT = payload.mp*9.81 
+    # factorx = 0.1
+    # factory = 0.1
+    # factorz = 0.1
+    # maxmu = maxT*np.array([factorx, factory, factorz])
+    # minmu = -maxT*np.array([factorx, factory, factorz])
+    # if tick < 1:
+    #     print('maxT:', maxT)
+    #     print('maxmu:', maxmu)
+    #     print('minmu:', minmu)
     try:
         if payload.qp_tool == 'cvxpy':
             mu_des = cp.Variable((size,))
-            objective   = cp.Minimize((1/2)*cp.quad_form(mu_des, Q))# + payload.mu_des_prev.T@mu_des)
+            objective   = cp.Minimize((1/2)*cp.quad_form(mu_des, Q)) # + payload.mu_des_prev.T@mu_des)
             constraints = [P@mu_des == Ud,
                             Ain@mu_des - a_s <= np.zeros(Ain.shape[0]), 
+                            mu_des <= mu_des_max,
+                            mu_des >= mu_des_min,
                             ]
-
             prob = cp.Problem(objective, constraints)
             # data, chain, inverse_data = prob.get_problem_data(cp.OSQP)
             # print('data: ',data.keys())

@@ -118,6 +118,8 @@ class SharedPayload:
         self.en_qdidot = payload_params['payloadCtrl']['en_qdidot']
         self.lambda_svm = payload_params['payloadCtrl']['lambda_svm']
         self.en_accrb = payload_params['payloadCtrl']['en_accrb']
+        self.loadangles = payload_params['payloadCtrl']['optimize']['loadangles']
+        self.load = payload_params['payloadCtrl']['optimize']['load']
         self.posFrload = np.empty((1,3))
         self.posFrloaddict = {}
         self.Fd = []
