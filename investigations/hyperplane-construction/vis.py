@@ -10,8 +10,6 @@ import meshcat as mc
 import meshcat.geometry as mcg
 import meshcat.transformations as mctf
 
-optimization = True
-
 def sphericalToCartCoord(r, inc, azi, use_degrees=True):
     # r, inc, azi = spherical
     if use_degrees:
@@ -169,189 +167,87 @@ def main():
     vis["cable2"].set_object(mcg.Line(mcg.PointsGeometry(vertices), 
         material=mcg.LineBasicMaterial(linewidth=6, color=0xffffff)))
 
-    if optimization:
-        # approach 1: use a QP to find the initial hyperplane
 
-        # cvxpy
-        # distance point x to hyperplane (n,b) is: d: (n.x - b) / norm(n)
-        # so we have
-        # (n1 . p1 - b1) / |n1| >= safety_radius
-        # (n1 . p2 - b1) / |n1| <= -safety_radius
+    # point mass case
 
-        n = cp.Variable(3)
-        prob = cp.Problem(cp.Minimize(cp.norm(n)),# + 10*(n.T @ Fd)**2),
-                    [
-                        n.T @ p1 <= -1,
-                    n.T @ p2 >= 1,
-                    #   cp.norm(n) >= safety_radius,
-                    ])
+    # optimization problem
+    lambda_svm = 1000
 
-        # prob = cp.Problem(cp.Minimize(cp.norm(n) + 50000*(n.T @ Fd)**2),
-        #              [
-        #                 n.T @ p1 >= safety_radius * np.sqrt(3),
-        #               n.T @ p2 <= -safety_radius * np.sqrt(3),
-        #               # Maximum norm: sqrt(3)
-        #               n >= -1,
-        #                 n <= 1,
-        #               ])
-
-        prob.solve()
-        print(prob.value)
-        print(n.value, Fd, (n.value.T @ Fd) / np.linalg.norm(n.value))
-        print(n.value, p1, (n.value.T @ p1) / np.linalg.norm(n.value))
-        print(n.value, p2, (n.value.T @ p2) / np.linalg.norm(n.value))
-        n = n.value
-
-        print(np.dot(n, p1), np.dot(n, p2))
-        exit()
-
-
-    else:
-        # approach 2: use geometric reasoning to find the initial hyperplane
-
-        # # Basic version: use hyperplane that contains Fd and
-        # # vector perpendicular to p2-p1
-        # v1 = p2 - p1
-        # # v1 = v1 / np.linalg.norm(v1)
-        # v2 = np.array([0,0,1])
-        # v3 = np.cross(v1, v2)
-
-        # n = np.cross(Fd, v3)
-        # # n = n / np.linalg.norm(n)
-        # print(n)
-
-        # # check if hyperplane is between UAVs
-        # n_normalized = n / np.linalg.norm(n)
-        # d1 = np.dot(n_normalized, p1)
-        # d2 = np.dot(n_normalized, p2)
-        # print(d1, d2)
-        # if d1 > 0 or d2 < 0:
-        #     print("hyperplane not between UAVs!")
-
-        #     # project p1 on plane
-        #     p1_proj = p1 - d1 * n_normalized
-        #     p2_proj = p2 - d2 * n_normalized
-
-        #     v1_proj = p2_proj - p1_proj
-        #     v1_proj_normalized = v1_proj / np.linalg.norm(v1_proj)
-
-        #     axis = np.cross(n, v1)
-        #     d = np.linalg.norm((p1 - ppos) - (v1_proj_normalized*l1 - ppos))
-        #     print(d)
-        #     angle = 2 * np.arcsin(d / l1) + np.arcsin(safety_radius / l1)
-
-        #     q = rowan.from_axis_angle(axis, angle)
-        #     n = rowan.rotate(q, n)
-
-        # new idea:
-        # 1. use former geometric solution (middle of the UAVs)
-        # 2. project p_j to this plane
-        # 3. compute rotation angle of the resulting triangle -> defines max
-        # 4. project F_d to this plane
-        # 5. compute rotation angle; clip by min/max!
-
-        # n.p1 = -n.p2
-        # n.(p1+p2) = 0
-        # => n orthogonal to (p1+p2)
-
-        p0 = np.zeros(3)
-        p_ri = p1 + (p2-p1)/2
-        p_ri_0 = p_ri - p0
-        p_r_j = p_ri - p2
-        n_s = np.cross(p_ri_0, p_r_j)
-        n = np.cross(p_ri_0, n_s)
-        n = np.cross([0,1,0],p1+p2)
-        # print(np.dot(n, p1-p2))
-        # exit()
-
-        p1_proj = project_point_on_plane(n, 0, p1)
-        max_angle1 = vec_angle(p1_proj - p0, p1 - p0)
-
-        p2_proj = project_point_on_plane(n, 0, p2)
-        max_angle2 = vec_angle(p2_proj - p0, p2 - p0)
-
-
-        angle1 = np.arcsin(uav1.safety_radius / l1)
-        angle2 = np.arcsin(uav2.safety_radius / l2)
-
-        print(np.degrees(max_angle1),np.degrees(max_angle2),  np.degrees(angle1), np.degrees(angle2))
-        # exit()
-
-        Fd_proj = project_point_on_plane(n, 0, Fd)
-        Fd_angle = vec_angle(Fd_proj - p0, Fd - p0)
-        print(np.degrees(Fd_angle))
-        # exit()
-
-        # angle = np.clip(Fd_angle, -max_angle+angle2, max_angle-angle1)
-
-        axis = n_s #np.cross(n, p2-p1)
-        # q = rowan.from_axis_angle(axis, angle)
-        # n = rowan.rotate(q, n)
-
-
-
+    n = cp.Variable(3)
+    prob = cp.Problem(cp.Minimize(cp.sum_squares(n) + lambda_svm * (n.T @ Fd)**2 ),
+        [
+            n.T @ p1 <= -1,
+            n.T @ p2 >= 1,
+        ])
+    prob.solve()
+    n = n.value
 
     # tilt resulting hyperplanes (point mass case)
+    # now rotate the hyperplane in two directions to compute the two resulting hyperplanes
     axis = np.cross(n, np.array([0,0,1]))
 
-    if np.linalg.norm(axis) > 1e-6:
-        angle1 = np.arcsin(uav1.safety_radius / l1)
+    if uav1.safety_radius > 2.0 * l1:
+        n1 = n
+        a1 = 0
+    else:
+        angle1 = 2 * np.arcsin(uav1.safety_radius / (2 * l1))
         q1 = rowan.from_axis_angle(axis, angle1)
         n1 = rowan.rotate(q1, n)
         a1 = 0
 
-        angle2 = np.arcsin(uav2.safety_radius / l2)
-        q2 = rowan.from_axis_angle(axis, -angle2)
-        n2 = rowan.rotate(q2, n)
+    if uav2.safety_radius > 2.0 * l2:
+        n2 = n
         a2 = 0
     else:
-        n1 = None
-        n2 = None
+        angle2 = 2 * np.arcsin(uav2.safety_radius / (2 * l2))
+        q2 = rowan.from_axis_angle(axis, -angle2)
+        n2 = -rowan.rotate(q2, n)
+        a2 = 0
 
-    # compute per-robot hyperplanes using three points
-    point0 = p1a
-    point1 = p1a + np.cross(n1, np.array([0,0,1]))
+    # # compute per-robot hyperplanes using three points
+    # point0 = p1a
+    # point1 = p1a + np.cross(n1, np.array([0,0,1]))
 
-    # find the minimum intersection of plane and robot movement sphere
-    intersection = plane_sphere_intersection(n1, 0, p1a, l1)
-    if intersection is not None:
-        center, radius = intersection
-        print("intersection", center, radius)
-        # compute the intersection point with the highest z-value
-        v = project_point_on_plane(n1, 0, center + np.array([0,0,1])) - center
-        print("v", v)
-        v_normalized = v / np.linalg.norm(v)
-        point2 = center + v_normalized * radius
-        print(point2)
+    # # find the minimum intersection of plane and robot movement sphere
+    # intersection = plane_sphere_intersection(n1, 0, p1a, l1)
+    # if intersection is not None:
+    #     center, radius = intersection
+    #     print("intersection", center, radius)
+    #     # compute the intersection point with the highest z-value
+    #     v = project_point_on_plane(n1, 0, center + np.array([0,0,1])) - center
+    #     print("v", v)
+    #     v_normalized = v / np.linalg.norm(v)
+    #     point2 = center + v_normalized * radius
+    #     print(point2)
 
-        n1 = np.cross(point0-point1, point0-point2)
-        # n1 = n
-        a1 = np.dot(n1, p1a)
-        print(point0, point1, point2)
-    else:
-        n1 = None
+    #     n1 = np.cross(point0-point1, point0-point2)
+    #     # n1 = n
+    #     a1 = np.dot(n1, p1a)
+    #     print(point0, point1, point2)
+    # else:
+    #     n1 = None
 
-    point0 = p2a
-    point1 = p2a + np.cross(n2, np.array([0,0,1]))
+    # point0 = p2a
+    # point1 = p2a + np.cross(n2, np.array([0,0,1]))
 
-    # find the minimum intersection of plane and robot movement sphere
-    intersection = plane_sphere_intersection(n2, 0, p2a, l2)
-    if intersection is not None:
-        center, radius = intersection
-        print("intersection", center, radius)
-        # compute the intersection point with the highest z-value
-        v = project_point_on_plane(n2, 0, center + np.array([0,0,1])) - center
-        print("v", v)
-        v_normalized = v / np.linalg.norm(v)
-        point2 = center + v_normalized * radius
-        print(point2)
+    # # find the minimum intersection of plane and robot movement sphere
+    # intersection = plane_sphere_intersection(n2, 0, p2a, l2)
+    # if intersection is not None:
+    #     center, radius = intersection
+    #     print("intersection", center, radius)
+    #     # compute the intersection point with the highest z-value
+    #     v = project_point_on_plane(n2, 0, center + np.array([0,0,1])) - center
+    #     print("v", v)
+    #     v_normalized = v / np.linalg.norm(v)
+    #     point2 = center + v_normalized * radius
+    #     print(point2)
 
-        n2 = np.cross(point0-point1, point0-point2)
-        # n1 = n
-        a2 = np.dot(n2, p2a)
-        print(point0, point1, point2)
-    else:
-        n2 = None
+    #     n2 = np.cross(point0-point1, point0-point2)
+    #     # n1 = n
+    #     a2 = np.dot(n2, p2a)
+    #     print(point0, point1, point2)
+    # else:
+    #     n2 = None
 
 
 
