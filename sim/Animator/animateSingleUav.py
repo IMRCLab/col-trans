@@ -103,6 +103,12 @@ def plotPayloadStates(payload, posq, tf_sim, shared):
         if payload.pointmass:
             p  = full_state[:, 6:6+3*numOfquads]
             angVel = full_state[:,6+3*numOfquads::]
+            for i in range(p.shape[0]):
+                qidottmp = []
+                for j in range(0,3*payload.numOfquads,3):
+                    qidottmp.append(np.cross(angVel[i,j:j+3], p[i,j:j+3]))
+                qidot.append(np.array(qidottmp).reshape(3*payload.numOfquads))
+            qidot = np.array(qidot)
         else:
             p  = full_state[:, 13:13+3*numOfquads]
             angVel = full_state[:,13+3*numOfquads::]
