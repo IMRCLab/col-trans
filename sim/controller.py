@@ -742,7 +742,10 @@ def main(args, animateOrPlotdict, params):
 
                         elif payload.ctrlType == 'lee_firmware': # Firmware
                             leePayload = uavs[id].ctrlPayload
+                            leePayload.en_qdidot = payload.en_qdidot
+                            leePayload.gen_hp = payload.gen_hp
                             leePayload.mass = uavs[id].m
+                            leePayload.en_accrb = payload.en_accrb                                
                             try:
                                 leePayload, state = updateNeighbors(leePayload, state, id, uavs, payload)
                                 cffirmware.controllerLeePayload(leePayload, control, setpoint, sensors, state, tick)
@@ -854,8 +857,11 @@ def main(args, animateOrPlotdict, params):
                 hpfilepath = "output/" + fName
                 hpsfilePathsperId.append(fName)
                 with open(hpfilepath, "w") as f:
-                    np.savetxt(f, uavs[id].hpStack[hpPerId][::payload.numOfquads,:], delimiter=",")
-       
+                    if payload.optimize:
+                        np.savetxt(f, uavs[id].hpStack[hpPerId][::payload.numOfquads,:], delimiter=",")
+                    else:
+                        nanhp = np.ones(((uavs[id].fullState.shape)[0],4))
+                        np.savetxt(f, nanhp, delimiter=",")
             hpsDict[uavID] = hpsfilePathsperId
 
         ## write the config file for visualization
