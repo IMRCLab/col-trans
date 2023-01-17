@@ -219,7 +219,7 @@ if __name__ == '__main__':
                     
                     # draw normals
                     normalMat = normal[hpsKey]
-                    n_ = np.linspace(p0, n+p0, num=2).T
+                    n_ = np.linspace(p0, 0.2*n/np.linalg.norm(n)+p0, num=2).T
                     vis["n"+str(hpsKey)+id].set_object(g.Line(g.PointsGeometry(n_), material=normalMat))
             tick+=1
             time.sleep(visProps["timestep"])

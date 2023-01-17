@@ -5,6 +5,7 @@ from rowan import from_matrix, to_matrix, to_euler, from_euler
 from scipy import  integrate, linalg
 from numpy.polynomial import Polynomial as poly
 import sys
+import time
 
 def skew(w):
     w = w.reshape(3,1)
@@ -113,6 +114,10 @@ class SharedPayload:
         self.lambdaa = payload_params['payloadCtrl']['optimize']['lambda']
         self.attSetpoint   = payload_params['refAttitude']
         self.shape = payload_params['shape']
+        self.gen_hp = payload_params['payloadCtrl']['gen_hp']
+        self.en_qdidot = payload_params['payloadCtrl']['en_qdidot']
+        self.lambda_svm = payload_params['payloadCtrl']['lambda_svm']
+        self.en_accrb = payload_params['payloadCtrl']['en_accrb']
         self.posFrload = np.empty((1,3))
         self.posFrloaddict = {}
         self.Fd = []
@@ -193,7 +198,7 @@ class SharedPayload:
             qi = self.state[k:k+3]
             k+=3
             Bq[i:i+3,0:3]    = -m*skew(qi) # Lee 2018
-            Bq[i:i+3, i:i+3] = m*(l)*np.identity(3) # Lee 2018
+            Bq[i:i+3, i:i+3] = m*(l)*np.eye(3) # Lee 2018
 
             if not self.pointmass:
                 R_p = to_matrix(self.state[6:10])
@@ -259,15 +264,13 @@ class SharedPayload:
             k+=3
             
             qiqiT = qi.reshape((3,1))@(qi.T).reshape((1,3))
-        
-            u_par = qiqiT @ u_i    
-            u_inp[0:3] += u_par
+            u_inp[0:3] += u_i
             
             u_perp = ((np.eye(3) - qiqiT) @  u_i)
-            u_inp[j:j+3] =  -skew(qi) @ u_perp
+            u_inp[j:j+3] = -skew(qi) @ u_perp
 
             if not self.pointmass:
-                u_inp[3:6] += skew(posFrload)@R_p.T @ u_par
+                u_inp[3:6] += skew(posFrload)@R_p.T @ qiqiT @ u_i
             i+=1
             j+=3
         return u_inp

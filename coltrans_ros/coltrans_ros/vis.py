@@ -77,7 +77,7 @@ class VisualizationNode(Node):
 
         print(self.get_topic_names_and_types())
 
-        cfs = ['cf5', 'cf6']
+        cfs = ['cf5', 'cf6', 'cf231']
         self.cfs = cfs
         
         # initalize meshcat
@@ -93,7 +93,7 @@ class VisualizationNode(Node):
 
         # for each crazyflie, generate a 3D model, a sphere, and a hyperplane
         for cf in cfs:
-            model = mcg.StlMeshGeometry.from_file("/home/whoenig/projects/tuberlin/col-trans/sim/Animator/cf2_assembly.stl")
+            model = mcg.StlMeshGeometry.from_file("/home/khaledwahba94/imrc/col-trans/sim/Animator/cf2_assembly.stl")
             self.vis["{}_model".format(cf)].set_object(model)
 
             sphere = mcg.Mesh(mcg.Sphere(0.1), 
@@ -120,7 +120,7 @@ class VisualizationNode(Node):
         #     mcg.MeshBasicMaterial(color=0xff11dd))
         # self.vis["payload"].set_object(payload)
 
-        model = mcg.StlMeshGeometry.from_file("/home/whoenig/projects/tuberlin/col-trans/sim/Animator/Triangle_meteres_centered.stl")
+        model = mcg.StlMeshGeometry.from_file("/home/khaledwahba94/imrc/col-trans/sim/Animator/Triangle_meteres_centered.stl")
         self.vis["payload".format(cf)].set_object(model)
 
         # subscribe to ROS2 topics for data
@@ -219,7 +219,7 @@ class VisualizationNode(Node):
         a = np.dot(n, ppos)
 
         R = plane_transform(ppos, n, a)
-        self.vis["{}_hp".format(name)].set_transform(R)
+        # self.vis["{}_hp".format(name)].set_transform(R)
 
         self.vis["{}_hp2".format(name)].set_transform(R)
 
