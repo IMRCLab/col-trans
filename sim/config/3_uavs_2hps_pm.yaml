@@ -115,6 +115,7 @@ RobotswithPayload:
       en_qdidot: 0
       gen_hp: 1
       lambda_svm: 1000
+      en_accrb: 0
       optimize:
         mode: 'enabled'
         lambda: 0.0
