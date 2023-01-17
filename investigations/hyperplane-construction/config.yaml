@@ -1,5 +1,6 @@
 - name: ex2
-  Fd: [0,0,0.1]
+  Fd: [0.0,0.1,0.5]
+  Md: [0.5,0.0,0.0]
   payload:
     model: rod.stl
     rotation: [1,0,0,0]
@@ -8,18 +9,18 @@
       - [0,-0.25,0]
   uavs:
     - cable_length: 0.9 # m
-      inclination: 0 # 0-180 deg
-      azimuth: 0 # 0-360 deg
+      inclination: 10 # 0-180 deg
+      azimuth: 90 # 0-360 deg
       safety_radius: 0.15 # m
       attached: 0 # index in attachment points
     - cable_length: 0.3 # m
-      inclination: 0 # 0-180 deg
-      azimuth: 0 # 0-360 deg
+      inclination: 10 # 0-180 deg
+      azimuth: 90 # 0-360 deg
       safety_radius: 0.15 # m
       attached: 1 # index in attachement points
 
 - name: ex1
-  Fd: [0,0,0.1]
+  Fd: [0.0,0,0.1]
   payload:
     model: pointmass
     rotation: [1,0,0,0]
@@ -27,12 +28,12 @@
       - [0,0,0]
   uavs:
     - cable_length: 0.6 # m
-      inclination: 20 # 0-180 deg
+      inclination: 80 # 0-180 deg
       azimuth: 0 # 0-360 deg
       safety_radius: 0.15 # m
       attached: 0
     - cable_length: 0.9 # m
-      inclination: -20 # 0-180 deg
-      azimuth: 45 # 0-360 deg
+      inclination: -80 # 0-180 deg
+      azimuth: 0 # 0-360 deg
       safety_radius: 0.15 # m
       attached: 0
