@@ -267,22 +267,33 @@ def torqueCtrlwPayload(uavModel, fi, payload, setpoint, tick):
 
 def parallelComp(desAcc, virtualInp, uavModel, payload, j):
     ## This only includes the point mass model
-    grav = np.array([0,0,-9.81])
     acc_ = desAcc.reshape(3,) #(payload.state[3:6] - payload.prevSt[3:6])/payload.dt
-    acc0 = acc_ - grav
+    acc0 = acc_ 
+    if not payload.pointmass: 
+        R0 = rn.to_matrix(payload.state[6:10])
+        omega_skew = uav.skew(payload.state[10:13])
+        attpoint = payload.posFrloaddict[uavModel.id] 
+        acc0 += R0@omega_skew@omega_skew@attpoint
     m   = uavModel.m
     l = uavModel.lc
     qi = payload.state[j:j+3]
     wi = payload.state[j+3*payload.numOfquads:j+3+3*payload.numOfquads]   
     qiqiT = qi.reshape((3,1))@(qi.T).reshape((1,3))
+    # print(virtualInp)
     u_parallel = virtualInp + m*l*(np.dot(wi, wi))*qi  +  m*qiqiT@acc0
+    # print(acc0, m*acc0)
+    # print('u_parallel: ',u_parallel)
     return u_parallel
 
 def perpindicularComp(desAcc, desVirtInp, uavModel, payload, kq, kw, ki, j, tick):
     ## This only includes the point mass model
-    grav = np.array([0,0,-9.81])
     acc_ = desAcc.reshape(3,) #payload.accl[0:3] #(payload.state[3:6] - payload.prevSt[3:6])/payload.dt
-    acc0 = acc_ - grav
+    acc0 = acc_ 
+    if not payload.pointmass: 
+        R0 = rn.to_matrix(payload.state[6:10])
+        omega_skew = uav.skew(payload.state[10:13])
+        attpoint = payload.posFrloaddict[uavModel.id] 
+        acc0 += R0@omega_skew@omega_skew@attpoint
     qdi    = - desVirtInp/ np.linalg.norm(desVirtInp)
     if tick == 0: 
         payload.qdi_prevdict[uavModel.id] = np.zeros(3,)
@@ -433,12 +444,22 @@ def qp(uavs, payload, Ud, P, tick):
     size = 3*payload.numOfquads
     Q = np.eye(size)
     uavs, Ain, a_s = qlimit(uavs, payload, payload.numOfquads, tick)
+    maxT = 0.5*payload.mp*9.81 
+    factorx = 0.2
+    factory = 0.2
+    factorz = 0.5
+    if tick < 1:
+        print('maxT:', maxT)
+        print('uxmax:', maxT*factorx)
+        print('uymax:', maxT*factory)
+        print('uzmax:', maxT*factorz)
     try:
         if payload.qp_tool == 'cvxpy':
             mu_des = cp.Variable((size,))
-            objective   = cp.Minimize((1/2)*cp.quad_form(mu_des, Q))
+            objective   = cp.Minimize((1/2)*cp.quad_form(mu_des, Q))# + payload.mu_des_prev.T@mu_des)
             constraints = [P@mu_des == Ud,
-                            Ain@mu_des - a_s <= np.zeros(Ain.shape[0])]
+                            Ain@mu_des - a_s <= np.zeros(Ain.shape[0]), 
+                            ]
 
             prob = cp.Problem(objective, constraints)
             # data, chain, inverse_data = prob.get_problem_data(cp.OSQP)
@@ -515,7 +536,7 @@ def controllerLeePayload(uavs, id, payload, control, setpoint, sensors, state, t
     currVl  = np.array([state.payload_vel.x, state.payload_vel.y, state.payload_vel.z]).reshape((3,1))
     desPos  = np.array([setpoint.position.x, setpoint.position.y, setpoint.position.z]).reshape((3,1))
     desVl   = np.array([setpoint.velocity.x, setpoint.velocity.y, setpoint.velocity.z]).reshape((3,1))    
-    desAcc  = np.array([setpoint.acceleration.x, setpoint.acceleration.y, setpoint.acceleration.z]).reshape((3,1))
+    desAcc  = np.array([setpoint.acceleration.x, setpoint.acceleration.y, setpoint.acceleration.z + 9.81]).reshape((3,1))
     desjerk = np.array([setpoint.jerk.x, setpoint.jerk.y, setpoint.jerk.z]).reshape((3,))
     dessnap = np.array([setpoint.snap.x, setpoint.snap.y, setpoint.snap.z]).reshape((3,))
     ep = (currPos - desPos)
@@ -524,9 +545,8 @@ def controllerLeePayload(uavs, id, payload, control, setpoint, sensors, state, t
     payload.i_error = payload.i_error.reshape((3,1)) + payload.dt * ep
     ei = payload.i_error.reshape((3,1))
     mp  = payload.mp 
-    gravComp = np.array([0,0,9.81]).reshape((3,1))
 
-    Fd = mp * (- kp @ ep - kd @ ev + desAcc + gravComp)
+    Fd = mp * (- kp @ ep - kd @ ev + desAcc)
     payload.Fd = Fd.reshape(3,)
     qi = payload.state[j:j+3]
     wi = payload.state[j+3*payload.numOfquads:j+3+3*payload.numOfquads]
@@ -539,7 +559,6 @@ def controllerLeePayload(uavs, id, payload, control, setpoint, sensors, state, t
         Rdp = rn.to_matrix([setpoint.attitudeQuaternion.w, setpoint.attitudeQuaternion.x, setpoint.attitudeQuaternion.y, setpoint.attitudeQuaternion.z])
     wdp = np.zeros(3,)
     Ud = Fd.copy()
-
     if not payload.pointmass: 
         Rp = rn.to_matrix(payload.state[6:10])
         rows = 6
