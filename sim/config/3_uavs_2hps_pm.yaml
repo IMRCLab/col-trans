@@ -121,6 +121,8 @@ RobotswithPayload:
         lambda: 0.0
         qp  : 'osqp'
         downwashAware: true
+        loadangles: [-1, -1, -1] #[degrees]
+        load: [-1, -1, -1] #[g]
       offset: [0.0, 0.0, 0.0]
       gains:
         ctrlLee:

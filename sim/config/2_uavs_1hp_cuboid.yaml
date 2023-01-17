@@ -117,6 +117,8 @@ RobotswithPayload:
         lambda: 1.0
         qp  : 'osqp'
         downwashAware: true
+        loadangles: [-1, -1] #[degrees]
+        load: [-1, -1] #[g]
       en_qdidot: 0
       gen_hp: 1
       en_accrb: 1
