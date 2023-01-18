@@ -744,6 +744,7 @@ def main(args, animateOrPlotdict, params):
                             leePayload = uavs[id].ctrlPayload
                             leePayload.en_qdidot = payload.en_qdidot
                             leePayload.gen_hp = payload.gen_hp
+                            leePayload.lambda_svm = payload.lambda_svm
                             leePayload.mass = uavs[id].m
                             leePayload.en_accrb = payload.en_accrb                                
                             try:
