@@ -119,7 +119,7 @@ RobotswithPayload:
       optimize:
         mode: 'enabled'
         lambda: 0.0
-        qp  : 'osqp'
+        qp  : 'cvxpy'
         downwashAware: true
         loadangles: [30, -1] #[degrees]
         load: [1, -1] #[g]
