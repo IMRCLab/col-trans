@@ -279,10 +279,7 @@ def parallelComp(desAcc, virtualInp, uavModel, payload, j):
     qi = payload.state[j:j+3]
     wi = payload.state[j+3*payload.numOfquads:j+3+3*payload.numOfquads]   
     qiqiT = qi.reshape((3,1))@(qi.T).reshape((1,3))
-    # print(virtualInp)
     u_parallel = virtualInp + m*l*(np.dot(wi, wi))*qi  +  m*qiqiT@acc0
-    # print(acc0, m*acc0)
-    # print('u_parallel: ',u_parallel)
     return u_parallel
 
 def perpindicularComp(desAcc, desVirtInp, uavModel, payload, kq, kw, ki, j, tick):
@@ -330,8 +327,82 @@ def normVec(n):
         return n / normn
     
     raise ValueError('norm of the vector is zero!')
-    
-def qlimit(uavs, payload, numofquads, tick):
+
+def genHP(uavs, payload, numofquads, tick, Fd):
+        ids = list(uavs.keys())
+        pairsinIds = list(permutations(ids, 2))
+        hpstmp = {}
+        ids = list(uavs.keys())
+        allPairs = {}
+        for i in ids:
+            idstmp = ids.copy()
+            idstmp.remove(i)
+            allPairs[i] = idstmp
+        for pairs, id in zip(allPairs.items(), uavs.keys()):
+            toPairwith = pairs[1]
+            numsofHplaneperId = uavs[id].hpNums 
+            for hpIds in uavs.keys():
+                hpstmp[id] = np.empty((1,4))
+            p0 = payload.state[0:3]
+
+            for topair, hplaneId in zip(toPairwith, range(numsofHplaneperId)):
+                pair = [id, topair]
+                p1 = uavs[pair[0]].state[0:3]
+                p2 = uavs[pair[1]].state[0:3]
+                lambda_svm = payload.lambda_svm
+                r = uavs[id].radius
+                n = cp.Variable(3)
+                prob = cp.Problem(cp.Minimize(cp.sum_squares(n) + lambda_svm * (n.T @ Fd)**2 ),
+                            [
+                                n.T @ p1 <= -1,
+                                n.T @ p2 >= 1,
+                            ])
+                prob.solve()
+                n = n.value
+                axis = np.cross(n, np.array([0,0,1]))
+                if (r > 2*uavs[pair[0]].lc) :
+                    n_sol = n
+                else:
+                    angle = 2*np.arcsin(r/(2*uavs[pair[0]].lc))
+                    q = rn.from_axis_angle(axis, angle)
+                    n_sol = rn.rotate(q, n)
+                a_sol = 0
+                hp = hyperplane(n_sol, a_sol)
+                uavs[id].addHp(hplaneId, hp)
+                hpstmp[id] = np.vstack((hpstmp[id], uavs[id].hp_prev[hplaneId]))
+
+        totalNumofHps = 0
+        for id in uavs.keys():
+            totalNumofHps += uavs[id].hpNums
+        A = np.zeros((totalNumofHps, 3*numofquads))
+        
+        for hptmpIds in hpstmp.keys():
+            hpstmp[hptmpIds] = np.delete(hpstmp[hptmpIds], 0,0)
+
+
+        n_stack = np.empty((1,3))
+        a_s = np.empty(1,)
+        
+        for hptmpIds in hpstmp.keys():
+            normals  = (hpstmp[hptmpIds])[:,0:3]
+            a_sts    = (hpstmp[hptmpIds])[:,3]
+            for m in range(len(normals)):
+                n_stack = np.vstack(( n_stack, (normals[m]).reshape((1,3)) ))
+                a_s     = np.vstack((a_s, a_sts[m]))
+       
+        a_s     = np.delete(a_s,0,0)
+        a_s = a_s.flatten()
+        n_stack = np.delete(n_stack,0,0)
+        j, k = 0, 0   
+        
+        for id, normals in hpstmp.items():
+            for normal in normals:
+                A[k, j:j+3] = normal[0:3]
+                k+=1
+            j+=3
+        return uavs, A, a_s
+
+def genOldHyperplane(uavs, payload, numofquads, tick):
     try:
         ids = list(uavs.keys())
         pairsinIds = list(permutations(ids, 2))
@@ -437,13 +508,21 @@ def qlimit(uavs, payload, numofquads, tick):
         print(f"Unexpected {e=}, {type(e)=}")
         print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno), type(e).__name__, e)
         print('pair: ', pair)
-        raise
         
 
 def qp(uavs, payload, Ud, P, tick):
     size = 3*payload.numOfquads
     Q = np.eye(size)
-    uavs, Ain, a_s = qlimit(uavs, payload, payload.numOfquads, tick)
+    if payload.pointmass: 
+        if payload.gen_hp == 1: 
+            uavs, Ain, a_s = genHP(uavs, payload, payload.numOfquads, tick, Ud)
+        elif payload.gen_hp == 0:
+            uavs, Ain, a_s = genOldHyperplane(uavs, payload, payload.numOfquads, tick)
+        else:
+            print('please set the correct gen_hp')
+            exit()
+    else:
+        uavs, Ain, a_s = genOldHyperplane(uavs, payload, payload.numOfquads, tick)
     loadangles = payload.loadangles
     loads = payload.load
     mu_des_min = []
@@ -464,21 +543,10 @@ def qp(uavs, payload, Ud, P, tick):
         mu_des_min.append(mu_min_tmp)
     mu_des_max = np.array(mu_des_max).flatten()
     mu_des_min = np.array(mu_des_min).flatten()
-
-    # maxT = payload.mp*9.81 
-    # factorx = 0.1
-    # factory = 0.1
-    # factorz = 0.1
-    # maxmu = maxT*np.array([factorx, factory, factorz])
-    # minmu = -maxT*np.array([factorx, factory, factorz])
-    # if tick < 1:
-    #     print('maxT:', maxT)
-    #     print('maxmu:', maxmu)
-    #     print('minmu:', minmu)
     try:
         if payload.qp_tool == 'cvxpy':
             mu_des = cp.Variable((size,))
-            objective   = cp.Minimize((1/2)*cp.quad_form(mu_des, Q)) # + payload.mu_des_prev.T@mu_des)
+            objective   = cp.Minimize((1/2)*cp.quad_form(mu_des, Q) + payload.mu_des_prev.T@mu_des)
             constraints = [P@mu_des == Ud,
                             Ain@mu_des - a_s <= np.zeros(Ain.shape[0]), 
                             mu_des <= mu_des_max,
@@ -489,8 +557,24 @@ def qp(uavs, payload, Ud, P, tick):
             # print('data: ',data.keys())
             # for key in data.keys():
             #     print(key, '\n', data[key],'\n')
+            if tick % 1000 == 0:
+                print('box: ',mu_des_max)
+                print()
             prob.solve(verbose=False, solver='OSQP')
-            mu_des = mu_des.value 
+            mu_des = mu_des.value
+            try: 
+                if mu_des.any() == None:
+                    raise
+                if tick % 1000 == 0:
+                    for i in range(0,3*payload.numOfquads,3):
+                        print('norm of mu_des [grams] '+str(i),(np.linalg.norm(mu_des[i:i+3])/9.81)*1000)
+                    print()
+
+            except Exception as e:
+                print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno), type(e).__name__, e)
+                print('QP returns None')
+                print('norm of mu_des',(np.linalg.norm(payload.mu_des_prev[0:3])/9.81)*1000)
+
         elif payload.qp_tool == 'osqp':
             A     = sparse.vstack((P, sparse.csc_matrix(Ain)), format='csc') 
             Q     = sparse.csc_matrix(Q)
