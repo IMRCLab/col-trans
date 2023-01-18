@@ -107,10 +107,10 @@ RobotswithPayload:
     init_linV_L : [0,   0,    0]
     init_angle  : [0,   0,    0]
     wl          : [0,   0,    0]
-    refTrajPath: 'trajectoriescsv/figure8.csv' #linTraj_traj.csv #cirTraj1.csv
+    refTrajPath: 'trajectoriescsv/hover_01.csv' #linTraj_traj.csv #cirTraj1.csv
     refAttitude: [0, 0, 0] # attitude setpoint in euler angles (degrees) 
     payloadCtrl:
-      name: 'lee_firmware'
+      name: 'lee'
       payloadLead: 'enabled'
       en_qdidot: 0
       gen_hp: 1
@@ -161,9 +161,9 @@ RobotswithPayload:
           kqx  :  14.0 #6.0 #25.0 #10.0 #25.0 #35.0 #3.0 #10.0 #30.0 #25.0 
           kqy  :  14.0 #6.0 #25.0 #10.0 #25.0 #35.0 #3.0 #10.0 #30.0 #25.0 
           kqz  :  14.0 #6.0 #25.0 #10.0 #25.0 #35.0 #3.0 #10.0 #30.0 #25.0 
-          kwcx :   4.0 #2.0 #24.0 #22.0 #34.0 #1.0 #28.0 #24.0  
-          kwcy :   4.0 #2.0 #24.0 #22.0 #34.0 #1.0 #28.0 #24.0  
-          kwcz :   4.0 #2.0 #24.0 #22.0 #34.0 #1.0 #28.0 #24.0  
+          kwcx :   8.0 #2.0 #24.0 #22.0 #34.0 #1.0 #28.0 #24.0  
+          kwcy :   8.0 #2.0 #24.0 #22.0 #34.0 #1.0 #28.0 #24.0  
+          kwcz :   8.0 #2.0 #24.0 #22.0 #34.0 #1.0 #28.0 #24.0  
   Robots:
     cf4: 
       type : 'cf21'
@@ -242,8 +242,8 @@ RobotswithPayload:
         kix  : 0.02
         kiy  : 0.02
         kiz  : 0.02     
-      l_c  : 0.27 #0.754 #0.707 # Length of cable
-      q_dg : [25, 0, 0]  # [0, 0, 0]  # Initial angle between UAV and payload
+      l_c  : 0.5 #0.754 #0.707 # Length of cable
+      q_dg : [30, 0, 0]  # [0, 0, 0]  # Initial angle between UAV and payload
       qd   : [0, 0, 0]  # Initial angle derivates between UAV and payload (i.e., of cables)
       pos_fr_payload: [-0.041, -0.0355, 0] #[-0.2241, -0.1294, 0] #[-0.1294, 0.2241, 0] #position vector of the cable on the load (i.e., zero vector means a point mass)
       initConditions:
@@ -267,5 +267,5 @@ environment:
     Kd: [0,0,0]
 ## Simulation parameters 
 dt : 1e-3 # time step
-simtime: 5.522e3 #  This is added (or subtracted) from the total trajectory time defined in the csv file
+simtime: 1.02e3 #  This is added (or subtracted) from the total trajectory time defined in the csv file
 sample: 250 #frames per second
