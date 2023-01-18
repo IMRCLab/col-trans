@@ -558,10 +558,6 @@ def qp(uavs, payload, Ud, P, tick):
                 mu_ref = np.array(mu_ref).flatten()
             else: 
                 mu_ref = np.zeros(size,)
-            if tick % 1000 == 0:
-                print('tick:', tick)
-                print('mu_ref: ', mu_ref)
-                print()
             factor = -2.0 * payload.lambdaa / (1 + payload.lambdaa)
             objective   = cp.Minimize((1/2)*cp.quad_form(mu_des, Q) + factor*mu_ref.T@mu_des)
             constraints = [P@mu_des == Ud,
@@ -574,22 +570,11 @@ def qp(uavs, payload, Ud, P, tick):
             # print('data: ',data.keys())
             # for key in data.keys():
             #     print(key, '\n', data[key],'\n')
-            if tick % 1000 == 0:
-                print('boxmax: ',mu_des_max)
-                print('boxmin: ',mu_des_min)
-                print()
             prob.solve(verbose=False, solver='OSQP')
             mu_des = mu_des.value
             try: 
                 if mu_des.any() == None:
                     raise
-                if tick % 1000 == 0:
-                    for i in range(0,3*payload.numOfquads,3):
-                        print('norm of mu_des [grams] '+str(i),(np.linalg.norm(mu_des[i:i+3])/9.81)*1000)
-                    print()
-                    print('mu_des: ', mu_des)
-                    print()
-
             except Exception as e:
                 print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno), type(e).__name__, e)
                 print('QP returns None')
