@@ -202,25 +202,29 @@ if __name__ == '__main__':
                     hp = hpsPerId[hpsKey][tick,:]
                     n = hp[0:3]
                     a = hp[-1]
-                    R = tf.identity_matrix()
-                    z_fixed = [0,0,1]
-                    z = normVec(n)
-                    q = rn.vector_vector_rotation(z_fixed, z) 
-                    R1 = rn.to_matrix(q)
-                    R[:3, 0] = R1[:,0]
-                    R[:3, 1] = R1[:,1]
-                    R[:3, 2] = R1[:,2]
-                    R[:3, 3] = p0
-                    planeObj = hplanePerId[hpsKey][0]
-                    planeMat = hplanePerId[hpsKey][1]
+                    if np.linalg.norm(n) > 0:
+                        R = tf.identity_matrix()
+                        z_fixed = [0,0,1]
+                        z = normVec(n)
+                        q = rn.vector_vector_rotation(z_fixed, z) 
+                        R1 = rn.to_matrix(q)
+                        R[:3, 0] = R1[:,0]
+                        R[:3, 1] = R1[:,1]
+                        R[:3, 2] = R1[:,2]
+                        R[:3, 3] = p0
+                        planeObj = hplanePerId[hpsKey][0]
+                        planeMat = hplanePerId[hpsKey][1]
 
-                    vis["p"+str(hpsKey)+id].set_object(planeObj, planeMat)
-                    vis["p"+str(hpsKey)+id].set_transform(R)
-                    
-                    # draw normals
-                    normalMat = normal[hpsKey]
-                    n_ = np.linspace(p0, 0.2*n/np.linalg.norm(n)+p0, num=2).T
-                    vis["n"+str(hpsKey)+id].set_object(g.Line(g.PointsGeometry(n_), material=normalMat))
+                        vis["p"+str(hpsKey)+id].set_object(planeObj, planeMat)
+                        vis["p"+str(hpsKey)+id].set_transform(R)
+                        
+                        # draw normals
+                        normalMat = normal[hpsKey]
+                        n_ = np.linspace(p0, 0.2*n/np.linalg.norm(n)+p0, num=2).T
+                        vis["n"+str(hpsKey)+id].set_object(g.Line(g.PointsGeometry(n_), material=normalMat))
+                    else:
+                        vis["p"+str(hpsKey)+id].delete()
+                        vis["n"+str(hpsKey)+id].delete()
             tick+=1
             time.sleep(visProps["timestep"])
                   
