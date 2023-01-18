@@ -546,7 +546,24 @@ def qp(uavs, payload, Ud, P, tick):
     try:
         if payload.qp_tool == 'cvxpy':
             mu_des = cp.Variable((size,))
-            objective   = cp.Minimize((1/2)*cp.quad_form(mu_des, Q) + payload.mu_des_prev.T@mu_des)
+            if payload.desFormFlag == 0:
+                mu_ref = payload.mu_des_prev
+            elif payload.desFormFlag == 1:
+                qirefs = payload.desiredFormation
+                mu_ref = []
+                for qiref in qirefs:
+                    qref = rn.to_matrix(rn.from_euler(np.radians(qiref[1]), np.radians(qiref[2]), np.radians(qiref[3]), convention='xyz',axis_type='extrinsic')) @ np.array([0,0,1])
+                    mu_mag = payload.mp*9.81*qiref[0]
+                    mu_ref.append(mu_mag*qref)
+                mu_ref = np.array(mu_ref).flatten()
+            else: 
+                mu_ref = np.zeros(size,)
+            if tick % 1000 == 0:
+                print('tick:', tick)
+                print('mu_ref: ', mu_ref)
+                print()
+            factor = -2.0 * payload.lambdaa / (1 + payload.lambdaa)
+            objective   = cp.Minimize((1/2)*cp.quad_form(mu_des, Q) + factor*mu_ref.T@mu_des)
             constraints = [P@mu_des == Ud,
                             Ain@mu_des - a_s <= np.zeros(Ain.shape[0]), 
                             mu_des <= mu_des_max,
@@ -558,7 +575,8 @@ def qp(uavs, payload, Ud, P, tick):
             # for key in data.keys():
             #     print(key, '\n', data[key],'\n')
             if tick % 1000 == 0:
-                print('box: ',mu_des_max)
+                print('boxmax: ',mu_des_max)
+                print('boxmin: ',mu_des_min)
                 print()
             prob.solve(verbose=False, solver='OSQP')
             mu_des = mu_des.value
@@ -568,6 +586,8 @@ def qp(uavs, payload, Ud, P, tick):
                 if tick % 1000 == 0:
                     for i in range(0,3*payload.numOfquads,3):
                         print('norm of mu_des [grams] '+str(i),(np.linalg.norm(mu_des[i:i+3])/9.81)*1000)
+                    print()
+                    print('mu_des: ', mu_des)
                     print()
 
             except Exception as e:
