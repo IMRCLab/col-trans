@@ -30,24 +30,8 @@ Where,
 # Aineq = sparse.csc_matrix([[ 0.01938242, -0.10992316, 0.04000876, 0, 0, 0],
 #                            [ 0, 0, 0, -0.01938242, 0.10992316, 0.04000876]])
 
-Aineq = sparse.csc_matrix([[ -0.15691592, -0.23329555,  0.06665812,  0.        ,  0.        ,  0.         ,  0.        ,  0.        ,  0.        ],
-                            [ 0.15691592, -0.23329555,  0.06665812,  0.        ,  0.        ,  0.         ,  0.        ,  0.        ,  0.        ],
-                            [ 0.,          0.        ,  0.        , 0.12358678 , 0.25253869 , 0.06665937  ,  0.        ,  0.        ,  0.        ],
-                            [ 0.,          0.        ,  0.        , 0.28050056, -0.01924231 ,  0.06665733 ,  0.        ,  0.        ,  0.        ],
-                            [ 0.,          0.        ,  0.        ,  0.        ,  0.        ,  0.         ,  -0.12358678,  0.25253869, 0.06665937],
-                            [ 0.,          0.        ,  0.        ,  0.        ,  0.        ,  0.         , -0.28050056, -0.01924231,  0.06665733]])
-
-allocMatrix = np.zeros((6, 9)) # AllocMatrix@mu = Fd
-attachmentPoints = [
-    [-0.041,  0.0355, 1],
-    [-0.041, -0.0355, 1],
-    [0.041,  -0.0355, 1]
-]
-k = 0
-for i in range(0,9,3):
-    allocMatrix[0:3,i:i+3] = np.eye(3)
-    allocMatrix[3::,i:i+3] = skew(np.array(attachmentPoints[k]))
-    k+=1
+Aineq = sparse.csc_matrix(np.ones((6,9)))
+allocMatrix = np.ones((6,9))
 Aeq   = allocMatrix
 # A matrix
 A = sparse.vstack((Aeq, Aineq), format='csc') 
@@ -57,12 +41,11 @@ P = sparse.csc_matrix(np.eye(9))
 q = np.zeros(9)
 # lower bound--> [Fd, -np.inf*ones(2,)]
 # set Fd to [0,0,0.0981] -->[0,0,mass*gravity]: mass of payload = 0.01 kg, gravity: 9.81 m/s^2
-l = np.hstack(([0,0,0.0981, 0, 0, 0], -np.inf*np.ones(6,)))
-u = np.hstack(([0,0,0.0981, 0, 0, 0], np.zeros(6,)))
+l = np.hstack((np.ones(6,), -np.inf*np.ones(6,)))
+u = np.hstack((np.ones(6,), np.zeros(6,)))
 
 # Create an OSQP object
 prob = osqp.OSQP()
-
 # Setup workspace and change alpha parameter
 prob.setup(P, q, A, l, u, alpha=1.0)
 
