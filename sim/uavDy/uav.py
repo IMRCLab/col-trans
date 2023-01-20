@@ -272,7 +272,7 @@ class SharedPayload:
             u_inp[0:3] += u_i
             
             u_perp = ((np.eye(3) - qiqiT) @  u_i)
-            u_inp[j:j+3] = -skew(qi) @ u_perp
+            u_inp[j:j+3] = -skew(qi) @ u_i
 
             if not self.pointmass:
                 u_inp[3:6] += skew(posFrload)@R_p.T @ qiqiT @ u_i
