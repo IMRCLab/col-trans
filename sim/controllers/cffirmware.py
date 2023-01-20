@@ -296,6 +296,8 @@ def perpindicularComp(desAcc, desVirtInp, uavModel, payload, kq, kw, ki, j, tick
         payload.qdi_prevdict[uavModel.id] = np.zeros(3,)
     dt = 1/500 #attitude rate
     qdidot = np.zeros(3,)  #(qdi - payload.qdi_prevdict[uavModel.id])/dt
+    if payload.en_qdidot == 1:
+        qdidot = (qdi - payload.qdi_prevdict[uavModel.id])/dt
     payload.qdi_prevdict[uavModel.id] = qdi.copy()
     
     m   = uavModel.m
@@ -583,7 +585,7 @@ def qp(uavs, payload, Ud, P, tick):
         elif payload.qp_tool == 'osqp':
             A     = sparse.vstack((P, sparse.csc_matrix(Ain)), format='csc') 
             Q     = sparse.csc_matrix(Q)
-            q     = payload.mu_des_prev
+            q     = -payload.mu_des_prev
             l     = np.hstack([Ud, -np.inf*np.ones(Ain.shape[0],)])
             u     = np.hstack([Ud, a_s])
             prob = osqp.OSQP()
@@ -677,6 +679,7 @@ def controllerLeePayload(uavs, id, payload, control, setpoint, sensors, state, t
         erp = 0.5* flatten(Rdp.T @ Rp - Rp.T @ Rdp)
         ewp = payload.state[10:13] - Rp.T @ Rdp @ wdp
         Md = -krp@erp - kwp@ewp #+ uav.skew(Rp.T @ Rdp @ wdp) @ payload.J @ Rp.T @ Rdp @ wdp 
+        payload.Md = Md.reshape(3,)
         Ud = np.array([Rp.T @ Fd.reshape(3,), Md]).reshape(6,)
     quadNums = payload.numOfquads
     P = np.zeros((rows, 3*quadNums))

@@ -125,6 +125,7 @@ class SharedPayload:
         self.posFrload = np.empty((1,3))
         self.posFrloaddict = {}
         self.Fd = []
+        self.Md = []
         if self.optimize == 'enabled':
             self.optimize == True
         else: 

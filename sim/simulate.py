@@ -680,8 +680,10 @@ def main(args, animateOrPlotdict, params):
                 
         Fddict = {}
         ui_s = {}
+        Mddict= {}
         for id in uavs.keys():
             Fddict[id] = []
+            Mddict[id] = []
             ui_s[id] = []
         for tick in range(0, int(tf_sim)+1):
             j = plStSize
@@ -730,6 +732,7 @@ def main(args, animateOrPlotdict, params):
                             try:
                                 uavs, payload, control, des_w, des_wd = cffirmware.controllerLeePayload(uavs, id, payload, control, setpoint, sensors, state, tick, j)
                                 Fddict[id].append(payload.Fd)
+                                Mddict[id].append(payload.Md)
                                 ui_s[id].append(np.array([control.u_all[0], control.u_all[1], control.u_all[2]]))
                                 ref_state = np.append(ref_state, np.array([des_w, des_wd]).reshape(6,), axis=0)
                             except Exception as e:
@@ -751,6 +754,8 @@ def main(args, animateOrPlotdict, params):
                                 leePayload, state = updateNeighbors(leePayload, state, id, uavs, payload)
                                 cffirmware.controllerLeePayload(leePayload, control, setpoint, sensors, state, tick)
                                 Fddict[id].append(np.array([leePayload.F_d.x, leePayload.F_d.y, leePayload.F_d.z]))
+                                if not payload.pointmass:
+                                    Mddict[id].append(np.array([leePayload.M_d.x, leePayload.M_d.y, leePayload.M_d.z]))
                                 ui_s[id].append(np.array([control.u_all[0], control.u_all[1], control.u_all[2]]))
                                 uavs, desVirtInp_i = udpateHpsAndmu(id, uavs, leePayload, payload.numOfquads-1)
                                 desVirtInp.append(desVirtInp_i)
