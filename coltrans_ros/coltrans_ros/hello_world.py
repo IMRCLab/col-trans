@@ -27,24 +27,26 @@ def main():
 
     #### set controller to lee for take off
     # print('take off with lee controller')
+    allcfs.setParam('usd.logging', 1)
 
-    for cf in allcfs.crazyflies:
-        cf.setParam('stabilizer.controller', 6)
+    allcfs.setParam('stabilizer.controller', 7)
+    timeHelper.sleep(2.0)
+
     ## take off 
-    allcfs.takeoff(targetHeight=UAVSHEIGHT, duration=3.0)
+    allcfs.takeoff(targetHeight=HEIGHT, duration=3.0)
     timeHelper.sleep(5.0)
     ####
 
     ## start the QP lee Payload controller for hovering
 
-    print('start hovering with QP lee payload')
-    for cf in allcfs.crazyflies:
-        cf.setParam('stabilizer.controller', 7)
-        cf.setParam("usd.logging", 1)
+    # print('start hovering with QP lee payload')
+    # allcfs.setParam('stabilizer.controller', 7)
+    # allcfs.setParam('usd.logging', 1)
+
     
     # timeHelper.sleep(20.0)
     # print("WARNING")
-    # timeHelper.sleep(2.0)
+    timeHelper.sleep(2.0)
 
     # allcfs.takeoff(targetHeight=HEIGHT, duration=5.0)
     # timeHelper.sleep(6.0)
@@ -64,14 +66,16 @@ def main():
     timeHelper.sleep(5.0)
 
     # Switch to another controller, so that the setpoint is not the payload
-    for cf in allcfs.crazyflies:
-        cf.setParam("usd.logging", 0)
-        cf.setParam('stabilizer.controller', 6)
+    # allcfs.setParam('usd.logging', 0)
+    allcfs.setParam('stabilizer.controller', 6)
+
     timeHelper.sleep(2.0)
 
     # Land!
     allcfs.land(targetHeight=0.02, duration=3.0)
     timeHelper.sleep(3.0)
+    allcfs.setParam('usd.logging', 0)
+
 
 
 if __name__ == "__main__":

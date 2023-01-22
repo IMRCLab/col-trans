@@ -221,25 +221,25 @@ all:
       mass: 0.034
       
       # payload properties
-      massP: 0.0104 # 3 UAV pointmass case
+      massP: 0.01 # 3 UAV pointmass case
 
       ap0id: 5
       ap0x: 0.0
       ap0y: 0.0
       ap0z: 0.0
-      ap0l: 0.51 # manual cable length
+      ap0l: 0.5 # manual cable length
 
       ap1id: 6
       ap1x: 0.0
       ap1y: 0.0
       ap1z: 0.0
-      ap1l: 0.62 # manual cable length
+      ap1l: 0.5 # manual cable length
 
-      ap1id: 231
-      ap1x: 0.0
-      ap1y: 0.0
-      ap1z: 0.0
-      ap1l: 0.31 # manual cable length
+      ap2id: 231
+      ap2x: 0.0
+      ap2y: 0.0
+      ap2z: 0.0
+      ap2l: 0.5 # manual cable length
 
       Kpos_P_limit: 100.0 #0.5 #0.5
       Kpos_D_limit: 100.0 #0.1 #0.1
@@ -268,7 +268,7 @@ all:
     # led:
     #   bitmask: 128s
   firmware_logging:
-    enabled: true
+    enabled: false
     default_topics:
      # remove to disable default topic
       pose:

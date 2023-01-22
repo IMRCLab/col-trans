@@ -1,6 +1,8 @@
 import osqp
 import numpy as np
 from scipy import sparse
+from postprocessing import postprocess
+
 np.set_printoptions(linewidth=np.inf)
 np.set_printoptions(suppress=True)
 
@@ -27,10 +29,13 @@ Where,
 """
 
 # Aineq: Aineq@mu <= np.zeros(2,) --> Hand crafted plane constraints 
-# Aineq = sparse.csc_matrix([[ 0.01938242, -0.10992316, 0.04000876, 0, 0, 0],
-#                            [ 0, 0, 0, -0.01938242, 0.10992316, 0.04000876]])
+Aineq = sparse.csc_matrix([[ 1.,          0.93969262,  0.34202014,  0.        ,  0.        ,  0.        ,  0.        ,  0.        ,  0.        ],
+                            [ 2.,         -0.8660254 , -0.5       ,  0.        ,  0.        ,  0.        ,  0.        ,  0.        ,  0.        ],
+                            [ 0.,          0.        ,  0.        , -0.81379768, -0.46984631,  0.34202014,  0.        ,  0.        ,  0.        ],
+                            [ 0.,          0.        ,  0.        ,  0.75      ,  0.4330127 , -0.5       ,  0.        ,  0.        ,  0.        ],
+                            [ 0.,          0.        ,  0.        ,  0.        ,  0.        ,  0.        ,  0.81379768, -0.46984631,  0.34202014],
+                            [ 0.,          0.        ,  0.        ,  0.        ,  0.        ,  0.        , -0.70940648,  0.40957602, -0.57357644]])
 
-Aineq = sparse.csc_matrix(np.ones((6,9)))
 allocMatrix = np.ones((6,9))
 Aeq   = allocMatrix
 # A matrix
@@ -56,6 +61,9 @@ prob.codegen("cffirmware_osqp/src/generated",
     force_rewrite=True,
     FLOAT=True,
     LONG=False)
+
+# export
+postprocess("3uav_2hp_rig", "../crazyflie-firmware/src/lib/osqp/src/osqp/workspace_3uav_2hp_rig.c")
 
 # Solve problem
 res = prob.solve()

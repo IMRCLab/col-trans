@@ -73,29 +73,29 @@ class TeleopNode(Node):
             req.parameters = [Parameter(name=param_name, value=param_value)]
             self.setParamsServiceServer.call_async(req)
 
-            param_name = "all.params.usd.logging"
-            value = 1
-            param_type = ParameterType.PARAMETER_INTEGER
-            param_value = ParameterValue(type=param_type, integer_value=int(value))
-            req = SetParameters.Request()
-            req.parameters = [Parameter(name=param_name, value=param_value)]
-            self.setParamsServiceServer.call_async(req)
+            # param_name = "all.params.usd.logging"
+            # value = 1
+            # param_type = ParameterType.PARAMETER_INTEGER
+            # param_value = ParameterValue(type=param_type, integer_value=int(value))
+            # req = SetParameters.Request()
+            # req.parameters = [Parameter(name=param_name, value=param_value)]
+            # self.setParamsServiceServer.call_async(req)
 
-            # switch to manual teleoperation after some time
-            if self.timer is None:
-                self.timer = self.create_timer(2.0, self.timer_callback)
+            # # switch to manual teleoperation after some time
+            # if self.timer is None:
+            #     self.timer = self.create_timer(2.0, self.timer_callback)
 
 
         # land: switch back to regular lee controller!
         if msg.buttons[6] == 1:
-            # stop logging
-            param_name = "all.params.usd.logging"
-            value = 0
-            param_type = ParameterType.PARAMETER_INTEGER
-            param_value = ParameterValue(type=param_type, integer_value=int(value))
-            req = SetParameters.Request()
-            req.parameters = [Parameter(name=param_name, value=param_value)]
-            self.setParamsServiceServer.call_async(req)
+            # # stop logging
+            # param_name = "all.params.usd.logging"
+            # value = 0
+            # param_type = ParameterType.PARAMETER_INTEGER
+            # param_value = ParameterValue(type=param_type, integer_value=int(value))
+            # req = SetParameters.Request()
+            # req.parameters = [Parameter(name=param_name, value=param_value)]
+            # self.setParamsServiceServer.call_async(req)
 
             # for cf in self.cfs:
             param_name = "all.params.stabilizer.controller"

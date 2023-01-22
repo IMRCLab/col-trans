@@ -1,6 +1,8 @@
 import osqp
 import numpy as np
 from scipy import sparse
+from postprocessing import postprocess
+
 np.set_printoptions(linewidth=np.inf)
 np.set_printoptions(suppress=True)
 
@@ -27,10 +29,9 @@ Where,
 """
 
 # Aineq: Aineq@mu <= np.zeros(2,) --> Hand crafted plane constraints 
-# Aineq = sparse.csc_matrix([[ 0.01938242, -0.10992316, 0.04000876, 0, 0, 0],
-#                            [ 0, 0, 0, -0.01938242, 0.10992316, 0.04000876]])
+Aineq = sparse.csc_matrix([[ 0.01938242, -0.10992316, 0.04000876, 0, 0, 0],
+                           [ 0, 0, 0, -0.01938242, 0.10992316, 0.04000876]])
 
-Aineq = sparse.csc_matrix(np.ones((2,6)))
 allocMatrix = np.zeros((6, 6)) # AllocMatrix@mu = Fd
 attachmentPoints = [
     [-0.041,  0.0355, 1],
@@ -65,6 +66,10 @@ prob.codegen("cffirmware_osqp/src/generated",
     force_rewrite=True,
     FLOAT=True,
     LONG=False)
+
+# export
+postprocess("2uav_1hp_rod", "../crazyflie-firmware/src/lib/osqp/src/osqp/workspace_2uav_1hp_rod.c")
+
 
 # Solve problem
 res = prob.solve()

@@ -241,19 +241,22 @@ all:
       ap0x: 0.0
       ap0y: 0.3
       ap0z: 0.0
-      ap0l: 0.53
+      ap0l: 0.5
 
       ap1id: 6
       ap1x: 0.0
       ap1y: -0.3
       ap1z: 0.0
-      ap1l: 0.53
+      ap1l: 0.5
 
       Kpos_P_limit: 100.0 #0.5 #0.5
       Kpos_D_limit: 100.0 #0.1 #0.1
       Kpos_I_limit: 100.0
-      radius: 0.2
 
+      radius: 0.15
+      gen_hp: 1 # SVM-based hyperplane generation
+      # lambda_svm: 10000.0
+      lambda_svm: 1000.0
       # lambda: 0.0
     # ring:
     #   effect: 16 # 6: double spinner, 7: solid color, 16: packetRate

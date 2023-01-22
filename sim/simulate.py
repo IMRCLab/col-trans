@@ -434,6 +434,7 @@ def initPLController(uavs, payload):
 def updateNeighbors(leePayload, state, id, uavs, payload):
     i = 0
     cfid = 0
+    attPointsById = dict()
     for id_ in uavs.keys():
         if id != id_:
             stateofId = uavs[id_].state
@@ -442,7 +443,43 @@ def updateNeighbors(leePayload, state, id, uavs, payload):
             i+=1
         attPoint = payload.posFrloaddict[id_]
         cffirmware.controller_lee_payload_set_attachement(leePayload, cfid, cfid, attPoint[0], attPoint[1], attPoint[2])
+        attPointsById[cfid] = attPoint
         cfid += 1
+
+    # set Pinv for pair 0/1
+    P = np.zeros((6, 6))
+    P[0:3,0:3] = np.eye(3)
+    P[0:3,3:6] = np.eye(3)
+    P[3:6,0:3] = skew(attPointsById[0])
+    P[3:6,3:6] = skew(attPointsById[1])
+    P_inv = np.linalg.pinv(P)
+    for r in range(6):
+        for c in range(6):
+            cffirmware.controller_lee_payload_set_Pinv(leePayload, 0, 0, 1, r, c, P_inv[r,c])
+
+    if 2 in attPointsById:
+        # set Pinv for pair 0/2
+        P = np.zeros((6, 6))
+        P[0:3,0:3] = np.eye(3)
+        P[0:3,3:6] = np.eye(3)
+        P[3:6,0:3] = skew(attPointsById[0])
+        P[3:6,3:6] = skew(attPointsById[2])
+        P_inv = np.linalg.pinv(P)
+        for r in range(6):
+            for c in range(6):
+                cffirmware.controller_lee_payload_set_Pinv(leePayload, 1, 0, 2, r, c, P_inv[r,c])
+
+        # set Pinv for pair 1/2
+        P = np.zeros((6, 6))
+        P[0:3,0:3] = np.eye(3)
+        P[0:3,3:6] = np.eye(3)
+        P[3:6,0:3] = skew(attPointsById[1])
+        P[3:6,3:6] = skew(attPointsById[2])
+        P_inv = np.linalg.pinv(P)
+        for r in range(6):
+            for c in range(6):
+                cffirmware.controller_lee_payload_set_Pinv(leePayload, 2, 1, 2, r, c, P_inv[r,c])
+
         # else:
         #     attPoint = payload.posFrloaddict[id]
         #     leePayload.attPoint.x = attPoint[0]
