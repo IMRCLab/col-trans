@@ -1,0 +1,24 @@
+cuboid:
+  mass: 0.0115
+
+  attachments:
+    - id: 5
+      point: [0.0, 0.3, 0.0]
+      length: 0.5
+    - id: 6
+      point: [0.0, -0.3, 0.0]
+      length: 0.5
+
+triangle:
+  mass: 0.01
+
+  attachments:
+    - id: 5
+      point: [0.04, 0.0, 0.0]
+      length: 0.5
+    - id: 6
+      point: [-0.02, -0.035, 0.0]
+      length: 0.5
+    - id: 231
+      point: [-0.02, 0.035, 0.0]
+      length: 0.5

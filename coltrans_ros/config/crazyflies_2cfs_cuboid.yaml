@@ -233,21 +233,6 @@ all:
       en_qdidot: 0 # enable qdidot computation
       en_accrb: 1
       
-      # payload properties
-      # massP: 0.017
-      massP: 0.0115 # 2 UAV cuboid case
-
-      ap0id: 5
-      ap0x: 0.0
-      ap0y: 0.3
-      ap0z: 0.0
-      ap0l: 0.5
-
-      ap1id: 6
-      ap1x: 0.0
-      ap1y: -0.3
-      ap1z: 0.0
-      ap1l: 0.5
 
       Kpos_P_limit: 100.0 #0.5 #0.5
       Kpos_D_limit: 100.0 #0.1 #0.1
@@ -258,6 +243,33 @@ all:
       # lambda_svm: 10000.0
       lambda_svm: 1000.0
       # lambda: 0.0
+
+      # payload properties (generated using gen_Pinv.py)
+      Pinv000: 0.4999999999999999
+      Pinv005: -1.6666666666666663
+      Pinv011: 0.4999999999999999
+      Pinv022: 0.5
+      Pinv023: 1.6666666666666665
+      Pinv030: 0.4999999999999999
+      Pinv035: 1.6666666666666665
+      Pinv041: 0.5000000000000001
+      Pinv052: 0.5000000000000001
+      Pinv053: -1.6666666666666665
+      Pinv0id1: 5
+      Pinv0id2: 6
+      ap0id: 5
+      ap0l: 0.5
+      ap0x: 0.0
+      ap0y: 0.3
+      ap0z: 0.0
+      ap1id: 6
+      ap1l: 0.5
+      ap1x: 0.0
+      ap1y: -0.3
+      ap1z: 0.0
+      massP: 0.0115
+
+
     # ring:
     #   effect: 16 # 6: double spinner, 7: solid color, 16: packetRate
     #   solidBlue: 255 # if set to solid color
