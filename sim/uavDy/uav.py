@@ -173,8 +173,8 @@ class SharedPayload:
 
     def getInitState(self, uav_params, payload_params):
         self.state = np.zeros(self.state_size,)
-        self.state[0:3]   = payload_params['init_pos_L']
         self.accl   = np.zeros(self.sys_dim,)
+        self.accl[0:3] = np.array([0,0,-9.81]) 
         self.state[3:6]   = self.accl[0:3]*self.dt + payload_params['init_linV_L']
         self.state[0:3]   = self.state[3:6]*self.dt + payload_params['init_pos_L']
         if not self.pointmass:
