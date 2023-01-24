@@ -241,6 +241,23 @@ def main():
     Fd1 = forces_at_attachment_points[0:3]
     Fd2 = forces_at_attachment_points[3:6]
 
+    # # optimization rather than Pinv
+    # # see (22) in Lee's paper
+    # Fd1 = cp.Variable(3)
+    # Fd2 = cp.Variable(3)
+    # prob = cp.Problem(cp.Minimize(
+    #     cp.norm(Fd1) + cp.norm(Fd2) +
+    #     cp.norm(skew(p1a) @ Rp.T @ Fd1 + skew(p2a) @ Rp.T @ Fd2 - Md)),
+    #         [
+    #             Fd1 + Fd2 == Fd,
+    #             # skew(p1a) @ Rp.T @ Fd1 + skew(p2a) @ Rp.T @ Fd2 == Md,
+    #         ])
+    # prob.solve(verbose=False)
+    # Fd1 = Fd1.value
+    # Fd2 = Fd2.value
+
+
+
     # draw Fd
     vertices = np.array([p1a,p1a+Fd1*15]).T
     vis["Fd1"].set_object(mcg.Line(mcg.PointsGeometry(vertices), 
@@ -252,18 +269,60 @@ def main():
 
 
     # optimization problem
+    lambda_svm = 10
+    Fd_scale = 1
+
+    # original version
+    # n = cp.Variable(3)
+    # a = cp.Variable(1)
+    # prob = cp.Problem(cp.Minimize(cp.sum_squares(n) + lambda_svm * (n.T @ (Fd_scale*(p1a+Fd1)) - a)**2 + lambda_svm * (n.T @ (Fd_scale*(p2a+Fd2)) - a)**2),
+    #     [
+    #         n.T @ p1  - a <= -1,
+    #         n.T @ p1a - a <= -1,
+    #         n.T @ p2  - a >= 1,
+    #         n.T @ p2a - a >= 1,
+    #     ])
+    # prob.solve()
+
+    # soft/hard-margin SVM version
+
+    # lambda_svm = 100
+    # n = cp.Variable(3)
+    # a = cp.Variable(1)
+    # slack1 = cp.Variable(1)
+    # slack2 = cp.Variable(1)
+    # prob = cp.Problem(cp.Minimize(cp.sum_squares(n) + lambda_svm * (slack1+slack2)),
+    #     [
+    #         n.T @ p1  - a <= -1,
+    #         n.T @ p1a - a <= -1,
+    #         n.T @ p2  - a >= 1,
+    #         n.T @ p2a - a >= 1,
+    #         n.T @ (p1a+Fd1) - a <= -1+slack1,
+    #         n.T @ (p2a+Fd2) - a >= 1-slack2,
+    #         slack1 >= 0,
+    #         slack2 >= 0,
+    #     ])
+    # prob.solve()
+
+    # pm 
     lambda_svm = 1000
+    Fd_scale = 1
+
+    pm = np.asarray(p1a) + (np.asarray(p2a)-np.asarray(p1a))/2
 
     n = cp.Variable(3)
     a = cp.Variable(1)
-    prob = cp.Problem(cp.Minimize(cp.sum_squares(n) + lambda_svm * (n.T @ (p1a+Fd1) - a)**2 + lambda_svm * (n.T @ (p2a+Fd2) - a)**2),
+    prob = cp.Problem(cp.Minimize(cp.sum_squares(n) + lambda_svm * (n.T @ (Fd_scale*(pm+Fd1)) - a)**2 + lambda_svm * (n.T @ (Fd_scale*(pm+Fd2)) - a)**2),
         [
             n.T @ p1  - a <= -1,
             n.T @ p1a - a <= -1,
             n.T @ p2  - a >= 1,
             n.T @ p2a - a >= 1,
+            n.T @ pm - a == 0,
         ])
     prob.solve()
+
+
     n = n.value
     a = a.value
     print(p1, p1a, p2, p2a)
