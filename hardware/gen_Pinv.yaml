@@ -41,6 +41,6 @@ triangle:
     - id: 6
       point: [-0.02, -0.035, 0.0]
       length: 0.5
-    - id: 231
+    - id: 4
       point: [-0.02, 0.035, 0.0]
       length: 0.5

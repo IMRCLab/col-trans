@@ -6,9 +6,9 @@ robots:
     initial_position: [0.5, 0.0, 0.0]
     type: cf21 # see robot_types
 
-  cf231:
+  cf4:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E7E7
+    uri: radio://0/80/2M/E7E7E7E704
     initial_position: [0.0, 0.5, 0.0]
     type: cf21 # cf21_betafpv  # see robot_types
 
@@ -143,37 +143,37 @@ all:
       mass: 0.0333
     ctrlLeeP:
       # P load
-      Kpos_Px:  16.0     #18.0 #15.0 #20.0 #15.0 #100.0 #60.0
-      Kpos_Py:  16.0     #18.0 #15.0 #20.0 #15.0 #100.0 #60.0
+      Kpos_Px:  8.0     #18.0 #15.0 #20.0 #15.0 #100.0 #60.0
+      Kpos_Py:  8.0     #18.0 #15.0 #20.0 #15.0 #100.0 #60.0
       Kpos_Pz:  32.0     #18.0 #20.0 #15.0 #160.0 #90.0
       # D load
-      Kpos_Dx:  8.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
-      Kpos_Dy:  8.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
+      Kpos_Dx:  4.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
+      Kpos_Dy:  4.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
       Kpos_Dz:  16.0      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
       # I load
       Kpos_Ix: 0.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
       Kpos_Iy: 0.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
       Kpos_Iz: 0.0 #4.0 # 2.0      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
       # # P attitude Load: 
-      Kprot_Px: 0.01
-      Kprot_Py: 0.01
-      Kprot_Pz: 0.01
+      Kprot_Px: 0.002 #0.01
+      Kprot_Py: 0.002 #0.01
+      Kprot_Pz: 0.002 #0.01
       # #D attitude Load 
-      Kprot_Dx: 0.02
-      Kprot_Dy: 0.02
-      Kprot_Dz: 0.02
+      Kprot_Dx: 0.0001 #0.02
+      Kprot_Dy: 0.0001 #0.02
+      Kprot_Dz: 0.0001 #0.02
       # I attitude Load
-      Kprot_Ix: 0.005
-      Kprot_Iy: 0.005
-      Kprot_Iz: 0.005
+      Kprot_Ix: 0.0 # 0.005
+      Kprot_Iy: 0.0 # 0.005
+      Kprot_Iz: 0.0 # 0.005
       # P cable
-      Kqx:  6.0 #12.0 #6.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
-      Kqy:  6.0 #12.0 #6.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
-      Kqz:  6.0 #12.0 #6.0 #10.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
+      Kqx:  12.0
+      Kqy:  12.0
+      Kqz:  12.0
       # D cable
-      Kwx:  3.0 #10.0 #3.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
-      Kwy:  3.0 #10.0 #3.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
-      Kwz:  3.0 #10.0 #3.0 #7.0 #7.0 # if those gains don't work please try (the old ones): 12.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
+      Kwx:  5.0
+      Kwy:  5.0
+      Kwz:  5.0
       # I cable
       KqIx: 0.0 # 0.05
       KqIy: 0.0 # 0.05
@@ -199,11 +199,10 @@ all:
       Kpos_D_limit: 100.0 #0.1 #0.1
       Kpos_I_limit: 100.0
 
-      radius: 0.15
-      gen_hp: 1 # SVM-based hyperplane generation
-      # lambda_svm: 10000.0
-      lambda_svm: 1000.0
-      # lambda: 0.0
+      radius: 0.2
+      gen_hp: 2 # SVM-based hyperplane generation
+      lambda_svm: 100.0
+      lambda: 0.0
 
       # payload properties (generated using gen_Pinv.py)
       Pinv000: 0.6269430051813467
@@ -245,7 +244,7 @@ all:
       Pinv153: 7.262542055455218
       Pinv154: 12.430183800984484
       Pinv1id1: 5
-      Pinv1id2: 231
+      Pinv1id2: 4
       Pinv200: 0.5
       Pinv201: 0.28571428571428614
       Pinv205: 14.285714285714283
@@ -261,7 +260,7 @@ all:
       Pinv253: 14.285714285714281
       Pinv254: 0.009996001599359369
       Pinv2id1: 6
-      Pinv2id2: 231
+      Pinv2id2: 4
       ap0id: 5
       ap0l: 0.5
       ap0x: 0.04
@@ -272,7 +271,7 @@ all:
       ap1x: -0.02
       ap1y: -0.035
       ap1z: 0.0
-      ap2id: 231
+      ap2id: 4
       ap2l: 0.5
       ap2x: -0.02
       ap2y: 0.035
@@ -309,10 +308,10 @@ all:
         vars: ["ctrlLeeP.n1x", "ctrlLeeP.n1y", "ctrlLeeP.n1z", "ctrlLeeP.desVirtInpx", "ctrlLeeP.desVirtInpy", "ctrlLeeP.desVirtInpz"]
       ctrlLeeP2:
         frequency: 10 # Hz
-        vars: ["ctrlLeeP.n2x", "ctrlLeeP.n2y", "ctrlLeeP.n2z", 'ctrlLeeP.Fdx', "ctrlLeeP.Fdy", "ctrlLeeP.Fdz"]
+        vars: ["ctrlLeeP.n2x", "ctrlLeeP.n2y", "ctrlLeeP.n2z", "ctrlLeeP.Fdx", "ctrlLeeP.Fdy", "ctrlLeeP.Fdz"]
       payloadDbg:
         frequency: 1 # Hz
-        vars: ["stateEstimate.pqx", "stateEstimate.pqy", "stateEstimate.pqz", "stateEstimate.pqw"]
+        vars: ["ctrlLeeP.Mdx", "ctrlLeeP.Mdy", "ctrlLeeP.Mdz"]
 
       # setpoint:
       #  frequency: 100 # Hz
