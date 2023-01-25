@@ -159,17 +159,17 @@ all:
       Kprot_Py: 0.002 #0.01
       Kprot_Pz: 0.002 #0.01
       # #D attitude Load 
-      Kprot_Dx: 0.0001 #0.02
-      Kprot_Dy: 0.0001 #0.02
-      Kprot_Dz: 0.0001 #0.02
+      Kprot_Dx: 0.0003 #0.02
+      Kprot_Dy: 0.0003 #0.02
+      Kprot_Dz: 0.0003 #0.02
       # I attitude Load
       Kprot_Ix: 0.0 # 0.005
       Kprot_Iy: 0.0 # 0.005
       Kprot_Iz: 0.0 # 0.005
       # P cable
-      Kqx:  12.0
-      Kqy:  12.0
-      Kqz:  12.0
+      Kqx:  11.0
+      Kqy:  11.0
+      Kqz:  11.0
       # D cable
       Kwx:  5.0
       Kwy:  5.0

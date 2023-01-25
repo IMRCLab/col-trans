@@ -12,6 +12,14 @@ import matplotlib.pyplot as plt
 plt.rcParams['axes.grid'] = True
 plt.rcParams['figure.max_open_warning'] = 100
 
+
+def skew(w):
+    w = np.asarray(w).reshape(3,1)
+    w1 = w[0,0]
+    w2 = w[1,0]
+    w3 = w[2,0]
+    return np.array([[0, -w3, w2],[w3, 0, -w1],[-w2, w1, 0]]).reshape((3,3))
+
 def create_subtitle(fig: plt.Figure, grid: SubplotSpec, title: str):
     row = fig.add_subplot(grid)
     row.set_title('\n\n\n'+title, fontweight='medium',fontsize='medium')
@@ -49,7 +57,7 @@ def plotload(states ,dstates, time):
     if not np.isnan((states[:,6:10])).any():
         fig3, ax3 = plt.subplots(3, 1, sharex=True)
         fig3.tight_layout()
-        rpy = rn.to_euler(states[:,6:10], convention='xyz')
+        rpy = rn.to_euler(rn.normalize(states[:,6:10]), convention='xyz')
         rpydes = rn.to_euler(dstates[:,6:10], convention='xyz')
         ax3[0].plot(time, np.degrees(rpy[:,0]), c='b',lw=0.5,label='Actual')
         ax3[0].plot(time, np.degrees(rpydes[:,0]), c='darkgreen',lw=0.5,label='Ref')
@@ -116,11 +124,11 @@ def plotuav(states, dstates, time ,name):
 
     fig3, ax3 = plt.subplots(3, 1, sharex=True)
     fig3.tight_layout()
-    rpy = rn.to_euler((states[:,6:10]), convention='xyz')
+    # rpy = rn.to_euler((states[:,6:10]), convention='xyz')
     rpydes = rn.to_euler(dstates[:,0:4], convention='xyz')
-    ax2[0].plot(time, np.degrees(rpy[:,0]), c='b',lw=0.5,label='Actual')
-    ax2[1].plot(time, np.degrees(rpy[:,1]), c='b',lw=0.5,label='Actual')
-    ax2[2].plot(time, np.degrees(rpy[:,2]), c='b',lw=0.5,label='Actual')
+    # ax2[0].plot(time, np.degrees(rpy[:,0]), c='b',lw=0.5,label='Actual')
+    # ax2[1].plot(time, np.degrees(rpy[:,1]), c='b',lw=0.5,label='Actual')
+    # ax2[2].plot(time, np.degrees(rpy[:,2]), c='b',lw=0.5,label='Actual')
     ax2[0].plot(time, np.degrees(rpydes[:,0]) ,lw=0.5, c='darkgreen',label='Reference')
     ax2[1].plot(time, np.degrees(rpydes[:,1]) ,lw=0.5, c='darkgreen',label='Reference')
     ax2[2].plot(time, np.degrees(rpydes[:,2]) ,lw=0.5, c='darkgreen',label='Reference')
@@ -183,15 +191,26 @@ def plotcable(states, qd, time, cf):
 
 def main(args=None):
     
-    # files = ["cf5_48", "cf6_48"]
-    # att_points = [[0,-0.3,0], [0,0.3,0]]
+    # files = ["cf5_74", "cf6_74"]
+    # att_points = [[0,0.3,0], [0,-0.3,0]]
     # shape = 'cuboid'
 
-    files = ["cf5_99", "cf6_99"]
-    att_points = [[0,-0.3,0], [0,0.3,0]]
-    shape = 'point'
+    # files = ["cf5_13", "cf6_13", "cf231_13"]
+    # att_points = [[0,0.0,0], [0,0.0,0], [0,0.0,0]]
+    # shape = 'point'
+
+    files = ["cf4_27", "cf5_27", "cf6_27"]
+    att_points = [[-0.02, 0.035, 0.0], [0.04, 0.0, 0.0], [-0.02, -0.035, 0.0]]
+    shape = 'triangle'
 
     logDatas = [cfusdlog.decode(f)['fixedFrequency'] for f in files]
+
+    starttime = min([logDatas[k]['timestamp'][0] for k in range(len(files))])
+
+    for k in range(len(files)):
+        idx = np.where((logDatas[k]['timestamp'] - starttime)/1000 < 15)
+        for key, value in logDatas[k].items():
+            logDatas[k][key] = value[idx]
 
     configData = {}
     configData['robots'] = {}
@@ -363,6 +382,7 @@ def main(args=None):
     fig, ax = plt.subplots(3, 1, sharex=True)
     fig.tight_layout()
 
+    Md_sum = np.zeros((T, 3))
     for k, filename in enumerate(files):
         time = (logDatas[k]['timestamp']-starttime)/1000
 
@@ -370,15 +390,33 @@ def main(args=None):
                                 logDatas[k]['ctrlLeeP.Mdy'], 
                                 logDatas[k]['ctrlLeeP.Mdz'],
                                 ]).T
+
+        mu = np.array([logDatas[k]['ctrlLeeP.desVirtInpx'],
+                        logDatas[k]['ctrlLeeP.desVirtInpy'], 
+                        logDatas[k]['ctrlLeeP.desVirtInpz'],
+                        ]).T[0:T]
+
+        q = np.array([logDatas[k]['stateEstimate.pqw'],
+                    logDatas[k]['stateEstimate.pqx'],
+                    logDatas[k]['stateEstimate.pqy'],
+                    logDatas[k]['stateEstimate.pqz']]).T[0:T]
+        Rp = rn.to_matrix(q, False)
+        for t in range(T):
+            Md_sum[t] += skew(att_points[k]) @ Rp[t].T @ mu[t]
+
         for i in range(0,3):
             ax[i].plot(time, Md[:,i], lw=0.75,label=filename)
-        ax[0].set_ylabel('x [Nm]',)
-        ax[1].set_ylabel('y [Nm]')
-        ax[2].set_ylabel('z [Nm]')
-        ax[0].legend()
-        fig.supxlabel("time [s]",fontsize='small')
-        grid = plt.GridSpec(3,1)
-        create_subtitle(fig, grid[0, ::], 'Md')
+
+    for i in range(0,3):
+        ax[i].plot(time[0:T], Md_sum[:,i], lw=0.75,label="sum of mus")
+    
+    ax[0].set_ylabel('x [Nm]',)
+    ax[1].set_ylabel('y [Nm]')
+    ax[2].set_ylabel('z [Nm]')
+    ax[0].legend()
+    fig.supxlabel("time [s]",fontsize='small')
+    grid = plt.GridSpec(3,1)
+    create_subtitle(fig, grid[0, ::], 'Md')
     fig.savefig(f, format='pdf', bbox_inches='tight')
 
     # n1s's
@@ -418,19 +456,26 @@ def main(args=None):
     for k, filename in enumerate(files):
         time = (logDatas[k]['timestamp']-starttime)/1000
 
-        mu = np.array([logDatas[k]['ctrlLeeP.desVirtInpx'],
+        mu1 = np.array([logDatas[k]['ctrlLeeP.desVirtInpx'],
                                 logDatas[k]['ctrlLeeP.desVirtInpy'], 
                                 logDatas[k]['ctrlLeeP.desVirtInpz'],
                                 ]).T
+
+        # mu2 = np.array([logDatas[k]['ctrlLeeP.desVirtInp2x'],
+        #                         logDatas[k]['ctrlLeeP.desVirtInp2y'], 
+        #                         logDatas[k]['ctrlLeeP.desVirtInp2z'],
+        #                         ]).T
+
         for i in range(0,3):
-            ax[i].plot(time, mu[:,i], lw=0.75,label=filename)
-        ax[0].set_ylabel('x [N]',)
-        ax[1].set_ylabel('y [N]')
-        ax[2].set_ylabel('z [N]')
-        ax[0].legend()
-        fig.supxlabel("time [s]",fontsize='small')
-        grid = plt.GridSpec(3,1)
-        create_subtitle(fig, grid[0, ::], 'mu')
+            ax[i].plot(time, mu1[:,i], lw=0.75,label=filename +" mu1")
+            # ax[i].plot(time, mu2[:,i], lw=0.75,label=filename +" mu2")
+    ax[0].set_ylabel('x [N]',)
+    ax[1].set_ylabel('y [N]')
+    ax[2].set_ylabel('z [N]')
+    ax[0].legend()
+    fig.supxlabel("time [s]",fontsize='small')
+    grid = plt.GridSpec(3,1)
+    create_subtitle(fig, grid[0, ::], 'mu')
     fig.savefig(f, format='pdf', bbox_inches='tight')
 
     # u's
@@ -480,7 +525,7 @@ def main(args=None):
 
         li = np.linalg.norm(pi - plStPos, axis=1)
         ax[0,0].plot(time, li, lw=0.75,label=filename)
-        ax[0,0].plot(time, li, lw=0.75,label=filename)
+        # ax[0,0].plot(time, li, lw=0.75,label=filename)
         # ax[0].set_ylabel('x [N]',)
         # ax[1].set_ylabel('y [N]')
         # ax[2].set_ylabel('z [N]')
