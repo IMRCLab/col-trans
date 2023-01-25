@@ -31,6 +31,28 @@ def output_osqp(prob):
         l = np.concatenate([data['b'], -np.inf*np.ones(data['G'].shape)])
         print("l", l)
 
+        return P, q, A, l, u
+
+def gen_osqp(P, q, A, l, u):
+        # generate the code
+
+        # Create an OSQP object
+        prob = osqp.OSQP()
+
+        # Setup workspace and change alpha parameter
+        prob.setup(P, q, A, l, u, alpha=1.0)
+
+        results = prob.solve()
+        print(results.x)
+
+        prob.codegen("cffirmware_osqp/src/generated",
+                project_type='Makefile',
+                parameters='matrices',
+                python_ext_name='emosqp',
+                force_rewrite=True,
+                FLOAT=True,
+                LONG=False)
+
 def postprocess(name, output, input = "cffirmware_osqp/src/generated/src/osqp/workspace.c"):
     """ Adds static keyword, so the workspace can be re-used """
         

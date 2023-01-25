@@ -9,6 +9,28 @@ cuboid:
       point: [0.0, -0.3, 0.0]
       length: 0.5
 
+triangle2cf:
+  mass: 0.01
+
+  attachments:
+    - id: 5
+      point: [0.0, 0.035, 0.0]
+      length: 0.5
+    - id: 6
+      point: [0.0, -0.035, 0.0]
+      length: 0.5
+
+payload3:
+  mass: 0.0072
+
+  attachments:
+    - id: 5
+      point: [0.0, 0.07, 0.0]
+      length: 0.5
+    - id: 6
+      point: [0.0, -0.07, 0.0]
+      length: 0.5
+
 triangle:
   mass: 0.01
 

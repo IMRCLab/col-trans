@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 
 TIMESCALE = 2.5
-UAVSHEIGHT = 1.2
+UAVSHEIGHT = 1.0
 HEIGHT = 0.75
 
 
@@ -28,13 +28,19 @@ def main():
     #### set controller to lee for take off
     # print('take off with lee controller')
     allcfs.setParam('usd.logging', 1)
+    timeHelper.sleep(2.0)
 
     allcfs.setParam('stabilizer.controller', 7)
     timeHelper.sleep(2.0)
-
-    ## take off 
     allcfs.takeoff(targetHeight=HEIGHT, duration=3.0)
-    timeHelper.sleep(5.0)
+    timeHelper.sleep(3.0)
+
+    # allcfs.setParam('stabilizer.controller', 6)
+    # timeHelper.sleep(2.0)
+    # allcfs.takeoff(targetHeight=UAVSHEIGHT, duration=3.0)
+    # timeHelper.sleep(4.0)
+    # allcfs.setParam('stabilizer.controller', 7)
+
     ####
 
     ## start the QP lee Payload controller for hovering
@@ -46,7 +52,7 @@ def main():
     
     # timeHelper.sleep(20.0)
     # print("WARNING")
-    timeHelper.sleep(2.0)
+    # timeHelper.sleep(5.0)
 
     # allcfs.takeoff(targetHeight=HEIGHT, duration=5.0)
     # timeHelper.sleep(6.0)
@@ -60,10 +66,10 @@ def main():
     allcfs.startTrajectory(0, timescale=TIMESCALE, relative=False)
     timeHelper.sleep(traj1.duration * TIMESCALE + 2.0)
 
-    # Land the payload
-    for cf in allcfs.crazyflies:
-        cf.goTo([0.0,0.0,0.1],0,4.0)
-    timeHelper.sleep(5.0)
+    # # Land the payload
+    # for cf in allcfs.crazyflies:
+    #     cf.goTo([0.0,0.0,0.1],0,4.0)
+    # timeHelper.sleep(5.0)
 
     # Switch to another controller, so that the setpoint is not the payload
     # allcfs.setParam('usd.logging', 0)

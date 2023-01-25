@@ -30,6 +30,8 @@ def main():
     Md = cp.Parameter(3, name='Md')
     Fd = cp.Parameter(3, name='Fd')
     prob = cp.Problem(cp.Minimize(
+        cp.sum_squares(Fd1) +
+        cp.sum_squares(Fd2) +
         cp.sum_squares(p1a_skew @ RpT @ Fd1 + p2a_skew @ RpT @ Fd2 - Md)),
             [
                 Fd1 + Fd2 == Fd,
@@ -45,9 +47,17 @@ def main():
     Md.value = np.array([10,11,12])
     RpT.value = np.array([[13,14,15],[16,17,18],[19,20,22]])
 
-    utils.output_osqp(prob)
+    P, q, A, l, u = utils.output_osqp(prob)
+    utils.gen_osqp(P, q, A, l, u)
 
+    # export
+    utils.postprocess("compute_Fd_pair", "../crazyflie-firmware/src/lib/osqp/src/osqp/workspace_compute_Fd_pair.c")
+
+    print(p1a_skew.value @ RpT.value)
     print(p2a_skew.value @ RpT.value)
+    prob.solve()
+    print(Fd1.value)
+    print(Fd2.value)
 
 
 if __name__ == '__main__':

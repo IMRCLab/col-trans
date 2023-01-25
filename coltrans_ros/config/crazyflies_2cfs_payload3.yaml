@@ -14,7 +14,7 @@ robots:
     initial_position: [0.0, -0.5, 0.0]
     type: cf21 # see robot_types
 
-  payload:
+  payload3:
       enabled: true
       initial_position: [0.0, 0.0, 0.0]
       type: mocap_rigidbody  # see robot_types
@@ -201,9 +201,9 @@ all:
       Kprot_Dy: 0.02
       Kprot_Dz: 0.02
       # I attitude Load
-      Kprot_Ix: 0.005
-      Kprot_Iy: 0.005
-      Kprot_Iz: 0.005
+      Kprot_Ix: 0.0 #0.005
+      Kprot_Iy: 0.0 #0.005
+      Kprot_Iz: 0.0 #0.005
       # P cable
       Kqx:  6.0 #12.0 #6.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
       Kqy:  6.0 #12.0 #6.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
@@ -246,29 +246,29 @@ all:
       # lambda: 1.0
 
       # payload properties (generated using gen_Pinv.py)
-      Pinv000: 0.4999999999999999
-      Pinv005: -1.6666666666666663
-      Pinv011: 0.4999999999999999
-      Pinv022: 0.5
-      Pinv023: 1.6666666666666665
-      Pinv030: 0.4999999999999999
-      Pinv035: 1.6666666666666665
-      Pinv041: 0.5000000000000001
-      Pinv052: 0.5000000000000001
-      Pinv053: -1.6666666666666665
+      Pinv000: 0.49999999999999956
+      Pinv005: -7.1428571428571415
+      Pinv011: 0.49999999999999983
+      Pinv022: 0.49999999999999956
+      Pinv023: 7.1428571428571415
+      Pinv030: 0.5
+      Pinv035: 7.1428571428571415
+      Pinv041: 0.49999999999999983
+      Pinv052: 0.5
+      Pinv053: -7.1428571428571415
       Pinv0id1: 5
       Pinv0id2: 6
       ap0id: 5
       ap0l: 0.5
       ap0x: 0.0
-      ap0y: 0.3
+      ap0y: 0.07
       ap0z: 0.0
       ap1id: 6
       ap1l: 0.5
       ap1x: 0.0
-      ap1y: -0.3
+      ap1y: -0.07
       ap1z: 0.0
-      massP: 0.0115
+      massP: 0.0072
 
 
     # ring:

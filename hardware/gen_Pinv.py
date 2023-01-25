@@ -33,7 +33,7 @@ def main():
     with open("gen_Pinv.yaml", 'r') as ymlfile:
         cfg = yaml.safe_load(ymlfile)
 
-    s = cfg['triangle']
+    s = cfg['payload3']
     result = dict()
 
     result['massP'] = s['mass']
