@@ -12,11 +12,26 @@ def main():
     # emergency to prevent flight
     allcfs.emergency()
 
-    # get a fake setpoint
-    allcfs.takeoff(1.0, 3.0)
-
     for cf in allcfs.crazyflies: 
+        cf.setParam('ctrlLeeP.lambda', 0.0)
         cf.setParam('stabilizer.controller', 7)
+
+    allcfs.land(0.0, 0.5)
+    timeHelper.sleep(1.0)
+
+
+    # get a fake setpoint
+    allcfs.takeoff(-0.5, 3.0)
+
+    # timeHelper.sleep(3.0)
+
+    # for cf in allcfs.crazyflies: 
+    #     cf.setParam('usd.logging', 1)
+
+    # timeHelper.sleep(30.0)
+
+    # for cf in allcfs.crazyflies: 
+    #     cf.setParam('usd.logging', 0)
 
 
 if __name__ == "__main__":

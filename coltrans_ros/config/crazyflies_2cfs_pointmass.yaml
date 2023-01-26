@@ -3,18 +3,28 @@ robots:
   cf5:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E705
-    initial_position: [0.0, 0.5, 0.0]
+    initial_position: [1.0, -1.0, 0.0]
     type: cf21 # see robot_types
+    firmware_params:
+      ring:
+        solidBlue: 255 # if set to solid color
+        solidGreen: 0 # if set to solid color
+        solidRed: 0 # if set to solid color
 
   cf6:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E706
-    initial_position: [0.0, -0.5, 0.0]
+    initial_position: [0.0, -1.0, 0.0]
     type: cf21 # see robot_types
+    firmware_params:
+      ring:
+        solidBlue: 0 # if set to solid color
+        solidGreen: 0 # if set to solid color
+        solidRed: 255 # if set to solid color
 
   payload:
       enabled: true
-      initial_position: [0.0, 0.0, 0.0]
+      initial_position: [0.5, -1.0, 0.0]
       type: marker  # see robot_types
       id: 255
 
@@ -150,7 +160,8 @@ all:
     stabilizer:
       estimator: 2 # 1: complementary, 2: kalman
       controller: 6 # 1: PID, 2: mellinger 4: sjc 6: Lee 7: lee payload
-      pAlpha: 0.9
+      pAlphaV: 0.9
+      pAlphaW: 0.9
     ctrlLee:
       Kpos_Px: 9.0 # def: 10.0
       Kpos_Py: 9.0 # def: 10.0
@@ -212,7 +223,8 @@ all:
       KI_x: 0.02        #0.05 #0.01 #0.009 #0.015
       KI_y: 0.02        #0.05 #0.01 #0.009 #0.015
       KI_z: 0.05        #0.05 #0.01 #0.009 #0.015
-      mass: 0.034
+      # mass: 0.034
+      mass: 0.0356 # with LED ring
       
       # payload properties
       # massP: 0.017
@@ -240,35 +252,8 @@ all:
       lambda_svm: 1000.0
       # lambda: 0.1
 
-      # gen_hp: 0 # geometry-based hyperplane generation
-
-      # ## 6 planes rpy and yaw 
-      # r11: 25.0
-      # p11: 0.0
-      # y11: 0.0
-      # r12: 30.0
-      # p12: 0.0
-      # y12: 0.0
-      # r21: 25.0
-      # p21: 0.0
-      # y21: 180.0
-      # r22: 30.0
-      # p22: 0.0
-      # y22: 180.0
-      # r31: 25.0
-      # p31: 0.0
-      # y31: 240.0
-      # r32: 30.0
-      # p32: 0.0
-      # y32: 240.0
-      # yawp11: 180.0
-      # yawp12: 0.0
-      # yawp21: 300.0
-      # yawp22: 120.0
-      # yawp31: 420.0
-      # yawp32: 240.0
-    # ring:
-    #   effect: 16 # 6: double spinner, 7: solid color, 16: packetRate
+    ring:
+      effect: 0 # 6: double spinner, 7: solid color, 16: packetRate
     #   solidBlue: 255 # if set to solid color
     #   solidGreen: 0 # if set to solid color
     #   solidRed: 0 # if set to solid color
@@ -284,7 +269,7 @@ all:
     # led:
     #   bitmask: 128s
   firmware_logging:
-    enabled: true
+    enabled: false
     default_topics:
      # remove to disable default topic
       pose:

@@ -120,7 +120,8 @@ all:
     stabilizer:
       estimator: 2 # 1: complementary, 2: kalman
       controller: 6 # 1: PID, 2: mellinger 4: sjc 6: Lee 7: lee payload
-      pAlpha: 0.8
+      pAlphaV: 0.8
+      pAlphaW: 0.5
     ctrlLee:
       Kpos_Px: 9.0 # def: 10.0
       Kpos_Py: 9.0 # def: 10.0
@@ -200,7 +201,7 @@ all:
       Kpos_I_limit: 100.0
 
       radius: 0.2
-      gen_hp: 2 # SVM-based hyperplane generation
+      gen_hp: 3 # SVM-based hyperplane generation
       lambda_svm: 100.0
       lambda: 0.0
 

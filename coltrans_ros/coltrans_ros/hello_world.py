@@ -60,11 +60,11 @@ def main():
     # go to origin
     for cf in allcfs.crazyflies:
         cf.goTo([0.0,0.0,HEIGHT],0,4.0)
-    timeHelper.sleep(10.0)
+    timeHelper.sleep(15.0)
 
-    # start trajectory
-    allcfs.startTrajectory(0, timescale=TIMESCALE, relative=False)
-    timeHelper.sleep(traj1.duration * TIMESCALE + 2.0)
+    # # start trajectory
+    # allcfs.startTrajectory(0, timescale=TIMESCALE, relative=False)
+    # timeHelper.sleep(traj1.duration * TIMESCALE + 2.0)
 
     # # Land the payload
     # for cf in allcfs.crazyflies:

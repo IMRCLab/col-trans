@@ -77,7 +77,9 @@ class VisualizationNode(Node):
 
         print(self.get_topic_names_and_types())
 
-        cfs = ['cf5', 'cf6', 'cf231']
+        cfs = ['cf5' , 'cf6', 'cf231']
+        # cfs = ['cf5', 'cf6']
+        self.payloadname = "payload2"
         self.cfs = cfs
         
         # initalize meshcat
@@ -93,7 +95,7 @@ class VisualizationNode(Node):
 
         # for each crazyflie, generate a 3D model, a sphere, and a hyperplane
         for cf in cfs:
-            model = mcg.StlMeshGeometry.from_file("/home/khaledwahba94/imrc/col-trans/sim/Animator/cf2_assembly.stl")
+            model = mcg.StlMeshGeometry.from_file("/home/whoenig/projects/tuberlin/col-trans/sim/Animator/cf2_assembly.stl")
             self.vis["{}_model".format(cf)].set_object(model)
 
             sphere = mcg.Mesh(mcg.Sphere(0.1), 
@@ -111,7 +113,7 @@ class VisualizationNode(Node):
             hp2 = mcg.Mesh(Plane(), 
                             material=mcg.MeshBasicMaterial(
                                 opacity=0.5,
-                                color=0xff0000))
+                                color=0x0000ff))
             self.vis["{}_hp2".format(cf)].set_object(hp2)
 
 
@@ -120,7 +122,7 @@ class VisualizationNode(Node):
         #     mcg.MeshBasicMaterial(color=0xff11dd))
         # self.vis["payload"].set_object(payload)
 
-        model = mcg.StlMeshGeometry.from_file("/home/khaledwahba94/imrc/col-trans/sim/Animator/Triangle_meteres_centered.stl")
+        model = mcg.StlMeshGeometry.from_file("/home/whoenig/projects/tuberlin/col-trans/sim/Animator/Triangle_meteres_centered.stl")
         self.vis["payload".format(cf)].set_object(model)
 
         # subscribe to ROS2 topics for data
@@ -155,7 +157,7 @@ class VisualizationNode(Node):
                 self.vis["{}_sphere".format(cf)].set_transform(mctf.translation_matrix(pos))
 
             # update the payload
-            trans = self.tf_buffer.lookup_transform("world", "payload", rclpy.time.Time())
+            trans = self.tf_buffer.lookup_transform("world", self.payloadname, rclpy.time.Time())
             pos = np.array([trans.transform.translation.x, trans.transform.translation.y, trans.transform.translation.z])
             quat = np.array([trans.transform.rotation.w, trans.transform.rotation.x, trans.transform.rotation.y, trans.transform.rotation.z])
             # use an additional pi rotation, since the model is 180deg different than the defined orientation in mocap
@@ -173,7 +175,7 @@ class VisualizationNode(Node):
         # draw hyperplane
         try:
 
-            trans = self.tf_buffer.lookup_transform("world", "payload", rclpy.time.Time())
+            trans = self.tf_buffer.lookup_transform("world", self.payloadname, rclpy.time.Time())
             ppos = np.array([trans.transform.translation.x, trans.transform.translation.y, trans.transform.translation.z])
         except LookupException as e:
             self.get_logger().error('failed to get transform {} \n'.format(repr(e)))
@@ -209,7 +211,7 @@ class VisualizationNode(Node):
         # draw hyperplane
         try:
 
-            trans = self.tf_buffer.lookup_transform("world", "payload", rclpy.time.Time())
+            trans = self.tf_buffer.lookup_transform("world", self.payloadname, rclpy.time.Time())
             ppos = np.array([trans.transform.translation.x, trans.transform.translation.y, trans.transform.translation.z])
         except LookupException as e:
             self.get_logger().error('failed to get transform {} \n'.format(repr(e)))
@@ -219,15 +221,13 @@ class VisualizationNode(Node):
         a = np.dot(n, ppos)
 
         R = plane_transform(ppos, n, a)
-        # self.vis["{}_hp".format(name)].set_transform(R)
-
         self.vis["{}_hp2".format(name)].set_transform(R)
 
         # draw normal
         vertices = np.array([ppos,ppos+n]).T
         self.vis["{}_hp2n".format(name)].set_object(mcg.Line(
             mcg.PointsGeometry(vertices),
-            material=mcg.LineBasicMaterial(linewidth=2, color=0xff0000, opacity=0.1)))
+            material=mcg.LineBasicMaterial(linewidth=2, color=0x00ff00, opacity=0.1)))
 
         # draw Fd
         # normalize mu because they are very small in values

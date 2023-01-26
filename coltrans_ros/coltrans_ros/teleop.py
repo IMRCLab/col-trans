@@ -81,10 +81,16 @@ class TeleopNode(Node):
             # req.parameters = [Parameter(name=param_name, value=param_value)]
             # self.setParamsServiceServer.call_async(req)
 
+
             # # switch to manual teleoperation after some time
             # if self.timer is None:
             #     self.timer = self.create_timer(2.0, self.timer_callback)
 
+        
+        if msg.buttons[3] == 1: # yellow button
+            # switch to manual teleoperation after some time
+            if self.timer is None:
+                self.timer = self.create_timer(0.5, self.timer_callback)
 
         # land: switch back to regular lee controller!
         if msg.buttons[6] == 1:
@@ -97,7 +103,14 @@ class TeleopNode(Node):
             # req.parameters = [Parameter(name=param_name, value=param_value)]
             # self.setParamsServiceServer.call_async(req)
 
-            # for cf in self.cfs:
+            param_name = "mode"
+            value = "high_level"
+            param_type = ParameterType.PARAMETER_STRING
+            param_value = ParameterValue(type=param_type, string_value=str(value))
+            req = SetParameters.Request()
+            req.parameters = [Parameter(name=param_name, value=param_value)]
+            self.setParamsServiceTeleop.call_async(req)
+
             param_name = "all.params.stabilizer.controller"
             value = 6
             param_type = ParameterType.PARAMETER_INTEGER
