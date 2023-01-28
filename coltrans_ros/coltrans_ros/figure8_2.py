@@ -9,7 +9,7 @@ import numpy as np
 
 TIMESCALE = 1.0
 HEIGHT = 1.0
-LOGGING = False
+LOGGING = True
 
 def main():
     swarm = Crazyswarm()
@@ -35,9 +35,9 @@ def main():
     allcfs.takeoff(targetHeight=HEIGHT, duration=4.0)
     timeHelper.sleep(4.0)
 
-    # go to origin
+    # go to starting point
     for cf in allcfs.crazyflies:
-        cf.goTo([0.0,0.0,HEIGHT],0,4.0)
+        cf.goTo([0.25,0.0,HEIGHT],0,4.0)
     timeHelper.sleep(5.0)
 
     # start trajectory

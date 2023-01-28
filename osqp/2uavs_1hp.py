@@ -1,6 +1,7 @@
 import osqp
 import numpy as np
 from scipy import sparse
+import utils
 
 """
 Structure of the QP in OSQP regarding this problem is as follows: 
@@ -52,5 +53,5 @@ prob.codegen("cffirmware_osqp/src/generated",
     FLOAT=True,
     LONG=False)
 
-# Solve problem
-res = prob.solve()
+# export
+utils.postprocess("2uav_2hp", "../crazyflie-firmware/src/lib/osqp/src/osqp/workspace_2uav_2hp.c")

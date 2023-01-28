@@ -199,18 +199,26 @@ def main(args=None):
     # att_points = [[0,0.0,0], [0,0.0,0], [0,0.0,0]]
     # shape = 'point'
 
-    files = ["cf4_27", "cf5_27", "cf6_27"]
-    att_points = [[-0.02, 0.035, 0.0], [0.04, 0.0, 0.0], [-0.02, -0.035, 0.0]]
-    shape = 'triangle'
+    # files = ["cf4_27", "cf5_27", "cf6_27"]
+    # att_points = [[-0.02, 0.035, 0.0], [0.04, 0.0, 0.0], [-0.02, -0.035, 0.0]]
+    # shape = 'triangle'
+
+    files = ["../tracking/cf4_64", "../tracking/cf7_19"]
+    att_points = [[0,0.0,0], [0,0.0,0]]
+    shape = 'point'
+
 
     logDatas = [cfusdlog.decode(f)['fixedFrequency'] for f in files]
 
     starttime = min([logDatas[k]['timestamp'][0] for k in range(len(files))])
+    # starttime = 0
+    # print(logDatas[1]['timestamp'])
+    # exit()
 
-    for k in range(len(files)):
-        idx = np.where((logDatas[k]['timestamp'] - starttime)/1000 < 15)
-        for key, value in logDatas[k].items():
-            logDatas[k][key] = value[idx]
+    # for k in range(len(files)):
+    #     idx = np.where((logDatas[k]['timestamp'] - starttime)/1000 < 15)
+    #     for key, value in logDatas[k].items():
+    #         logDatas[k][key] = value[idx]
 
     configData = {}
     configData['robots'] = {}
@@ -378,46 +386,46 @@ def main(args=None):
     create_subtitle(fig, grid[0, ::], 'Fd')
     fig.savefig(f, format='pdf', bbox_inches='tight')
 
-    # Md
-    fig, ax = plt.subplots(3, 1, sharex=True)
-    fig.tight_layout()
+    # # Md
+    # fig, ax = plt.subplots(3, 1, sharex=True)
+    # fig.tight_layout()
 
-    Md_sum = np.zeros((T, 3))
-    for k, filename in enumerate(files):
-        time = (logDatas[k]['timestamp']-starttime)/1000
+    # Md_sum = np.zeros((T, 3))
+    # for k, filename in enumerate(files):
+    #     time = (logDatas[k]['timestamp']-starttime)/1000
 
-        Md = np.array([logDatas[k]['ctrlLeeP.Mdx'],
-                                logDatas[k]['ctrlLeeP.Mdy'], 
-                                logDatas[k]['ctrlLeeP.Mdz'],
-                                ]).T
+    #     Md = np.array([logDatas[k]['ctrlLeeP.Mdx'],
+    #                             logDatas[k]['ctrlLeeP.Mdy'], 
+    #                             logDatas[k]['ctrlLeeP.Mdz'],
+    #                             ]).T
 
-        mu = np.array([logDatas[k]['ctrlLeeP.desVirtInpx'],
-                        logDatas[k]['ctrlLeeP.desVirtInpy'], 
-                        logDatas[k]['ctrlLeeP.desVirtInpz'],
-                        ]).T[0:T]
+    #     mu = np.array([logDatas[k]['ctrlLeeP.desVirtInpx'],
+    #                     logDatas[k]['ctrlLeeP.desVirtInpy'], 
+    #                     logDatas[k]['ctrlLeeP.desVirtInpz'],
+    #                     ]).T[0:T]
 
-        q = np.array([logDatas[k]['stateEstimate.pqw'],
-                    logDatas[k]['stateEstimate.pqx'],
-                    logDatas[k]['stateEstimate.pqy'],
-                    logDatas[k]['stateEstimate.pqz']]).T[0:T]
-        Rp = rn.to_matrix(q, False)
-        for t in range(T):
-            Md_sum[t] += skew(att_points[k]) @ Rp[t].T @ mu[t]
+    #     q = np.array([logDatas[k]['stateEstimate.pqw'],
+    #                 logDatas[k]['stateEstimate.pqx'],
+    #                 logDatas[k]['stateEstimate.pqy'],
+    #                 logDatas[k]['stateEstimate.pqz']]).T[0:T]
+    #     Rp = rn.to_matrix(q, False)
+    #     for t in range(T):
+    #         Md_sum[t] += skew(att_points[k]) @ Rp[t].T @ mu[t]
 
-        for i in range(0,3):
-            ax[i].plot(time, Md[:,i], lw=0.75,label=filename)
+    #     for i in range(0,3):
+    #         ax[i].plot(time, Md[:,i], lw=0.75,label=filename)
 
-    for i in range(0,3):
-        ax[i].plot(time[0:T], Md_sum[:,i], lw=0.75,label="sum of mus")
+    # for i in range(0,3):
+    #     ax[i].plot(time[0:T], Md_sum[:,i], lw=0.75,label="sum of mus")
     
-    ax[0].set_ylabel('x [Nm]',)
-    ax[1].set_ylabel('y [Nm]')
-    ax[2].set_ylabel('z [Nm]')
-    ax[0].legend()
-    fig.supxlabel("time [s]",fontsize='small')
-    grid = plt.GridSpec(3,1)
-    create_subtitle(fig, grid[0, ::], 'Md')
-    fig.savefig(f, format='pdf', bbox_inches='tight')
+    # ax[0].set_ylabel('x [Nm]',)
+    # ax[1].set_ylabel('y [Nm]')
+    # ax[2].set_ylabel('z [Nm]')
+    # ax[0].legend()
+    # fig.supxlabel("time [s]",fontsize='small')
+    # grid = plt.GridSpec(3,1)
+    # create_subtitle(fig, grid[0, ::], 'Md')
+    # fig.savefig(f, format='pdf', bbox_inches='tight')
 
     # n1s's
     fig, ax = plt.subplots(3, 1, sharex=True)

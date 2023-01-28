@@ -88,20 +88,28 @@ class TeleopNode(Node):
 
         
         if msg.buttons[3] == 1: # yellow button
-            # switch to manual teleoperation after some time
-            if self.timer is None:
-                self.timer = self.create_timer(0.5, self.timer_callback)
+            # # switch to manual teleoperation after some time
+            # if self.timer is None:
+            #     self.timer = self.create_timer(0.5, self.timer_callback)
+
+            param_name = "all.params.usd.logging"
+            value = 1
+            param_type = ParameterType.PARAMETER_INTEGER
+            param_value = ParameterValue(type=param_type, integer_value=int(value))
+            req = SetParameters.Request()
+            req.parameters = [Parameter(name=param_name, value=param_value)]
+            self.setParamsServiceServer.call_async(req)
 
         # land: switch back to regular lee controller!
         if msg.buttons[6] == 1:
-            # # stop logging
-            # param_name = "all.params.usd.logging"
-            # value = 0
-            # param_type = ParameterType.PARAMETER_INTEGER
-            # param_value = ParameterValue(type=param_type, integer_value=int(value))
-            # req = SetParameters.Request()
-            # req.parameters = [Parameter(name=param_name, value=param_value)]
-            # self.setParamsServiceServer.call_async(req)
+            # stop logging
+            param_name = "all.params.usd.logging"
+            value = 0
+            param_type = ParameterType.PARAMETER_INTEGER
+            param_value = ParameterValue(type=param_type, integer_value=int(value))
+            req = SetParameters.Request()
+            req.parameters = [Parameter(name=param_name, value=param_value)]
+            self.setParamsServiceServer.call_async(req)
 
             param_name = "mode"
             value = "high_level"
