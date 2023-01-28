@@ -1,71 +1,45 @@
 # named list of all robots
 robots:
-  cf5:
-    enabled: true
-    uri: radio://0/80/2M/E7E7E7E705
-    initial_position: [0.5, 0.0, 0.0]
-    type: cf21 # see robot_types
 
-  cf231:
+  cf4:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E7E7
-    initial_position: [0.0, 0.5, 0.0]
-    type: cf21 # cf21_betafpv  # see robot_types
+    uri: radio://0/80/2M/E7E7E7E704
+    initial_position: [1.0, -1.0, 0.0]
+    type: cf21 # see robot_types
+    firmware_params:
+      ring:
+        solidBlue: 255 # if set to solid color
+        solidGreen: 0 # if set to solid color
+        solidRed: 0 # if set to solid color
+
+  cf7:
+    enabled: true
+    uri: radio://0/80/2M/E7E7E7E707
+    initial_position: [0.25, -1.0, 0.0]
+    type: cf21 # see robot_types
+    firmware_params:
+      ring:
+        solidBlue: 0 # if set to solid color
+        solidGreen: 0 # if set to solid color
+        solidRed: 255 # if set to solid color
 
   cf6:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E706
-    initial_position: [0.0, -0.5, 0.0]
+    initial_position: [0.5, -0.5, 0.0]
     type: cf21 # see robot_types
+    firmware_params:
+      ring:
+        solidBlue: 0 # if set to solid color
+        solidGreen: 255 # if set to solid color
+        solidRed: 0 # if set to solid color
 
   payload:
       enabled: true
-      initial_position: [0.0, 0.0, 0.0]
+      initial_position: [0.5, -1.0, 0.0]
       type: marker  # see robot_types
       id: 255
 
-
-  # cf231:
-  #   enabled: true
-  #   uri: radio://0/80/2M/E7E7E7E7E7
-  #   initial_position: [0.0, 0.5, 0.0]
-  #   type: cf21 # cf21_betafpv  # see robot_types
-
-  # cf5:
-  #   enabled: true
-  #   uri: radio://0/80/2M/E7E7E7E705
-  #   initial_position: [0.5, 0.0, 0.0]
-  #   type: cf21 # cf21_betafpv  # see robot_types
-
-  #   # firmware_params:
-  #     # kalman:
-  #     #   pNAcc_xy: 1.0 # default 0.5
-  # cf6:
-  #   enabled: true
-  #   uri: radio://0/80/2M/E7E7E7E706
-  #   initial_position: [0.0, -0.5, 0.0]
-  #   type: cf21 #cf21_betafpv # see robot_types
-
-  # cf1:
-  #   enabled: false
-  #   uri: radio://0/80/2M/E7E7E7E701
-  #   initial_position: [0.0, 0.5, 0.0]
-  #   type: cf21 # cf21_betafpv  # see robot_types
-
-
-  # payload:
-  #     enabled: true
-  #     initial_position: [0.0, 0.0, 0.0]
-  #     type: marker  # see robot_types
-  #     id: 255
-
-  # cf4:
-  #   enabled: false
-  #   uri: radio://0/80/2M/E7E7E7E704
-  #   initial_position: [0.0, 0.5, 0.0]
-  #   type: cf21 #cf21_betafpv # see robot_types
-  #     # kalman:
-  #     #   pNAcc_xy: 1.0 # default 0.5
 # Definition of the various robot types
 robot_types:
   cf21:
@@ -78,65 +52,6 @@ robot_types:
     battery:
       voltage_warning: 3.8  # V
       voltage_critical: 3.7 # V
-    # firmware_params:
-    #   kalman:
-    #     pNAcc_xy: 1.0 # default 0.5
-    # these are the settings for the BetaFPV motors
-  cf21_betafpv:
-    motion_capture:
-      enabled: true
-      # only if enabled; see motion_capture.yaml
-      marker: systemid #default_single_marker #mocap_deck
-      dynamics: default
-    big_quad: false
-    battery:
-      voltage_warning: 3.8  # V
-      voltage_critical: 3.7 # V
-    firmware_params:
-      pwm:
-        d00: 0.6034652836497831
-        d10: 0.07227137807568539
-        d01: -0.4832288487150109
-        d20: -0.0009261372585960825
-        d11: -0.0216219843334675
-
-        e00: -12.564182528108777
-        e10: 5.153254032178315
-        e01: 34.40420347673405
-      ctrlLee:
-        Kpos_Px: 10.0 # def: 10.0, 9.
-        Kpos_Py: 10.0 # def: 10.0, 9.
-        Kpos_Pz: 10.0 # def: 10.0, 9.
-        Kpos_Dx: 8.0  # def: 8.0, 5.0
-        Kpos_Dy: 8.0  # def: 8.0, 5.
-        Kpos_Dz: 8.0  # def: 8.0  ,5.
-        Kpos_Ix: 0.0  # 5.0
-        Kpos_Iy: 0.0  # 5.0
-        Kpos_Iz: 0.0  # 8.0
-        KR_x: 0.006 #0.0055   # def: 0.005  
-        KR_y: 0.006 #0.0055  # def: 0.005
-        KR_z: 0.006  #0.008   # def: 0.005
-        Kw_x: 0.002 #0.0013 # def: 0.0009
-        Kw_y: 0.002 #0.0013  # def: 0.0009
-        Kw_z: 0.0015  # def: 0.0012
-        KI_x: 0.001 #0.012 #0.009 #0.015
-        KI_y: 0.001 #0.018 #0.009 #0.015
-        KI_z: 0.001 #0.015 #0.009 #0.015
-        mass: 0.0386 # for systemid
-
-  cf21_mocap_deck:
-    motion_capture:
-      enabled: true
-      # only if enabled; see motion_capture.yaml
-      marker: mocap_deck
-      dynamics: default
-    big_quad: false
-    battery:
-      voltage_warning: 3.8  # V
-      voltage_critical: 3.7 # V
-    # firmware_params:
-    #   kalman:
-    #     pNAcc_xy: 1.0 # default 0.5
 
   # Just a marker to track, not a robot to connect to
   marker:
@@ -156,7 +71,8 @@ all:
     stabilizer:
       estimator: 2 # 1: complementary, 2: kalman
       controller: 6 # 1: PID, 2: mellinger 4: sjc 6: Lee 7: lee payload
-      pAlpha: 0.9
+      pAlphaV: 0.9
+      pAlphaW: 0.9
     ctrlLee:
       Kpos_Px: 9.0 # def: 10.0
       Kpos_Py: 9.0 # def: 10.0
@@ -218,24 +134,25 @@ all:
       KI_x: 0.012
       KI_y: 0.018
       KI_z: 0.015
-      mass: 0.034
+      # mass: 0.034
+      mass: 0.0356 # with LED ring, usd
       
       # payload properties
       massP: 0.01 # 3 UAV pointmass case
 
-      ap0id: 5
+      ap0id: 4
       ap0x: 0.0
       ap0y: 0.0
       ap0z: 0.0
       ap0l: 0.5 # manual cable length
 
-      ap1id: 6
+      ap1id: 7
       ap1x: 0.0
       ap1y: 0.0
       ap1z: 0.0
       ap1l: 0.5 # manual cable length
 
-      ap2id: 231
+      ap2id: 6
       ap2x: 0.0
       ap2y: 0.0
       ap2z: 0.0
@@ -247,12 +164,12 @@ all:
 
       gen_hp: 1 # SVM-based hyperplane generation
       # lambda_svm: 10000.0
-      lambda_svm: 1000.0
+      lambda_svm: 10.0
 
       # lambda: 0.0
 
-    # ring:
-    #   effect: 16 # 6: double spinner, 7: solid color, 16: packetRate
+    ring:
+      effect: 7 # 6: double spinner, 7: solid color, 16: packetRate
     #   solidBlue: 255 # if set to solid color
     #   solidGreen: 0 # if set to solid color
     #   solidRed: 0 # if set to solid color
