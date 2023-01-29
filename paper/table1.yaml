@@ -1,0 +1,15 @@
+cases:
+  - name: "2 UAVs, pointmass"
+    files:
+      - "2uav_pm_fig8/cf4_66"
+      - "2uav_pm_fig8/cf7_21"
+    start_time: 8
+    end_time: 25
+
+  - name: "3 UAVs, pointmass"
+    files:
+      - "3uav_pm_fig8/cf4_77"
+      - "3uav_pm_fig8/cf6_80"
+      - "3uav_pm_fig8/cf7_32"
+    start_time: 7.5
+    end_time: 24.5
