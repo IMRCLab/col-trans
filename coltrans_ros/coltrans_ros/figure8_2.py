@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 
 TIMESCALE = 1.0
-HEIGHT = 1.0
+HEIGHT = 0.5
 LOGGING = True
 
 def main():
@@ -32,8 +32,8 @@ def main():
     allcfs.setParam('ring.effect', 7)
     allcfs.setParam('stabilizer.controller', 7)
     timeHelper.sleep(2.0)
-    allcfs.takeoff(targetHeight=HEIGHT, duration=4.0)
-    timeHelper.sleep(4.0)
+    allcfs.takeoff(targetHeight=HEIGHT, duration=3.0)
+    timeHelper.sleep(3.0)
 
     # go to starting point
     for cf in allcfs.crazyflies:
@@ -44,18 +44,23 @@ def main():
     allcfs.startTrajectory(0, timescale=TIMESCALE, relative=False)
     timeHelper.sleep(traj1.duration * TIMESCALE + 2.0)
 
-    # go back to starting position
+    # go back to starting position and hover over floor
     for cf in allcfs.crazyflies:
         cf.goTo([0.5,-1.0,HEIGHT],0,4.0)
     timeHelper.sleep(5.0)
 
+    # hover over floor
+    for cf in allcfs.crazyflies:
+        cf.goTo([0.5,-1.0,0.2],0,2.0)
+    timeHelper.sleep(2.0)
+
     # Switch to another controller, so that the setpoint is not the payload
     allcfs.setParam('stabilizer.controller', 6)
-    timeHelper.sleep(1.0)
+    # timeHelper.sleep(1.0)
 
     # Land!
-    allcfs.land(targetHeight=0.02, duration=3.5)
-    timeHelper.sleep(3.5)
+    allcfs.land(targetHeight=0.1, duration=1.5)
+    timeHelper.sleep(1.5)
 
     allcfs.setParam('ring.effect', 0)
     if LOGGING:
