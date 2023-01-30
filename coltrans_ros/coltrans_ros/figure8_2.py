@@ -18,7 +18,7 @@ def main():
     # allcfs.emergency()
 
     traj1 = Trajectory()
-    traj1.loadcsv("/home/whoenig/projects/crazyflie/crazyswarm2/src/coltrans_ros/data/figure8_2.csv")
+    traj1.loadcsv("/home/whoenig/projects/crazyflie/crazyswarm2/src/coltrans_ros/data/figure8_3.csv")
 
     print("Upload trajectory")
     for cf in allcfs.crazyflies:
@@ -34,10 +34,14 @@ def main():
     timeHelper.sleep(2.0)
     allcfs.takeoff(targetHeight=HEIGHT, duration=3.0)
     timeHelper.sleep(3.0)
+    timeHelper.sleep(3.0) # extra time
+
+    e = traj1.eval(0.0)
 
     # go to starting point
     for cf in allcfs.crazyflies:
-        cf.goTo([0.25,0.0,HEIGHT],0,4.0)
+        cf.goTo([0.25,0.0,HEIGHT],e.yaw,4.0)
+        # cf.goTo([0.0,-0.25,HEIGHT],0,4.0)
     timeHelper.sleep(5.0)
 
     # start trajectory

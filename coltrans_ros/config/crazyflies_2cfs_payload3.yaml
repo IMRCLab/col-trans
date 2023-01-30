@@ -3,8 +3,8 @@ robots:
   cf4:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E704
-    # initial_position: [1.0, -1.0, 0.0]
-    initial_position: [0.0, 0.5, 0.0]
+    initial_position: [1.0, -1.0, 0.0]
+    # initial_position: [0.0, 0.5, 0.0]
     type: cf21 # see robot_types
     firmware_params:
       ring:
@@ -15,8 +15,8 @@ robots:
   cf6:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E706
-    # initial_position: [0.0, -1.0, 0.0]
-    initial_position: [0.0, -0.5, 0.0]
+    initial_position: [0.0, -1.0, 0.0]
+    # initial_position: [0.0, -0.5, 0.0]
     type: cf21 # see robot_types
     firmware_params:
       ring:
@@ -26,8 +26,8 @@ robots:
 
   payload3:
       enabled: true
-      # initial_position: [0.5, -1.0, 0.0]
-      initial_position: [0.0, 0.0, 0.0]
+      initial_position: [0.5, -1.0, 0.0]
+      # initial_position: [0.0, 0.0, 0.0]
       type: mocap_rigidbody  # see robot_types
       id: 255
 
@@ -92,16 +92,16 @@ all:
       mass: 0.0333
     ctrlLeeP:
       # P load
-      Kpos_Px: 16.0 #18.0
-      Kpos_Py: 16.0 #18.0
-      Kpos_Pz: 18.0 #18.0
+      Kpos_Px: 18.0
+      Kpos_Py: 18.0
+      Kpos_Pz: 18.0
       # D load
-      Kpos_Dx: 12.0 #16.0
-      Kpos_Dy: 12.0 #16.0
-      Kpos_Dz: 16.0 #16.0
+      Kpos_Dx: 16.0
+      Kpos_Dy: 16.0
+      Kpos_Dz: 16.0
       # I load
-      Kpos_Ix: 0.0 #5.0
-      Kpos_Iy: 0.0 #5.0
+      Kpos_Ix: 5.0
+      Kpos_Iy: 5.0
       Kpos_Iz: 11.0
       Kpos_I_limit: 100.0 #0.5
 
@@ -114,32 +114,31 @@ all:
       Kprot_Dy: 0.002
       Kprot_Dz: 0.002
       # I attitude Load
-      Kprot_Ix: 0.0
-      Kprot_Iy: 0.0
-      Kprot_Iz: 0.0
+      Kprot_Ix: 0.0001
+      Kprot_Iy: 0.0001
+      Kprot_Iz: 0.0001
 
       # P cable
-      Kqx: 10.0
-      Kqy: 10.0
-      Kqz: 10.0
+      Kqx: 12.0
+      Kqy: 12.0
+      Kqz: 12.0
       Kq_limit: 100.0 #0.7
       # D cable
-      Kwx: 8.0
-      Kwy: 8.0
-      Kwz: 8.0
+      Kwx: 10.0
+      Kwy: 10.0
+      Kwz: 10.0
+      # I cable
+      KqIx: 0.5
+      KqIy: 0.5
+      KqIz: 0.5
 
       # integral gains Lee (30) -- (32)
       c_x: 100.0
       c_R: 100.0
       c_q: 100.0
       h_x0: 0.0 # payload position
-      h_R0: 0.00005 # payload attitude
-      h_xi: 0.00002 # cable
-
-      # I cable
-      KqIx: 0.0 #1.0
-      KqIy: 0.0 #1.0
-      KqIz: 0.0 #1.0
+      h_R0: 0.0 #0.00005 # payload attitude
+      h_xi: 0.0 #0.00002 # cable
 
       # P angle
       KRx: 0.008 #0.0055 #0.008
@@ -153,7 +152,8 @@ all:
       KI_x: 0.02        #0.05 #0.01 #0.009 #0.015
       KI_y: 0.02        #0.05 #0.01 #0.009 #0.015
       KI_z: 0.05        #0.05 #0.01 #0.009 #0.015
-      # mass: 0.034 
+
+      # mass: 0.034
       mass: 0.0356 # with LED ring, usd
 
       en_qdidot: 0 # enable qdidot computation
@@ -193,7 +193,7 @@ all:
       ap1x: 0.0
       ap1y: -0.07
       ap1z: 0.0
-      massP: 0.014
+      massP: 0.0082
 
 
     ring:
