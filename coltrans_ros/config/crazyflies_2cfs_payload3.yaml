@@ -114,9 +114,9 @@ all:
       Kprot_Dy: 0.002
       Kprot_Dz: 0.002
       # I attitude Load
-      Kprot_Ix: 0.0001
-      Kprot_Iy: 0.0001
-      Kprot_Iz: 0.0001
+      Kprot_Ix: 0.0003
+      Kprot_Iy: 0.0003
+      Kprot_Iz: 0.0003
 
       # P cable
       Kqx: 12.0

@@ -7,8 +7,8 @@ from pathlib import Path
 
 import numpy as np
 
-TIMESCALE = 1.0
-HEIGHT = 0.5
+TIMESCALE = 1.2
+HEIGHT = 0.6
 LOGGING = True
 
 def main():
@@ -34,7 +34,7 @@ def main():
     timeHelper.sleep(2.0)
     allcfs.takeoff(targetHeight=HEIGHT, duration=3.0)
     timeHelper.sleep(3.0)
-    timeHelper.sleep(3.0) # extra time
+    timeHelper.sleep(5.0) # extra time
 
     e = traj1.eval(0.0)
 
@@ -43,6 +43,8 @@ def main():
         cf.goTo([0.25,0.0,HEIGHT],e.yaw,4.0)
         # cf.goTo([0.0,-0.25,HEIGHT],0,4.0)
     timeHelper.sleep(5.0)
+
+    timeHelper.sleep(5.0) # extra time
 
     # start trajectory
     allcfs.startTrajectory(0, timescale=TIMESCALE, relative=False)

@@ -7,7 +7,8 @@ import rowan
 
 def main(args=None):
 
-    files = ["cf4_66", "cf7_21"]
+    # files = ["cf4_77", "cf6_80", "cf7_32"]
+    files = ["cf4_86", "cf6_86"]
 
     logDatas = [cfusdlog.decode(f)['fixedFrequency'] for f in files]
     
@@ -16,7 +17,7 @@ def main(args=None):
     # filter
     for k in range(len(files)):
         t = (logDatas[k]['timestamp'] - starttime)/1000
-        idx = np.where(np.logical_and(t > 8, t < 26))
+        idx = np.where(np.logical_and(t > 21.0, t < 37.0))
         for key, value in logDatas[k].items():
             logDatas[k][key] = value[idx]
 
@@ -115,6 +116,80 @@ def main(args=None):
     fig.supxlabel("time [s]",fontsize='small')
 
     plt.show()
+
+    # Payload Orientation
+    fig, ax = plt.subplots(3, 1, sharex=True)
+    
+    for file, logData in zip(files, logDatas):
+        time = (logData['timestamp']-starttime)/1000
+
+        q = np.array([ 
+            logData['stateEstimate.pqw'],
+            logData['stateEstimate.pqx'],
+            logData['stateEstimate.pqy'],
+            logData['stateEstimate.pqz']]).T
+        rpy = np.degrees(rowan.to_euler(rowan.normalize(q), convention='xyz'))
+
+        qp_des = np.array([ 
+            logData['ctrlLeeP.qp_desw'],
+            logData['ctrlLeeP.qp_desx'],
+            logData['ctrlLeeP.qp_desy'],
+            logData['ctrlLeeP.qp_desz']]).T
+        
+        rpydes = np.degrees(rowan.to_euler(rowan.normalize(qp_des), convention='xyz'))
+        
+        for i in range(0,3):
+            ax[i].plot(time, rpy[:,i], lw=0.75,label=file)
+            ax[i].plot(time, rpydes[:,i], lw=0.75,label=file + " desired")
+
+        # error_quat = rowan.geometry.intrinsic_distance(q, qp_des)
+
+    ax[0].set_ylabel('x [deg]')
+    ax[1].set_ylabel('y [deg]')
+    ax[2].set_ylabel('z [deg]')
+    ax[0].legend()
+    fig.supxlabel("time [s]",fontsize='small')
+
+    plt.show()        
+    exit()
+
+    # Payload Orientation
+    fig, axs = plt.subplots(3, 1, sharex=True)
+    axs[0].set_ylabel("x [deg]")
+    axs[1].set_ylabel("y [deg]")
+    axs[2].set_ylabel("z [deg]")
+    axs[-1].set_xlabel("Time [ms]")
+    
+    for file, logData in zip(files, logDatas):
+        time = (logData['timestamp']-starttime)/1000
+
+        q = np.array([ 
+                logData['stateEstimate.qw'],
+                logData['stateEstimate.qx'],
+                logData['stateEstimate.qy'],
+                logData['stateEstimate.qz']]).T
+
+        
+        q = np.array([ 
+        logData['stateEstimate.pqw'],
+        logData['stateEstimate.pqx'],
+        logData['stateEstimate.pqy'],
+        logData['stateEstimate.pqz']]).T
+
+        qp_des = np.array([ 
+        logData['ctrlLeeP.qp_desw'],
+        logData['ctrlLeeP.qp_desx'],
+        logData['ctrlLeeP.qp_desy'],
+        logData['ctrlLeeP.qp_desz']]).T
+        
+        
+        for i in range(0,3):
+            ax[i].plot(time, rpy[:,i], lw=0.75,label=filename)
+            ax[i].plot(time, rpydes[:,i], lw=0.75,label=filename + " desired")
+
+        error_quat = rowan.geometry.intrinsic_distance(q, qp_des)
+
+
     exit()
 
     # Payload orientation
@@ -143,8 +218,14 @@ def main(args=None):
         logData['stateEstimate.pqy'],
         logData['stateEstimate.pqz']]).T
 
-        rpy = np.degrees(rowan.to_euler(rowan.normalize(q), convention='xyz'))
+        qp_des = np.array([ 
+        logData['ctrlLeeP.qp_desw'],
+        logData['ctrlLeeP.qp_desx'],
+        logData['ctrlLeeP.qp_desy'],
+        logData['ctrlLeeP.qp_desz']]).T
+        rpydes = np.degrees(rowan.to_euler(rowan.normalize(q), convention='xyz'))
         
+
         axs[0].plot(logData['timestamp']-latency, rpy[:,0], label=file + " payload")
         axs[1].plot(logData['timestamp']-latency, rpy[:,1], label=file + " payload")
         axs[2].plot(logData['timestamp']-latency, rpy[:,2], label=file + " payload")
