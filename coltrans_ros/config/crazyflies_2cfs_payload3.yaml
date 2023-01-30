@@ -109,9 +109,9 @@ all:
       Kprot_Py: 0.008
       Kprot_Pz: 0.008
       #D attitude Load 
-      Kprot_Dx: 0.001
-      Kprot_Dy: 0.001
-      Kprot_Dz: 0.001
+      Kprot_Dx: 0.002
+      Kprot_Dy: 0.002
+      Kprot_Dz: 0.002
       # I attitude Load
       Kprot_Ix: 0.0
       Kprot_Iy: 0.0
@@ -132,7 +132,7 @@ all:
       c_R: 100.0
       c_q: 100.0
       h_x0: 0.0 # payload position
-      h_R0: 0.00001 # payload attitude
+      h_R0: 0.00005 # payload attitude
       h_xi: 0.00001 # cable
 
       # I cable
@@ -163,7 +163,7 @@ all:
       Kpos_D_limit: 100.0 #0.1 #0.1
 
       radius: 0.15
-      gen_hp: 1 # SVM-based hyperplane generation
+      gen_hp: 3 # SVM-based hyperplane generation
       lambda_svm: 100.0
       lambda: 0.0
       # lambda_svm: 0.0
