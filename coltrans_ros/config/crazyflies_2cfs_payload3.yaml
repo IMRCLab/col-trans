@@ -3,7 +3,7 @@ robots:
   cf4:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E704
-    # initial_position: [0.5, 0.0, 0.0]
+    # initial_position: [1.0, -1.0, 0.0]
     initial_position: [0.0, 0.5, 0.0]
     type: cf21 # see robot_types
     firmware_params:
@@ -15,7 +15,7 @@ robots:
   cf6:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E706
-    # initial_position: [0.0, -0.5, 0.0]
+    # initial_position: [0.0, -1.0, 0.0]
     initial_position: [0.0, -0.5, 0.0]
     type: cf21 # see robot_types
     firmware_params:
@@ -26,6 +26,7 @@ robots:
 
   payload3:
       enabled: true
+      # initial_position: [0.5, -1.0, 0.0]
       initial_position: [0.0, 0.0, 0.0]
       type: mocap_rigidbody  # see robot_types
       id: 255
@@ -118,14 +119,14 @@ all:
       Kprot_Iz: 0.0
 
       # P cable
-      Kqx:  10.0
-      Kqy:  10.0
-      Kqz:  10.0
+      Kqx: 10.0
+      Kqy: 10.0
+      Kqz: 10.0
       Kq_limit: 100.0 #0.7
       # D cable
-      Kwx: 5.0
-      Kwy: 5.0
-      Kwz: 5.0
+      Kwx: 8.0
+      Kwy: 8.0
+      Kwz: 8.0
 
       # integral gains Lee (30) -- (32)
       c_x: 100.0
@@ -133,7 +134,7 @@ all:
       c_q: 100.0
       h_x0: 0.0 # payload position
       h_R0: 0.00005 # payload attitude
-      h_xi: 0.00001 # cable
+      h_xi: 0.00002 # cable
 
       # I cable
       KqIx: 0.0 #1.0
@@ -162,7 +163,7 @@ all:
       Kpos_P_limit: 100.0 #0.5 #0.5
       Kpos_D_limit: 100.0 #0.1 #0.1
 
-      radius: 0.15
+      radius: 0.2
       gen_hp: 3 # SVM-based hyperplane generation
       lambda_svm: 100.0
       lambda: 0.0
