@@ -156,19 +156,19 @@ all:
       ap0x: 0.0
       ap0y: 0.0
       ap0z: 0.0
-      ap0l: 0.51 # manual cable length
+      ap0l: 0.5 # manual cable length
 
       ap1id: 7
       ap1x: 0.0
       ap1y: 0.0
       ap1z: 0.0
-      ap1l: 0.75 # manual cable length
+      ap1l: 0.5 # manual cable length
 
       ap2id: 6
       ap2x: 0.0
       ap2y: 0.0
       ap2z: 0.0
-      ap2l: 0.24 # manual cable length
+      ap2l: 0.5 # manual cable length
 
       Kpos_P_limit: 100.0 #0.5 #0.5
       Kpos_D_limit: 100.0 #0.1 #0.1
@@ -178,6 +178,18 @@ all:
       # lambda_svm: 10000.0
       lambda_svm: 100.0
       # lambda: 0.1
+
+      # desired formation
+      lambda: 0.1
+      ap0dx: 0.0
+      ap0dy: -0.58
+      ap0dz: 0.82
+      ap1dx: 0.0
+      ap1dy: 0.0
+      ap1dz: 1.0
+      ap2dx: 0.0
+      ap2dy: 0.58
+      ap2dz: 0.82
 
     ring:
       effect: 7 # 6: double spinner, 7: solid color, 16: packetRate

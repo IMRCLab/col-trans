@@ -1,8 +1,8 @@
 # named list of all robots
 robots:
-  cf5:
+  cf4:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E705
+    uri: radio://0/80/2M/E7E7E7E704
     # initial_position: [0.5, 0.0, 0.0]
     initial_position: [0.0, 0.5, 0.0]
     type: cf21 # see robot_types
@@ -158,7 +158,8 @@ all:
     stabilizer:
       estimator: 2 # 1: complementary, 2: kalman
       controller: 6 # 1: PID, 2: mellinger 4: sjc 6: Lee 7: lee payload
-      pAlpha: 0.8
+      pAlphaV: 0.8
+      pAlphaW: 0.8
     ctrlLee:
       Kpos_Px: 9.0 # def: 10.0
       Kpos_Py: 9.0 # def: 10.0
@@ -201,9 +202,9 @@ all:
       Kprot_Dy: 0.02
       Kprot_Dz: 0.02
       # I attitude Load
-      Kprot_Ix: 0.005
-      Kprot_Iy: 0.005
-      Kprot_Iz: 0.005
+      Kprot_Ix: 0.0 # 0.005
+      Kprot_Iy: 0.0 # 0.005
+      Kprot_Iz: 0.0 # 0.005
       # P cable
       Kqx:  6.0 #12.0 #6.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
       Kqy:  6.0 #12.0 #6.0 #8.0 # if those gains don't work please try (the old ones): 14.0          #15.0 #25.0 #1.5 #8.5 #1.5 #25.0 #750.0 #150.0 #250.0  #160.0
@@ -256,9 +257,9 @@ all:
       Pinv041: 0.5000000000000001
       Pinv052: 0.5000000000000001
       Pinv053: -1.6666666666666665
-      Pinv0id1: 5
+      Pinv0id1: 4
       Pinv0id2: 6
-      ap0id: 5
+      ap0id: 4
       ap0l: 0.5
       ap0x: 0.0
       ap0y: 0.3

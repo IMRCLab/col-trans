@@ -7,7 +7,7 @@ import rowan
 
 def main(args=None):
 
-    files = ["cf4_35"]
+    files = ["/home/whoenig/tubCloud/projects/coltrans/physical flights/3uav_pm_fig8/cf4_77"]
 
     logDatas = [cfusdlog.decode(f)['qpSolved'] for f in files]
 

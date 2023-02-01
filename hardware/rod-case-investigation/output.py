@@ -28,9 +28,12 @@ def create_subtitle(fig: plt.Figure, grid: SubplotSpec, title: str):
 
 def main(args=None):
     
-    files = ["cf4_86"]
+    # files = ["cf10_05", "cf11_05"]
+    files = ["cf4_10"]
     att_points = [[0,0.07,0], [0,-0.07,0]]
     shape = 'cuboid'
+    start_time = 10
+    end_time = 15
 
     # files = ["../tracking/cf6_77", "../tracking/cf7_29"]
     # att_points = [[0,0.0,0], [0,0.0,0], [0,0.0,0]]
@@ -48,14 +51,14 @@ def main(args=None):
     logDatas = [cfusdlog.decode(f)['fixedFrequency'] for f in files]
 
     starttime = min([logDatas[k]['timestamp'][0] for k in range(len(files))])
-    # starttime = 0
-    # print(logDatas[1]['timestamp'])
-    # exit()
 
-    for k in range(len(files)):
-        idx = np.where((logDatas[k]['timestamp'] - starttime)/1000 < 36)
+    # filter by time
+    for k in range(len(logDatas)):
+        t = (logDatas[k]['timestamp'] - starttime)/1000
+        idx = np.where(np.logical_and(t > start_time, t < end_time))
         for key, value in logDatas[k].items():
             logDatas[k][key] = value[idx]
+
 
     configData = {}
     configData['robots'] = {}
@@ -74,7 +77,7 @@ def main(args=None):
 
     f = PdfPages('results.pdf')
 
-    starttime = min([logDatas[k]['timestamp'][0] for k in range(len(files))])
+    # starttime = min([logDatas[k]['timestamp'][0] for k in range(len(files))])
 
     # payload position
     fig, ax = plt.subplots(3, 1, sharex=True)
@@ -113,22 +116,19 @@ def main(args=None):
     for k, filename in enumerate(files):
         time = (logDatas[k]['timestamp']-starttime)/1000
 
-        p0_dot = np.array([logDatas[k]['stateEstimateZ.pvx']/1000,
+        v0 = np.array([logDatas[k]['stateEstimateZ.pvx']/1000,
                                 logDatas[k]['stateEstimateZ.pvy']/1000, 
                                 logDatas[k]['stateEstimateZ.pvz']/1000,
                                 ]).T
 
-        p0 = np.array([logDatas[k]['stateEstimateZ.px']/1000,
-                                logDatas[k]['stateEstimateZ.py']/1000, 
-                                logDatas[k]['stateEstimateZ.pz']/1000,
+        v0d = np.array([logDatas[k]['ctrltargetZ.vx']/1000,
+                                logDatas[k]['ctrltargetZ.vy']/1000, 
+                                logDatas[k]['ctrltargetZ.vz']/1000,
                                 ]).T
 
-        # p0_dot_est = np.diff(p0, axis=0) / np.tile(np.diff(time),(3,1)).T
-
         for i in range(0,3):
-            ax[i].plot(time, p0_dot[:,i], lw=0.75,label=filename)
-            # ax[i].plot(time[1:], p0_dot_est[:,i], lw=0.75,label=filename + " finite diff")
-
+            ax[i].plot(time, v0[:,i], lw=0.75,label=filename)
+            ax[i].plot(time, v0d[:,i], lw=0.75,label=filename + " desired")
     
     ax[0].set_ylabel('x [m/s]')
     ax[1].set_ylabel('y [m/s]')
@@ -139,6 +139,70 @@ def main(args=None):
     create_subtitle(fig, grid[0, ::], 'Payload velocity')
     fig.savefig(f, format='pdf', bbox_inches='tight')
 
+    # payload orientation
+    fig, ax = plt.subplots(3, 1, sharex=True)
+    fig.tight_layout()
+
+    for k, filename in enumerate(files):
+        time = (logDatas[k]['timestamp']-starttime)/1000
+
+        q = np.array([ 
+            logDatas[k]['stateEstimate.pqw'],
+            logDatas[k]['stateEstimate.pqx'],
+            logDatas[k]['stateEstimate.pqy'],
+            logDatas[k]['stateEstimate.pqz']]).T
+        rpy = np.degrees(rn.to_euler(rn.normalize(q), convention='xyz'))
+
+        qp_des = np.array([ 
+            logDatas[k]['ctrlLeeP.qp_desw'],
+            logDatas[k]['ctrlLeeP.qp_desx'],
+            logDatas[k]['ctrlLeeP.qp_desy'],
+            logDatas[k]['ctrlLeeP.qp_desz']]).T
+        
+        rpydes = np.degrees(rn.to_euler(rn.normalize(qp_des), convention='xyz'))
+
+        for i in range(0,3):
+            ax[i].plot(time, rpy[:,i], lw=0.75,label=filename)
+            ax[i].plot(time, rpydes[:,i], lw=0.75,label=filename + " desired")
+    
+    ax[0].set_ylabel('x [deg]')
+    ax[1].set_ylabel('y [deg]')
+    ax[2].set_ylabel('z [deg]')
+    ax[0].legend()
+    fig.supxlabel("time [s]",fontsize='small')
+    grid = plt.GridSpec(3,1)
+    create_subtitle(fig, grid[0, ::], 'Payload orientation')
+    fig.savefig(f, format='pdf', bbox_inches='tight')
+
+    # payload omega
+    fig, ax = plt.subplots(3, 1, sharex=True)
+    fig.tight_layout()
+
+    for k, filename in enumerate(files):
+        time = (logDatas[k]['timestamp']-starttime)/1000
+
+        pw = np.degrees(np.array([ 
+            logDatas[k]['stateEstimate.pwx'],
+            logDatas[k]['stateEstimate.pwy'],
+            logDatas[k]['stateEstimate.pwz']])).T
+
+        pw_des = np.array([ 
+            logDatas[k]['ctrlLeeP.omega_prx'],
+            logDatas[k]['ctrlLeeP.omega_pry'],
+            logDatas[k]['ctrlLeeP.omega_prz']]).T
+        
+        for i in range(0,3):
+            ax[i].plot(time, pw[:,i], lw=0.75,label=filename)
+            ax[i].plot(time, pw_des[:,i], lw=0.75,label=filename + " desired")
+    
+    ax[0].set_ylabel('x [deg/s]')
+    ax[1].set_ylabel('y [deg/s]')
+    ax[2].set_ylabel('z [deg/s]')
+    ax[0].legend()
+    fig.supxlabel("time [s]",fontsize='small')
+    grid = plt.GridSpec(3,1)
+    create_subtitle(fig, grid[0, ::], 'Payload Omega')
+    fig.savefig(f, format='pdf', bbox_inches='tight')
 
     # Fd
     fig, ax = plt.subplots(3, 1, sharex=True)
@@ -332,11 +396,70 @@ def main(args=None):
     fig.savefig(f, format='pdf', bbox_inches='tight')
 
 
+   
 
-    fig, ax = plt.subplots(3,1, sharex=True)
-    fig.tight_layout()
-    # uav rpy vs rpydes 
+
+    
+    #####################################
+    # Separate per file
+
+
     for k, filename in enumerate(files):
+        
+        fig, ax = plt.subplots(3, 1, sharex=True)
+        fig.tight_layout()
+        time = (logDatas[k]['timestamp']-starttime)/1000
+        
+        qi = np.array([logDatas[k]['ctrlLeeP.qix'],
+                       logDatas[k]['ctrlLeeP.qiy'],
+                       logDatas[k]['ctrlLeeP.qiz']]).T
+
+        mu = np.array([logDatas[k]['ctrlLeeP.desVirtInpx'],
+                        logDatas[k]['ctrlLeeP.desVirtInpy'],
+                        logDatas[k]['ctrlLeeP.desVirtInpz']]).T
+        qdi = []
+        for i in range(mu.shape[0]):
+            munorm = np.linalg.norm(mu[i,:])
+            qdi.append(-mu[i,:]/munorm)
+        qdi = np.array(qdi).reshape(mu.shape[0],3)
+
+        for i in range(0,3):
+            ax[i].plot(time, qi[:,i], lw=0.75,label='qi')
+            ax[i].plot(time, qdi[:,i], lw=0.75,label='desired')
+        create_subtitle(fig, grid[0, ::], 'qi ' + filename)
+        ax[0].set_ylabel('qix')
+        ax[1].set_ylabel('qiy')
+        ax[2].set_ylabel('qiz')
+        ax[0].legend()
+        fig.savefig(f, format='pdf', bbox_inches='tight')
+
+
+        fig, ax = plt.subplots(3,1, sharex=True)
+        fig.tight_layout()
+
+        qidot = np.array([logDatas[k]['ctrlLeeP.qidotx'],
+                          logDatas[k]['ctrlLeeP.qidoty'],
+                          logDatas[k]['ctrlLeeP.qidotz']]).T
+
+
+        qdidot = np.array([logDatas[k]['ctrlLeeP.qdidotx'],
+                          logDatas[k]['ctrlLeeP.qdidoty'],
+                          logDatas[k]['ctrlLeeP.qdidotz']]).T
+
+        for i in range(0,3):
+            ax[i].plot(time, qidot[:,i], lw=0.75,label='qidot')
+            ax[i].plot(time, qdidot[:,i], lw=0.75,label='desired')
+
+        create_subtitle(fig, grid[0, ::], 'qidot ' + filename)
+        ax[0].set_ylabel('qidotx')
+        ax[1].set_ylabel('qidoty')
+        ax[2].set_ylabel('qidotz')
+        ax[0].legend()
+        fig.savefig(f, format='pdf', bbox_inches='tight')
+
+        fig, ax = plt.subplots(3,1, sharex=True)
+        fig.tight_layout()
+        # uav rpy vs rpydes 
         time = (logDatas[k]['timestamp']-starttime)/1000
 
         q = np.array([logDatas[k]['stateEstimate.qw'],
@@ -350,49 +473,48 @@ def main(args=None):
                            logDatas[k]['ctrlLeeP.rpydz']])).T
 
         for i in range(0,3):
-            ax[i].plot(time, rpy[:,i], lw=0.75,label=filename +" rpy")
-            ax[i].plot(time, rpydes[:,i], lw=0.75,label=filename +" rpydes")
-        ax[0].set_ylabel('x [rad]',)
-        ax[1].set_ylabel('y [rad]')
-        ax[2].set_ylabel('z [rad]')
+            ax[i].plot(time, rpy[:,i], lw=0.75,label="rpy")
+            ax[i].plot(time, rpydes[:,i], lw=0.75,label="rpydes")
+        ax[0].set_ylabel('x [deg]',)
+        ax[1].set_ylabel('y [deg]')
+        ax[2].set_ylabel('z [deg]')
         ax[0].legend()
         fig.supxlabel("time [s]",fontsize='small')
         grid = plt.GridSpec(3,1)
-        create_subtitle(fig, grid[0, ::], 'rpy')
-    fig.savefig(f, format='pdf', bbox_inches='tight')
+        create_subtitle(fig, grid[0, ::], 'rpy ' + filename)
+        fig.savefig(f, format='pdf', bbox_inches='tight')
 
 
-    fig, ax = plt.subplots(3,1, sharex=True)
-    fig.tight_layout()
-    # uav gyro vs omegar 
-    for k, filename in enumerate(files):
+        fig, ax = plt.subplots(3,1, sharex=True)
+        fig.tight_layout()
+        # uav gyro vs omegar 
         time = (logDatas[k]['timestamp']-starttime)/1000
 
-        omega = np.array([np.radians(logDatas[k]['gyro.x']),
-                          np.radians(logDatas[k]['gyro.y']),
-                          np.radians(logDatas[k]['gyro.z'])]).T
+        omega = np.array([logDatas[k]['gyro.x'],
+                          logDatas[k]['gyro.y'],
+                          logDatas[k]['gyro.z']]).T
 
-        omegar = np.array([logDatas[k]['ctrlLeeP.omegarx'],
+        omegar = np.degrees(np.array([logDatas[k]['ctrlLeeP.omegarx'],
                           logDatas[k]['ctrlLeeP.omegary'],
-                          logDatas[k]['ctrlLeeP.omegarz']]).T
+                          logDatas[k]['ctrlLeeP.omegarz']])).T
 
         for i in range(0,3):
-            ax[i].plot(time, omega[:,i], lw=0.75,label=filename +" rpy")
-            ax[i].plot(time, omegar[:,i], lw=0.75,label=filename +" rpydes")
-        ax[0].set_ylabel('x [rad/s]',)
-        ax[1].set_ylabel('y [rad/s]')
-        ax[2].set_ylabel('z [rad/s]')
+            ax[i].plot(time, omega[:,i], lw=0.75,label="omega")
+            ax[i].plot(time, omegar[:,i], lw=0.75,label="omega_r")
+        ax[0].set_ylabel('x [deg/s]',)
+        ax[1].set_ylabel('y [deg/s]')
+        ax[2].set_ylabel('z [deg/s]')
         ax[0].legend()
         fig.supxlabel("time [s]",fontsize='small')
         grid = plt.GridSpec(3,1)
-        create_subtitle(fig, grid[0, ::], 'rpy')
-    fig.savefig(f, format='pdf', bbox_inches='tight')
+        create_subtitle(fig, grid[0, ::], 'omega ' + filename)
+        fig.savefig(f, format='pdf', bbox_inches='tight')
 
 
-    fig, ax = plt.subplots(3,1, sharex=True)
-    fig.tight_layout()
-    # uav thrust vs maxthrust [g]
-    for k, filename in enumerate(files):
+        fig, ax = plt.subplots(4,1, sharex=True)
+        fig.tight_layout()
+        # uav thrust vs maxthrust [g]
+        
         time = (logDatas[k]['timestamp']-starttime)/1000
 
         thrustpart = np.array([logDatas[k]['powerDist.thrustPart']/(100)])
@@ -402,15 +524,15 @@ def main(args=None):
         maxThrust  = np.array([logDatas[k]['powerDist.maxThrust']/(100)])
 
         motorForces = np.row_stack(( 
-        thrust - roll - pitch + yaw,
-        thrust - roll + pitch - yaw,
-        thrust + roll + pitch + yaw,
-        thrust + roll - pitch - yaw
+            thrustpart - rollpart - pitchpart + yawpart,
+            thrustpart - rollpart + pitchpart - yawpart,
+            thrustpart + rollpart + pitchpart + yawpart,
+            thrustpart + rollpart - pitchpart - yawpart
         )).T 
 
         for i in range(0,4):
-            ax[i].plot(time, motorForces[:,i], lw=0.75,label=filename +" motorForces")
-            ax[i].plot(time, maxThrust[i], lw=0.75,label=filename +" maxThrust")
+            ax[i].plot(time, motorForces[:,i], lw=0.75,label="motorForces")
+            ax[i].plot(time, maxThrust.T, lw=0.75,label="maxThrust")
         ax[0].set_ylabel('m1 [g]',)
         ax[1].set_ylabel('m2 [g]')
         ax[2].set_ylabel('m3 [g]')
@@ -418,8 +540,8 @@ def main(args=None):
         ax[0].legend()
         fig.supxlabel("time [s]",fontsize='small')
         grid = plt.GridSpec(3,1)
-        create_subtitle(fig, grid[0, ::], 'motor forces')
-    fig.savefig(f, format='pdf', bbox_inches='tight')
+        create_subtitle(fig, grid[0, ::], 'motor forces ' + filename)
+        fig.savefig(f, format='pdf', bbox_inches='tight')
             
     f.close()
 if __name__ == '__main__':

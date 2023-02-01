@@ -1,4 +1,4 @@
-import time
+import numpy as np
 
 import rclpy
 from rclpy.node import Node
@@ -32,113 +32,85 @@ class TeleopNode(Node):
             10)
 
         self.timer = None
+        self.buttons_prev = None
 
-        # # while on the ground, first switch to our controller and then back, to initialize "fast"
-        # time.sleep(10)
-        # param_name = "all.params.stabilizer.controller"
-        # value = 7
-        # param_type = ParameterType.PARAMETER_INTEGER
-        # param_value = ParameterValue(type=param_type, integer_value=int(value))
-        # req = SetParameters.Request()
-        # req.parameters = [Parameter(name=param_name, value=param_value)]
-        # self.setParamsServiceServer.call_async(req)
-
-        # time.sleep(2)
-        # param_name = "all.params.stabilizer.controller"
-        # value = 6
-        # param_type = ParameterType.PARAMETER_INTEGER
-        # param_value = ParameterValue(type=param_type, integer_value=int(value))
-        # req = SetParameters.Request()
-        # req.parameters = [Parameter(name=param_name, value=param_value)]
-        # self.setParamsServiceServer.call_async(req)
-
-        # self.get_logger().info("DONE!")
 
 
     def joy_callback(self, msg: Joy):
-        # the expected configuration is
-        # vars: ["frontnet.targetx", "frontnet.targety", "frontnet.targetz", "frontnet.targetyaw"]
+        buttons = np.array(msg.buttons)
+        
+        if self.buttons_prev is None:
+            self.buttons_prev = buttons
+            return
 
-        # self.get_logger().info('I heard: "%s"' % msg)
+        buttonsChange = buttons - self.buttons_prev
+        self.buttons_prev = buttons
 
-        # blue button: switch to payload controller
-        if msg.buttons[2] == 1:
+        # 2 - blue button: switch to payload controller
+        if buttonsChange[2] == 1:
             # switch to payload controller
-            # for cf in self.cfs:
-            param_name = "all.params.stabilizer.controller"
-            value = 7
-            param_type = ParameterType.PARAMETER_INTEGER
-            param_value = ParameterValue(type=param_type, integer_value=int(value))
-            req = SetParameters.Request()
-            req.parameters = [Parameter(name=param_name, value=param_value)]
-            self.setParamsServiceServer.call_async(req)
-
-            # param_name = "all.params.usd.logging"
-            # value = 1
-            # param_type = ParameterType.PARAMETER_INTEGER
-            # param_value = ParameterValue(type=param_type, integer_value=int(value))
-            # req = SetParameters.Request()
-            # req.parameters = [Parameter(name=param_name, value=param_value)]
-            # self.setParamsServiceServer.call_async(req)
-
+            self.setParamInt("all.params.stabilizer.controller", 7)
+            # self.setParamInt("all.params.usd.logging", 1)
 
             # # switch to manual teleoperation after some time
             # if self.timer is None:
             #     self.timer = self.create_timer(2.0, self.timer_callback)
 
-        
-        if msg.buttons[3] == 1: # yellow button
+        # 3 - yellow button
+        if buttonsChange[3] == 1:
             # # switch to manual teleoperation after some time
             # if self.timer is None:
             #     self.timer = self.create_timer(0.5, self.timer_callback)
 
-            param_name = "all.params.usd.logging"
-            value = 1
-            param_type = ParameterType.PARAMETER_INTEGER
-            param_value = ParameterValue(type=param_type, integer_value=int(value))
-            req = SetParameters.Request()
-            req.parameters = [Parameter(name=param_name, value=param_value)]
-            self.setParamsServiceServer.call_async(req)
+            self.setParamInt("all.params.usd.logging", 1)
 
-        # land: switch back to regular lee controller!
-        if msg.buttons[6] == 1:
+        # 4 - LB
+        if buttonsChange[4] == 1:
+            self.setParamInt("all.params.ctrlLeeP.form_ctrl", 2)
+
+        # 5 - RB
+        if buttonsChange[5] == 1:
+            self.setParamInt("all.params.ctrlLeeP.form_ctrl", 0)
+
+        # land button: switch back to regular lee controller!
+        if buttonsChange[6] == 1:
             # stop logging
-            param_name = "all.params.usd.logging"
-            value = 0
-            param_type = ParameterType.PARAMETER_INTEGER
-            param_value = ParameterValue(type=param_type, integer_value=int(value))
-            req = SetParameters.Request()
-            req.parameters = [Parameter(name=param_name, value=param_value)]
-            self.setParamsServiceServer.call_async(req)
-
-            param_name = "mode"
-            value = "high_level"
-            param_type = ParameterType.PARAMETER_STRING
-            param_value = ParameterValue(type=param_type, string_value=str(value))
-            req = SetParameters.Request()
-            req.parameters = [Parameter(name=param_name, value=param_value)]
-            self.setParamsServiceTeleop.call_async(req)
-
-            param_name = "all.params.stabilizer.controller"
-            value = 6
-            param_type = ParameterType.PARAMETER_INTEGER
-            param_value = ParameterValue(type=param_type, integer_value=int(value))
-            req = SetParameters.Request()
-            req.parameters = [Parameter(name=param_name, value=param_value)]
-            self.setParamsServiceServer.call_async(req)
+            self.setParamInt("all.params.usd.logging", 0)
+            # make sure teleoperation is disabled
+            self.setParamTeleopString("mode", "high_level")
+            # switch to regular Lee controller
+            self.setParamInt("all.params.stabilizer.controller", 6)
 
 
     def timer_callback(self):
-        param_name = "mode"
-        value = "cmd_vel_world"
+        self.setParamTeleopString("mode", "cmd_vel_world")
+
+        self.timer.destroy()
+        self.timer = None
+
+    def setParam(self, param_name, param_value):
+        req = SetParameters.Request()
+        req.parameters = [Parameter(name=param_name, value=param_value)]
+        self.setParamsServiceServer.call_async(req)
+
+    def setParamTeleopString(self, param_name, value):
         param_type = ParameterType.PARAMETER_STRING
         param_value = ParameterValue(type=param_type, string_value=str(value))
         req = SetParameters.Request()
         req.parameters = [Parameter(name=param_name, value=param_value)]
         self.setParamsServiceTeleop.call_async(req)
 
-        self.timer.destroy()
-        self.timer = None
+    def setParamInt(self, name, value):
+        param_type = ParameterType.PARAMETER_INTEGER
+        param_value = ParameterValue(type=param_type, integer_value=int(value))
+        self.setParam(name, param_value)
+
+    def setParamFloat(self, name, value):
+        param_type = ParameterType.PARAMETER_DOUBLE
+        param_value = ParameterValue(type=param_type, double_value=float(value))
+        self.setParam(name, param_value)
+
+
 
 def main(args=None):
     rclpy.init(args=args)

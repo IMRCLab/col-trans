@@ -1,23 +1,23 @@
 # named list of all robots
 robots:
-  cf4:
+  cf10:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E704
+    uri: radio://0/80/2M/E7E7E7E70A
     initial_position: [1.0, -1.0, 0.0]
     # initial_position: [0.0, 0.5, 0.0]
-    type: cf21 # see robot_types
+    type: cf21_betafpv # see robot_types
     firmware_params:
       ring:
         solidBlue: 255 # if set to solid color
         solidGreen: 0 # if set to solid color
         solidRed: 0 # if set to solid color
 
-  cf6:
+  cf11:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E706
+    uri: radio://0/80/2M/E7E7E7E70B
     initial_position: [0.0, -1.0, 0.0]
     # initial_position: [0.0, -0.5, 0.0]
-    type: cf21 # see robot_types
+    type: cf21_betafpv # see robot_types
     firmware_params:
       ring:
         solidBlue: 0 # if set to solid color
@@ -33,7 +33,7 @@ robots:
 
 # Definition of the various robot types
 robot_types:
-  cf21:
+  cf21_betafpv:
     motion_capture:
       enabled: true
       # only if enabled; see motion_capture.yaml
@@ -43,6 +43,17 @@ robot_types:
     battery:
       voltage_warning: 3.8  # V
       voltage_critical: 3.7 # V
+    firmware_params:
+      pwm:
+        d00: 0.6034652836497831
+        d10: 0.07227137807568539
+        d01: -0.4832288487150109
+        d20: -0.0009261372585960825
+        d11: -0.0216219843334675
+
+        e00: -12.564182528108777
+        e10: 5.153254032178315
+        e01: 34.40420347673405
 
   # Just a marker to track, not a robot to connect to
   marker:
@@ -141,17 +152,18 @@ all:
       h_xi: 0.0 #0.00002 # cable
 
       # P angle
-      KRx: 0.008 #0.0055 #0.008
-      KRy: 0.008 #0.0055 #0.008
-      KRz: 0.01         #0.01 #0.008
+      KRx: 0.008
+      KRy: 0.008
+      KRz: 0.008
       # D angle
-      Komx: 0.0013        #0.0013 #0.0017 #0.0013   #0.0017
-      Komy: 0.0013        #0.0013 #0.0017 #0.0013   #0.0017
-      Komz: 0.002          #0.0017
+      en_num_w: 1
+      Komx: 0.002
+      Komy: 0.002
+      Komz: 0.0015
       # I angle
-      KI_x: 0.02        #0.05 #0.01 #0.009 #0.015
-      KI_y: 0.02        #0.05 #0.01 #0.009 #0.015
-      KI_z: 0.05        #0.05 #0.01 #0.009 #0.015
+      KI_x: 0.001
+      KI_y: 0.001
+      KI_z: 0.001
 
       # mass: 0.034
       mass: 0.0356 # with LED ring, usd
@@ -166,8 +178,9 @@ all:
       radius: 0.2
       gen_hp: 3 # SVM-based hyperplane generation
       lambda_svm: 100.0
-      lambda: 0.5
+      
       form_ctrl: 1
+      lambda: 0.5
       # lambda_svm: 0.0
       # lambda: 1.0
 
@@ -182,14 +195,14 @@ all:
       Pinv041: 0.49999999999999983
       Pinv052: 0.5
       Pinv053: -7.1428571428571415
-      Pinv0id1: 4
-      Pinv0id2: 6
-      ap0id: 4
+      Pinv0id1: 10
+      Pinv0id2: 11
+      ap0id: 10
       ap0l: 0.48
       ap0x: 0.0
       ap0y: 0.07
       ap0z: 0.0
-      ap1id: 6
+      ap1id: 11
       ap1l: 0.5
       ap1x: 0.0
       ap1y: -0.07
