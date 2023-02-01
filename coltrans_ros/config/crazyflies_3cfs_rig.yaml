@@ -1,22 +1,37 @@
 # named list of all robots
 robots:
-  cf5:
+  cf7:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E705
+    uri: radio://0/80/2M/E7E7E7E707
     initial_position: [0.5, 0.0, 0.0]
     type: cf21 # see robot_types
+    firmware_params:
+      ring:
+        solidBlue: 255 # if set to solid color
+        solidGreen: 0 # if set to solid color
+        solidRed: 0 # if set to solid color
 
   cf4:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E704
     initial_position: [0.0, 0.5, 0.0]
     type: cf21 # cf21_betafpv  # see robot_types
+    firmware_params:
+      ring:
+        solidBlue: 0 # if set to solid color
+        solidGreen: 255 # if set to solid color
+        solidRed: 0 # if set to solid color
 
-  cf6:
+  cf5:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E706
+    uri: radio://0/80/2M/E7E7E7E705
     initial_position: [0.0, -0.5, 0.0]
     type: cf21 # see robot_types
+    firmware_params:
+      ring:
+        solidBlue: 0 # if set to solid color
+        solidGreen: 0 # if set to solid color
+        solidRed: 255 # if set to solid color
 
   payload2:
       enabled: true
@@ -36,65 +51,6 @@ robot_types:
     battery:
       voltage_warning: 3.8  # V
       voltage_critical: 3.7 # V
-    # firmware_params:
-    #   kalman:
-    #     pNAcc_xy: 1.0 # default 0.5
-    # these are the settings for the BetaFPV motors
-  cf21_betafpv:
-    motion_capture:
-      enabled: true
-      # only if enabled; see motion_capture.yaml
-      marker: systemid #default_single_marker #mocap_deck
-      dynamics: default
-    big_quad: false
-    battery:
-      voltage_warning: 3.8  # V
-      voltage_critical: 3.7 # V
-    firmware_params:
-      pwm:
-        d00: 0.6034652836497831
-        d10: 0.07227137807568539
-        d01: -0.4832288487150109
-        d20: -0.0009261372585960825
-        d11: -0.0216219843334675
-
-        e00: -12.564182528108777
-        e10: 5.153254032178315
-        e01: 34.40420347673405
-      ctrlLee:
-        Kpos_Px: 10.0 # def: 10.0, 9.
-        Kpos_Py: 10.0 # def: 10.0, 9.
-        Kpos_Pz: 10.0 # def: 10.0, 9.
-        Kpos_Dx: 8.0  # def: 8.0, 5.0
-        Kpos_Dy: 8.0  # def: 8.0, 5.
-        Kpos_Dz: 8.0  # def: 8.0  ,5.
-        Kpos_Ix: 0.0  # 5.0
-        Kpos_Iy: 0.0  # 5.0
-        Kpos_Iz: 0.0  # 8.0
-        KR_x: 0.006 #0.0055   # def: 0.005  
-        KR_y: 0.006 #0.0055  # def: 0.005
-        KR_z: 0.006  #0.008   # def: 0.005
-        Kw_x: 0.002 #0.0013 # def: 0.0009
-        Kw_y: 0.002 #0.0013  # def: 0.0009
-        Kw_z: 0.0015  # def: 0.0012
-        KI_x: 0.001 #0.012 #0.009 #0.015
-        KI_y: 0.001 #0.018 #0.009 #0.015
-        KI_z: 0.001 #0.015 #0.009 #0.015
-        mass: 0.0386 # for systemid
-
-  cf21_mocap_deck:
-    motion_capture:
-      enabled: true
-      # only if enabled; see motion_capture.yaml
-      marker: mocap_deck
-      dynamics: default
-    big_quad: false
-    battery:
-      voltage_warning: 3.8  # V
-      voltage_critical: 3.7 # V
-    # firmware_params:
-    #   kalman:
-    #     pNAcc_xy: 1.0 # default 0.5
 
   # Just a marker to track, not a robot to connect to
   marker:
@@ -144,66 +100,84 @@ all:
       mass: 0.0333
     ctrlLeeP:
       # P load
-      Kpos_Px:  8.0     #18.0 #15.0 #20.0 #15.0 #100.0 #60.0
-      Kpos_Py:  8.0     #18.0 #15.0 #20.0 #15.0 #100.0 #60.0
-      Kpos_Pz:  32.0     #18.0 #20.0 #15.0 #160.0 #90.0
+      Kpos_Px: 8.0 #18.0
+      Kpos_Py: 8.0 #18.0
+      Kpos_Pz: 18.0
       # D load
-      Kpos_Dx:  4.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
-      Kpos_Dy:  4.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
-      Kpos_Dz:  16.0      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
+      Kpos_Dx: 4.0 #16.0
+      Kpos_Dy: 4.0 #16.0
+      Kpos_Dz: 16.0
       # I load
-      Kpos_Ix: 0.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
-      Kpos_Iy: 0.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
-      Kpos_Iz: 0.0 #4.0 # 2.0      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
-      # # P attitude Load: 
-      Kprot_Px: 0.002 #0.01
-      Kprot_Py: 0.002 #0.01
-      Kprot_Pz: 0.002 #0.01
-      # #D attitude Load 
-      Kprot_Dx: 0.0003 #0.02
-      Kprot_Dy: 0.0003 #0.02
-      Kprot_Dz: 0.0003 #0.02
+      Kpos_Ix: 0.0 #5.0
+      Kpos_Iy: 0.0 #5.0
+      Kpos_Iz: 11.0
+      Kpos_I_limit: 100.0 #0.5
+
+      # P attitude Load: 
+      Kprot_Px: 0.002 # 0.008
+      Kprot_Py: 0.002 # 0.008
+      Kprot_Pz: 0.002 # 0.008
+      #D attitude Load 
+      Kprot_Dx: 0.0003 #0.002
+      Kprot_Dy: 0.0003 #0.002
+      Kprot_Dz: 0.0003 #0.002
       # I attitude Load
-      Kprot_Ix: 0.0 # 0.005
-      Kprot_Iy: 0.0 # 0.005
-      Kprot_Iz: 0.0 # 0.005
+      Kprot_Ix: 0.0 #0.0003
+      Kprot_Iy: 0.0 #0.0003
+      Kprot_Iz: 0.0 #0.0003
+
       # P cable
-      Kqx:  11.0
-      Kqy:  11.0
-      Kqz:  11.0
+      Kqx: 10.0
+      Kqy: 10.0
+      Kqz: 10.0
+      Kq_limit: 100.0 #0.7
       # D cable
-      Kwx:  5.0
-      Kwy:  5.0
-      Kwz:  5.0
+      Kwx: 8.0
+      Kwy: 8.0
+      Kwz: 8.0
       # I cable
-      KqIx: 0.0 # 0.05
-      KqIy: 0.0 # 0.05
-      KqIz: 0.0 # 0.05
+      KqIx: 0.5
+      KqIy: 0.5
+      KqIz: 0.5
+
+      # integral gains Lee (30) -- (32)
+      c_x: 100.0
+      c_R: 100.0
+      c_q: 100.0
+      h_x0: 0.0 # payload position
+      h_R0: 0.0 #0.00005 # payload attitude
+      h_xi: 0.0 #0.00002 # cable
+
       # P angle
-      KRx: 0.008 #0.0055 #0.008
-      KRy: 0.008 #0.0055 #0.008
-      KRz: 0.01         #0.01 #0.008
+      KRx: 0.008
+      KRy: 0.008
+      KRz: 0.01
       # D angle
-      Komx: 0.0013        #0.0013 #0.0017 #0.0013   #0.0017
-      Komy: 0.0013        #0.0013 #0.0017 #0.0013   #0.0017
-      Komz: 0.002          #0.0017
+      Komx: 0.0013
+      Komy: 0.0013
+      Komz: 0.002
       # I angle
-      KI_x: 0.02        #0.05 #0.01 #0.009 #0.015
-      KI_y: 0.02        #0.05 #0.01 #0.009 #0.015
-      KI_z: 0.05        #0.05 #0.01 #0.009 #0.015
-      mass: 0.034 
+      KI_x: 0.02
+      KI_y: 0.02
+      KI_z: 0.05
+
+      # mass: 0.034
+      mass: 0.0356 # with LED ring, usd
 
       en_qdidot: 0 # enable qdidot computation
       en_accrb: 1
+      
 
       Kpos_P_limit: 100.0 #0.5 #0.5
       Kpos_D_limit: 100.0 #0.1 #0.1
-      Kpos_I_limit: 100.0
 
       radius: 0.2
       gen_hp: 3 # SVM-based hyperplane generation
       lambda_svm: 100.0
       lambda: 0.0
+      form_ctrl: 1
+      # lambda_svm: 0.0
+      # lambda: 1.0
 
       # payload properties (generated using gen_Pinv.py)
       Pinv000: 0.6269430051813467
@@ -224,8 +198,8 @@ all:
       Pinv052: 0.49720735203938105
       Pinv053: -7.262542055455218
       Pinv054: 12.430183800984484
-      Pinv0id1: 5
-      Pinv0id2: 6
+      Pinv0id1: 7
+      Pinv0id2: 5
       Pinv100: 0.6269430051813467
       Pinv101: -0.07253886010362721
       Pinv105: 7.253886010362682
@@ -244,7 +218,7 @@ all:
       Pinv152: 0.49720735203938105
       Pinv153: 7.262542055455218
       Pinv154: 12.430183800984484
-      Pinv1id1: 5
+      Pinv1id1: 7
       Pinv1id2: 4
       Pinv200: 0.5
       Pinv201: 0.28571428571428614
@@ -260,14 +234,14 @@ all:
       Pinv252: 0.49980007996801296
       Pinv253: 14.285714285714281
       Pinv254: 0.009996001599359369
-      Pinv2id1: 6
+      Pinv2id1: 5
       Pinv2id2: 4
-      ap0id: 5
+      ap0id: 7
       ap0l: 0.5
       ap0x: 0.04
       ap0y: 0.0
       ap0z: 0.0
-      ap1id: 6
+      ap1id: 5
       ap1l: 0.5
       ap1x: -0.02
       ap1y: -0.035
@@ -281,8 +255,8 @@ all:
 
 
 
-    # ring:
-    #   effect: 16 # 6: double spinner, 7: solid color, 16: packetRate
+    ring:
+      effect: 7 # 6: double spinner, 7: solid color, 16: packetRate
     #   solidBlue: 255 # if set to solid color
     #   solidGreen: 0 # if set to solid color
     #   solidRed: 0 # if set to solid color
@@ -298,7 +272,7 @@ all:
     # led:
     #   bitmask: 128s
   firmware_logging:
-    enabled: true
+    enabled: false
     default_topics:
      # remove to disable default topic
       pose:
