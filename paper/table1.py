@@ -64,6 +64,7 @@ def main(args=None):
             trial["totals"].extend(total.tolist())
         
         trial["pos_errors"] = []
+        trial["rot_errors"] = []
 
         for k in range(len(logDatas)):
             logdata = logDatas[k]["fixedFrequency"]
@@ -84,13 +85,44 @@ def main(args=None):
             eucl_error = np.linalg.norm(error, axis=1)*100 # in cm
             trial["pos_errors"].extend(eucl_error.tolist())
 
+
+            q = np.array([ 
+                logdata['stateEstimate.pqw'],
+                logdata['stateEstimate.pqx'],
+                logdata['stateEstimate.pqy'],
+                logdata['stateEstimate.pqz']]).T
+
+            qp_des = np.array([ 
+                logdata['ctrlLeeP.qp_desw'],
+                logdata['ctrlLeeP.qp_desx'],
+                logdata['ctrlLeeP.qp_desy'],
+                logdata['ctrlLeeP.qp_desz']]).T
+
+            error_quat = np.degrees(rowan.geometry.intrinsic_distance(q, qp_des)) # in deg
+            trial["rot_errors"].extend(error_quat.tolist())
+
     # print(cfg)
 
     print(r"%%%%%%%%%%%%%%%%%%%%%%%%%%%")
     print(r"% Generated table, do not edit!")
-    print(r"\begin{tabular}{l||c||c}")
+    print(r"\begin{tabular}{l||c||c||c}")
     print(r"& " + " & ".join([trial["name"] for trial in cfg["cases"]]) + r"\\")
+    
     print(r"\hline\hline")
+
+    print(r"Payload & ", end='')
+    print(" & ".join(["{}".format(trial["payload"]) for trial in cfg["cases"]]) + r"\\")
+    print(r"Trajectory & ", end='')
+    print(" & ".join(["{}".format(trial["trajectory"]) for trial in cfg["cases"]]) + r"\\")
+    print(r"Mass [g] & ", end='')
+    print(" & ".join(["{}".format(trial["mass"]) for trial in cfg["cases"]]) + r"\\")
+    print(r"Dimension [cm] & ", end='')
+    print(" & ".join(["{}".format(trial["dimensions"]) for trial in cfg["cases"]]) + r"\\")
+    print(r"Cables [cm] & ", end='')
+    print(" & ".join([", ".join(str(l) for l in trial["cables"]) for trial in cfg["cases"]]) + r"\\")
+    
+    print(r"\hline")
+
     print(r"QP runtime total [ms] & ", end='')
     print(" & ".join(["{:.1f} ({:.1f})".format(np.mean(trial["totals"]), np.std(trial["totals"])) for trial in cfg["cases"]]) + r"\\")
 
@@ -105,9 +137,10 @@ def main(args=None):
 
     print(r"\hline")
 
-    print(r"Payload tracking error [cm] & ", end='')
+    print(r"Payload position error [cm] & ", end='')
     print(" & ".join(["{:.1f} ({:.1f})".format(np.mean(trial["pos_errors"]), np.std(trial["pos_errors"])) for trial in cfg["cases"]]) + r"\\")
-
+    print(r"Payload rotation error [deg] & ", end='')
+    print(" & ".join(["{:.1f} ({:.1f})".format(np.mean(trial["rot_errors"]), np.std(trial["rot_errors"])) if np.isfinite(trial["rot_errors"]).all() else " - " for trial in cfg["cases"]]) + r"\\")
 
 
     print(r"\end{tabular}")

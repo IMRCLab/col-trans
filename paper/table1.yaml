@@ -1,15 +1,37 @@
 cases:
-  - name: "2 UAVs, pointmass"
+  - name: "2 UAVs, point mass"
     files:
       - "2uav_pm_fig8/cf4_66"
       - "2uav_pm_fig8/cf7_21"
     start_time: 8
     end_time: 25
+    mass: 10 # g
+    dimensions: "-"
+    cables: [25, 50] #cm
+    payload: "point mass"
+    trajectory: "figure 8"
 
-  - name: "3 UAVs, pointmass"
+  - name: "3 UAVs, point mass"
     files:
       - "3uav_pm_fig8/cf4_77"
       - "3uav_pm_fig8/cf6_80"
       - "3uav_pm_fig8/cf7_32"
     start_time: 7.5
     end_time: 24.5
+    mass: 10 # g
+    dimensions: "-"
+    cables: [25, 50, 75] #cm
+    payload: "point mass"
+    trajectory: "figure 8"
+
+  - name: "2 UAVs, rod"
+    files:
+      - "2uav_payload3_fig8/cf4_86"
+      - "2uav_payload3_fig8/cf6_86"
+    start_time: 21
+    end_time: 37
+    mass: 8 # g
+    dimensions: "15" # cm
+    cables: [50, 50] #cm
+    payload: "point mass"
+    trajectory: "figure 8"
