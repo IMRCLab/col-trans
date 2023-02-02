@@ -46,6 +46,11 @@ class TeleopNode(Node):
         buttonsChange = buttons - self.buttons_prev
         self.buttons_prev = buttons
 
+        # 0 - green button
+        if buttonsChange[0] == 1:
+            # switch to manual teleoperation
+            self.setParamTeleopString("mode", "cmd_vel_world")
+
         # 2 - blue button: switch to payload controller
         if buttonsChange[2] == 1:
             # switch to payload controller
@@ -66,11 +71,18 @@ class TeleopNode(Node):
 
         # 4 - LB
         if buttonsChange[4] == 1:
-            self.setParamInt("all.params.ctrlLeeP.form_ctrl", 1)
+            # # switch back to "normal" regularization
+            # self.setParamFloat("all.params.ctrlLeeP.lambda", 0.5)
+            # self.setParamInt("all.params.ctrlLeeP.form_ctrl", 1)
+
+            # switch desired formation off
+            self.setParamInt("all.params.ctrlLeeP.form_ctrl", 0)
 
         # 5 - RB
         if buttonsChange[5] == 1:
-            self.setParamInt("all.params.ctrlLeeP.form_ctrl", 0)
+            # switch to desired formation
+            self.setParamFloat("all.params.ctrlLeeP.lambda", 4.0)
+            self.setParamInt("all.params.ctrlLeeP.form_ctrl", 2)
 
         # land button: switch back to regular lee controller!
         if buttonsChange[6] == 1:

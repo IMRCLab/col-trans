@@ -180,8 +180,8 @@ all:
       # lambda: 0.1
 
       # desired formation
-      lambda: 4.0
-      form_ctrl: 2
+      lambda: 0.5 # for fixed formation, 4 is a good value
+      form_ctrl: 1
       ap0dx: 0.0
       ap0dy: -0.58
       ap0dz: 0.82
