@@ -76,7 +76,7 @@ all:
     stabilizer:
       estimator: 2 # 1: complementary, 2: kalman
       controller: 6 # 1: PID, 2: mellinger 4: sjc 6: Lee 7: lee payload
-      pAlphaV: 0.8
+      pAlphaV: 0.65
       pAlphaW: 0.8
     ctrlLee:
       Kpos_Px: 9.0 # def: 10.0
@@ -100,17 +100,19 @@ all:
       mass: 0.0333
     ctrlLeeP:
       # P load
-      Kpos_Px: 8.0 #18.0
-      Kpos_Py: 8.0 #18.0
-      Kpos_Pz: 32.0
+      Kpos_Px: 14.0 #18.0
+      Kpos_Py: 14.0 #18.0
+      Kpos_Pz: 24.0
       # D load
-      Kpos_Dx: 4.0 #16.0
-      Kpos_Dy: 4.0 #16.0
-      Kpos_Dz: 16.0
+      Kpos_Dx: 13.0 #16.0
+      Kpos_Dy: 13.0 #16.0
+      Kpos_Dz: 13.0
+      Kpos_D_limit: 0.6
+
       # I load
       Kpos_Ix: 0.0 #5.0
       Kpos_Iy: 0.0 #5.0
-      Kpos_Iz: 0.0
+      Kpos_Iz: 10.0
       Kpos_I_limit: 100.0 #0.5
 
       # P attitude Load: 
@@ -121,10 +123,12 @@ all:
       Kprot_Dx: 0.0003 #0.002
       Kprot_Dy: 0.0003 #0.002
       Kprot_Dz: 0.0003 #0.002
+      Kprot_D_limit: 10.0
+
       # I attitude Load
-      Kprot_Ix: 0.0 #0.0001
-      Kprot_Iy: 0.0 #0.0001
-      Kprot_Iz: 0.0 #0.0001
+      Kprot_Ix: 0.0001
+      Kprot_Iy: 0.0001
+      Kprot_Iz: 0.0001
 
       # P cable
       Kqx: 11.0
@@ -132,13 +136,13 @@ all:
       Kqz: 11.0
       Kq_limit: 100.0 #0.7
       # D cable
-      Kwx: 5.0
-      Kwy: 5.0
-      Kwz: 5.0
+      Kwx: 6.0
+      Kwy: 6.0
+      Kwz: 6.0
       # I cable
-      KqIx: 0.0
-      KqIy: 0.0
-      KqIz: 0.0
+      KqIx: 0.5
+      KqIy: 0.5
+      KqIz: 0.5
 
       # integral gains Lee (30) -- (32)
       c_x: 100.0
@@ -154,8 +158,8 @@ all:
       KRz: 0.01
       # D angle
       en_num_w: 0
-      Komx: 0.0013
-      Komy: 0.0013
+      Komx: 0.0016
+      Komy: 0.0016
       Komz: 0.002
       Kom_limit: 100.0
       # I angle
@@ -171,7 +175,6 @@ all:
       
 
       Kpos_P_limit: 100.0 #0.5 #0.5
-      Kpos_D_limit: 100.0 #0.1 #0.1
 
       radius: 0.2
       gen_hp: 2 # SVM-based hyperplane generation
