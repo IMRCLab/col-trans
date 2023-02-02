@@ -66,7 +66,7 @@ class TeleopNode(Node):
 
         # 4 - LB
         if buttonsChange[4] == 1:
-            self.setParamInt("all.params.ctrlLeeP.form_ctrl", 2)
+            self.setParamInt("all.params.ctrlLeeP.form_ctrl", 1)
 
         # 5 - RB
         if buttonsChange[5] == 1:

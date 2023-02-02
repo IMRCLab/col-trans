@@ -15,7 +15,7 @@ robots:
   cf7:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E707
-    initial_position: [-0.25, -1.0, 0.0]
+    initial_position: [0.5, -0.5, 0.0]
     type: cf21 # see robot_types
     firmware_params:
       ring:
@@ -23,10 +23,10 @@ robots:
         solidGreen: 0 # if set to solid color
         solidRed: 255 # if set to solid color
 
-  cf6:
+  cf8:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E706
-    initial_position: [0.5, -0.75, 0.0]
+    uri: radio://0/80/2M/E7E7E7E708
+    initial_position: [0.0, -1.0, 0.0]
     type: cf21 # see robot_types
     firmware_params:
       ring:
@@ -164,7 +164,7 @@ all:
       ap1z: 0.0
       ap1l: 0.5 # manual cable length
 
-      ap2id: 6
+      ap2id: 8
       ap2x: 0.0
       ap2y: 0.0
       ap2z: 0.0
@@ -180,7 +180,8 @@ all:
       # lambda: 0.1
 
       # desired formation
-      lambda: 0.1
+      lambda: 4.0
+      form_ctrl: 2
       ap0dx: 0.0
       ap0dy: -0.58
       ap0dz: 0.82
@@ -192,7 +193,7 @@ all:
       ap2dz: 0.82
 
     ring:
-      effect: 7 # 6: double spinner, 7: solid color, 16: packetRate
+      effect: 0 # 6: double spinner, 7: solid color, 16: packetRate
     #   solidBlue: 255 # if set to solid color
     #   solidGreen: 0 # if set to solid color
     #   solidRed: 0 # if set to solid color

@@ -29,11 +29,11 @@ def create_subtitle(fig: plt.Figure, grid: SubplotSpec, title: str):
 def main(args=None):
     
     # files = ["cf10_05", "cf11_05"]
-    files = ["cf4_10"]
+    files = ["cf8_43"]
     att_points = [[0,0.07,0], [0,-0.07,0]]
     shape = 'cuboid'
-    start_time = 10
-    end_time = 15
+    start_time = 7
+    end_time = 100
 
     # files = ["../tracking/cf6_77", "../tracking/cf7_29"]
     # att_points = [[0,0.0,0], [0,0.0,0], [0,0.0,0]]
@@ -151,19 +151,20 @@ def main(args=None):
             logDatas[k]['stateEstimate.pqx'],
             logDatas[k]['stateEstimate.pqy'],
             logDatas[k]['stateEstimate.pqz']]).T
-        rpy = np.degrees(rn.to_euler(rn.normalize(q), convention='xyz'))
+        if np.isfinite(q[:,3]).all():
+            rpy = np.degrees(rn.to_euler(rn.normalize(q), convention='xyz'))
 
-        qp_des = np.array([ 
-            logDatas[k]['ctrlLeeP.qp_desw'],
-            logDatas[k]['ctrlLeeP.qp_desx'],
-            logDatas[k]['ctrlLeeP.qp_desy'],
-            logDatas[k]['ctrlLeeP.qp_desz']]).T
-        
-        rpydes = np.degrees(rn.to_euler(rn.normalize(qp_des), convention='xyz'))
+            qp_des = np.array([ 
+                logDatas[k]['ctrlLeeP.qp_desw'],
+                logDatas[k]['ctrlLeeP.qp_desx'],
+                logDatas[k]['ctrlLeeP.qp_desy'],
+                logDatas[k]['ctrlLeeP.qp_desz']]).T
+            
+            rpydes = np.degrees(rn.to_euler(rn.normalize(qp_des), convention='xyz'))
 
-        for i in range(0,3):
-            ax[i].plot(time, rpy[:,i], lw=0.75,label=filename)
-            ax[i].plot(time, rpydes[:,i], lw=0.75,label=filename + " desired")
+            for i in range(0,3):
+                ax[i].plot(time, rpy[:,i], lw=0.75,label=filename)
+                ax[i].plot(time, rpydes[:,i], lw=0.75,label=filename + " desired")
     
     ax[0].set_ylabel('x [deg]')
     ax[1].set_ylabel('y [deg]')
