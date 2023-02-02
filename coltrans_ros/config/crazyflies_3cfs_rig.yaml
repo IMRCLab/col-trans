@@ -22,9 +22,9 @@ robots:
         solidGreen: 255 # if set to solid color
         solidRed: 0 # if set to solid color
 
-  cf5:
+  cf8:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E705
+    uri: radio://0/80/2M/E7E7E7E708
     initial_position: [0.0, -0.5, 0.0]
     type: cf21 # see robot_types
     firmware_params:
@@ -77,7 +77,7 @@ all:
       estimator: 2 # 1: complementary, 2: kalman
       controller: 6 # 1: PID, 2: mellinger 4: sjc 6: Lee 7: lee payload
       pAlphaV: 0.8
-      pAlphaW: 0.5
+      pAlphaW: 0.8
     ctrlLee:
       Kpos_Px: 9.0 # def: 10.0
       Kpos_Py: 9.0 # def: 10.0
@@ -102,7 +102,7 @@ all:
       # P load
       Kpos_Px: 8.0 #18.0
       Kpos_Py: 8.0 #18.0
-      Kpos_Pz: 18.0
+      Kpos_Pz: 32.0
       # D load
       Kpos_Dx: 4.0 #16.0
       Kpos_Dy: 4.0 #16.0
@@ -110,7 +110,7 @@ all:
       # I load
       Kpos_Ix: 0.0 #5.0
       Kpos_Iy: 0.0 #5.0
-      Kpos_Iz: 11.0
+      Kpos_Iz: 0.0
       Kpos_I_limit: 100.0 #0.5
 
       # P attitude Load: 
@@ -122,23 +122,23 @@ all:
       Kprot_Dy: 0.0003 #0.002
       Kprot_Dz: 0.0003 #0.002
       # I attitude Load
-      Kprot_Ix: 0.0 #0.0003
-      Kprot_Iy: 0.0 #0.0003
-      Kprot_Iz: 0.0 #0.0003
+      Kprot_Ix: 0.0 #0.0001
+      Kprot_Iy: 0.0 #0.0001
+      Kprot_Iz: 0.0 #0.0001
 
       # P cable
-      Kqx: 10.0
-      Kqy: 10.0
-      Kqz: 10.0
+      Kqx: 11.0
+      Kqy: 11.0
+      Kqz: 11.0
       Kq_limit: 100.0 #0.7
       # D cable
-      Kwx: 8.0
-      Kwy: 8.0
-      Kwz: 8.0
+      Kwx: 5.0
+      Kwy: 5.0
+      Kwz: 5.0
       # I cable
-      KqIx: 0.5
-      KqIy: 0.5
-      KqIz: 0.5
+      KqIx: 0.0
+      KqIy: 0.0
+      KqIz: 0.0
 
       # integral gains Lee (30) -- (32)
       c_x: 100.0
@@ -153,9 +153,11 @@ all:
       KRy: 0.008
       KRz: 0.01
       # D angle
+      en_num_w: 0
       Komx: 0.0013
       Komy: 0.0013
       Komz: 0.002
+      Kom_limit: 100.0
       # I angle
       KI_x: 0.02
       KI_y: 0.02
@@ -172,10 +174,8 @@ all:
       Kpos_D_limit: 100.0 #0.1 #0.1
 
       radius: 0.2
-      gen_hp: 3 # SVM-based hyperplane generation
+      gen_hp: 2 # SVM-based hyperplane generation
       lambda_svm: 100.0
-      lambda: 0.0
-      form_ctrl: 1
       # lambda_svm: 0.0
       # lambda: 1.0
 
@@ -199,7 +199,7 @@ all:
       Pinv053: -7.262542055455218
       Pinv054: 12.430183800984484
       Pinv0id1: 7
-      Pinv0id2: 5
+      Pinv0id2: 8
       Pinv100: 0.6269430051813467
       Pinv101: -0.07253886010362721
       Pinv105: 7.253886010362682
@@ -234,14 +234,14 @@ all:
       Pinv252: 0.49980007996801296
       Pinv253: 14.285714285714281
       Pinv254: 0.009996001599359369
-      Pinv2id1: 5
+      Pinv2id1: 8
       Pinv2id2: 4
       ap0id: 7
       ap0l: 0.5
       ap0x: 0.04
       ap0y: 0.0
       ap0z: 0.0
-      ap1id: 5
+      ap1id: 8
       ap1l: 0.5
       ap1x: -0.02
       ap1y: -0.035
@@ -253,10 +253,21 @@ all:
       ap2z: 0.0
       massP: 0.01
 
-
+      # desired formation
+      lambda: 0.0
+      form_ctrl: 1
+      ap0dx: 0.0
+      ap0dy: -0.58
+      ap0dz: 0.82
+      ap1dx: 0.0
+      ap1dy: 0.0
+      ap1dz: 1.0
+      ap2dx: 0.0
+      ap2dy: 0.58
+      ap2dz: 0.82
 
     ring:
-      effect: 7 # 6: double spinner, 7: solid color, 16: packetRate
+      effect: 0 # 6: double spinner, 7: solid color, 16: packetRate
     #   solidBlue: 255 # if set to solid color
     #   solidGreen: 0 # if set to solid color
     #   solidRed: 0 # if set to solid color
