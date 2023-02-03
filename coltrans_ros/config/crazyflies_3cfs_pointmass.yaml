@@ -4,7 +4,7 @@ robots:
   cf4:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E704
-    initial_position: [1.0, -1.0, 0.0]
+    initial_position: [1.0, 0.5, 0.0]
     type: cf21 # see robot_types
     firmware_params:
       ring:
@@ -15,7 +15,7 @@ robots:
   cf7:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E707
-    initial_position: [0.5, -0.5, 0.0]
+    initial_position: [0.5, 0.0, 0.0]
     type: cf21 # see robot_types
     firmware_params:
       ring:
@@ -26,7 +26,7 @@ robots:
   cf8:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E708
-    initial_position: [0.0, -1.0, 0.0]
+    initial_position: [0.0, 0.5, 0.0]
     type: cf21 # see robot_types
     firmware_params:
       ring:
@@ -36,7 +36,7 @@ robots:
 
   payload:
     enabled: true
-    initial_position: [0.5, -1.0, 0.0]
+    initial_position: [0.5, 0.5, 0.0]
     type: marker    # see robot_types
     id: 255
 
@@ -126,9 +126,9 @@ all:
       Kwy: 8.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
       Kwz: 8.0          #10.0 #24.0 #1.2 #7.0 #1.5 #1.0 #15.0 #700.0 #80.0 #100.0 #60.0 
       # I cable
-      KqIx: 1.0
-      KqIy: 1.0
-      KqIz: 1.0
+      KqIx: 1.2
+      KqIy: 1.2
+      KqIz: 1.2
 
       # P angle
       KRx: 0.008 #0.0055 #0.008
@@ -193,7 +193,7 @@ all:
       ap2dz: 0.82
 
     ring:
-      effect: 0 # 6: double spinner, 7: solid color, 16: packetRate
+      effect: 7 # 6: double spinner, 7: solid color, 16: packetRate
     #   solidBlue: 255 # if set to solid color
     #   solidGreen: 0 # if set to solid color
     #   solidRed: 0 # if set to solid color

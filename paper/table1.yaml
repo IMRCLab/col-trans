@@ -9,7 +9,7 @@ cases:
     dimensions: "-"
     cables: [25, 50] #cm
     payload: "point mass"
-    trajectory: "figure 8"
+    trajectory: "figure 8 (13 s)"
 
   - name: "3 UAVs, point mass"
     files:
@@ -22,7 +22,7 @@ cases:
     dimensions: "-"
     cables: [25, 50, 75] #cm
     payload: "point mass"
-    trajectory: "figure 8"
+    trajectory: "figure 8 (13 s)"
 
   - name: "2 UAVs, rod"
     files:
@@ -34,4 +34,30 @@ cases:
     dimensions: "15" # cm
     cables: [50, 50] #cm
     payload: "point mass"
-    trajectory: "figure 8"
+    trajectory: "figure 8 (15 s)"
+
+  - name: "3 UAVs, triangle"
+    files:
+      - "3uav_payload2_fig8/cf4_81"
+      - "3uav_payload2_fig8/cf7_61"
+      - "3uav_payload2_fig8/cf8_14"
+    start_time: 27
+    end_time: 45
+    mass: 10 # g
+    dimensions: "8" # cm
+    cables: [50, 50, 50] #cm
+    payload: "triangle"
+    trajectory: "figure 8 (15 s)"
+
+  - name: "3 UAVs, point mass"
+    files:
+      - "3uav_pm_teleop/cf4_87"
+      - "3uav_pm_teleop/cf7_66"
+      - "3uav_pm_teleop/cf8_20"
+    start_time: 10.0
+    end_time: 45.0
+    mass: 10 # g
+    dimensions: "-"
+    cables: [50, 50, 50] #cm
+    payload: "point mass"
+    trajectory: "teleoperation"

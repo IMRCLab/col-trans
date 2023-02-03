@@ -105,7 +105,7 @@ def main(args=None):
 
     print(r"%%%%%%%%%%%%%%%%%%%%%%%%%%%")
     print(r"% Generated table, do not edit!")
-    print(r"\begin{tabular}{l||c||c||c}")
+    print(r"\begin{tabular}{l||c||c||c||c||c}")
     print(r"& " + " & ".join([trial["name"] for trial in cfg["cases"]]) + r"\\")
     
     print(r"\hline\hline")

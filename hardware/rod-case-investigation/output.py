@@ -29,11 +29,11 @@ def create_subtitle(fig: plt.Figure, grid: SubplotSpec, title: str):
 def main(args=None):
     
     # files = ["cf10_05", "cf11_05"]
-    files = ["cf8_43"]
+    files = ["/home/whoenig/tubCloud/projects/coltrans/physical flights/3uav_pm_teleop/cf8_20"]
     att_points = [[0,0.07,0], [0,-0.07,0]]
     shape = 'cuboid'
-    start_time = 7
-    end_time = 100
+    start_time = 10
+    end_time = 45
 
     # files = ["../tracking/cf6_77", "../tracking/cf7_29"]
     # att_points = [[0,0.0,0], [0,0.0,0], [0,0.0,0]]
@@ -96,6 +96,9 @@ def main(args=None):
                                 logDatas[k]['ctrltargetZ.z']/1000,
                                 ]).T
 
+        error = np.linalg.norm(p0-p0d, axis=1)*100 # in cm
+        print("Pos error: {:.1f} ({:.1f}) cm".format(np.mean(error), np.std(error)))
+
         for i in range(0,3):
             ax[i].plot(time, p0[:,i], lw=0.75,label=filename)
             ax[i].plot(time, p0d[:,i], lw=0.75,label=filename + " desired")
@@ -125,6 +128,10 @@ def main(args=None):
                                 logDatas[k]['ctrltargetZ.vy']/1000, 
                                 logDatas[k]['ctrltargetZ.vz']/1000,
                                 ]).T
+
+        error = v0 - v0d
+        error_mag = np.linalg.norm(error, axis=1)
+        print("Max velocity error magnitude (Kpos_D_limit): ", np.max(error_mag))
 
         for i in range(0,3):
             ax[i].plot(time, v0[:,i], lw=0.75,label=filename)
@@ -162,6 +169,9 @@ def main(args=None):
             
             rpydes = np.degrees(rn.to_euler(rn.normalize(qp_des), convention='xyz'))
 
+            error = np.degrees(rn.geometry.intrinsic_distance(q, qp_des)) # in deg
+            print("Rot error: {:.1f} ({:.1f}) deg".format(np.mean(error), np.std(error)))
+
             for i in range(0,3):
                 ax[i].plot(time, rpy[:,i], lw=0.75,label=filename)
                 ax[i].plot(time, rpydes[:,i], lw=0.75,label=filename + " desired")
@@ -191,6 +201,10 @@ def main(args=None):
             logDatas[k]['ctrlLeeP.omega_prx'],
             logDatas[k]['ctrlLeeP.omega_pry'],
             logDatas[k]['ctrlLeeP.omega_prz']]).T
+
+        omega_error = np.radians(pw - pw_des)
+        omega_error_mag = np.linalg.norm(omega_error, axis=1)
+        print("Max omega error payload magnitude (Kprot_D_limit): ", np.max(omega_error_mag))
         
         for i in range(0,3):
             ax[i].plot(time, pw[:,i], lw=0.75,label=filename)
@@ -498,6 +512,10 @@ def main(args=None):
         omegar = np.degrees(np.array([logDatas[k]['ctrlLeeP.omegarx'],
                           logDatas[k]['ctrlLeeP.omegary'],
                           logDatas[k]['ctrlLeeP.omegarz']])).T
+
+        omega_error = np.radians(omega - omegar)
+        omega_error_mag = np.linalg.norm(omega_error, axis=1)
+        print("Max omega error UAV magnitude: ", np.max(omega_error_mag))
 
         for i in range(0,3):
             ax[i].plot(time, omega[:,i], lw=0.75,label="omega")
