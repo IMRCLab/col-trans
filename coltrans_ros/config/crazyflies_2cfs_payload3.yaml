@@ -12,9 +12,9 @@ robots:
         solidGreen: 0 # if set to solid color
         solidRed: 0 # if set to solid color
 
-  cf6:
+  cf8:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E706
+    uri: radio://0/80/2M/E7E7E7E708
     initial_position: [0.0, -1.0, 0.0]
     # initial_position: [0.0, -0.5, 0.0]
     type: cf21 # see robot_types
@@ -68,8 +68,8 @@ all:
     stabilizer:
       estimator: 2 # 1: complementary, 2: kalman
       controller: 6 # 1: PID, 2: mellinger 4: sjc 6: Lee 7: lee payload
-      pAlphaV: 0.8
-      pAlphaW: 0.5
+      pAlphaV: 0.65
+      pAlphaW: 0.8
     ctrlLee:
       Kpos_Px: 9.0 # def: 10.0
       Kpos_Py: 9.0 # def: 10.0
@@ -92,41 +92,45 @@ all:
       mass: 0.0333
     ctrlLeeP:
       # P load
-      Kpos_Px: 18.0
-      Kpos_Py: 18.0
-      Kpos_Pz: 18.0
+      Kpos_Px: 15.0
+      Kpos_Py: 15.0
+      Kpos_Pz: 15.0
       # D load
-      Kpos_Dx: 16.0
-      Kpos_Dy: 16.0
-      Kpos_Dz: 16.0
+      Kpos_Dx: 13.5
+      Kpos_Dy: 13.5
+      Kpos_Dz: 13.5
+      Kpos_D_limit: 0.6
+
       # I load
-      Kpos_Ix: 5.0
-      Kpos_Iy: 5.0
-      Kpos_Iz: 11.0
-      Kpos_I_limit: 100.0 #0.5
+      Kpos_Ix: 1.5 #5.0
+      Kpos_Iy: 1.5 #5.0
+      Kpos_Iz: 4.0 # 10.0
+      Kpos_I_limit: 100.0
 
       # P attitude Load: 
-      Kprot_Px: 0.008
-      Kprot_Py: 0.008
-      Kprot_Pz: 0.008
+      Kprot_Px: 0.004 # 0.008
+      Kprot_Py: 0.004 # 0.008
+      Kprot_Pz: 0.004 # 0.008
       #D attitude Load 
-      Kprot_Dx: 0.002
-      Kprot_Dy: 0.002
-      Kprot_Dz: 0.002
+      Kprot_Dx: 0.0006 #0.002
+      Kprot_Dy: 0.0006 #0.002
+      Kprot_Dz: 0.0006 #0.002
+      Kprot_D_limit: 10.0
+
       # I attitude Load
-      Kprot_Ix: 0.0003
-      Kprot_Iy: 0.0003
-      Kprot_Iz: 0.0003
+      Kprot_Ix: 0.0 #0.0001
+      Kprot_Iy: 0.0 #0.0001
+      Kprot_Iz: 0.0 #0.0001
 
       # P cable
-      Kqx: 12.0
-      Kqy: 12.0
-      Kqz: 12.0
+      Kqx: 11.0
+      Kqy: 11.0
+      Kqz: 11.0
       Kq_limit: 100.0 #0.7
       # D cable
-      Kwx: 10.0
-      Kwy: 10.0
-      Kwz: 10.0
+      Kwx: 8.0
+      Kwy: 8.0
+      Kwz: 8.0
       # I cable
       KqIx: 0.5
       KqIy: 0.5
@@ -141,17 +145,19 @@ all:
       h_xi: 0.0 #0.00002 # cable
 
       # P angle
-      KRx: 0.008 #0.0055 #0.008
-      KRy: 0.008 #0.0055 #0.008
-      KRz: 0.01         #0.01 #0.008
+      KRx: 0.0075
+      KRy: 0.0075
+      KRz: 0.01
       # D angle
-      Komx: 0.0013        #0.0013 #0.0017 #0.0013   #0.0017
-      Komy: 0.0013        #0.0013 #0.0017 #0.0013   #0.0017
-      Komz: 0.002          #0.0017
+      en_num_w: 0
+      Komx: 0.0013
+      Komy: 0.0013
+      Komz: 0.002
+      Kom_limit: 100.0
       # I angle
-      KI_x: 0.02        #0.05 #0.01 #0.009 #0.015
-      KI_y: 0.02        #0.05 #0.01 #0.009 #0.015
-      KI_z: 0.05        #0.05 #0.01 #0.009 #0.015
+      KI_x: 0.02
+      KI_y: 0.02
+      KI_z: 0.05
 
       # mass: 0.034
       mass: 0.0356 # with LED ring, usd
@@ -165,11 +171,9 @@ all:
 
       radius: 0.2
       gen_hp: 3 # SVM-based hyperplane generation
-      lambda_svm: 100.0
-      lambda: 0.5
+      lambda_svm: 10.0
+      lambda: 0.0
       form_ctrl: 1
-      # lambda_svm: 0.0
-      # lambda: 1.0
 
       # payload properties (generated using gen_Pinv.py)
       Pinv000: 0.49999999999999956
@@ -183,13 +187,13 @@ all:
       Pinv052: 0.5
       Pinv053: -7.1428571428571415
       Pinv0id1: 4
-      Pinv0id2: 6
+      Pinv0id2: 8
       ap0id: 4
-      ap0l: 0.48
+      ap0l: 0.5
       ap0x: 0.0
       ap0y: 0.07
       ap0z: 0.0
-      ap1id: 6
+      ap1id: 8
       ap1l: 0.5
       ap1x: 0.0
       ap1y: -0.07
@@ -198,7 +202,7 @@ all:
 
 
     ring:
-      effect: 7 # 6: double spinner, 7: solid color, 16: packetRate
+      effect: 0 # 6: double spinner, 7: solid color, 16: packetRate
     #   solidBlue: 255 # if set to solid color
     #   solidGreen: 0 # if set to solid color
     #   solidRed: 0 # if set to solid color
