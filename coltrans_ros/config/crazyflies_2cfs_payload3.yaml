@@ -108,19 +108,21 @@ all:
       Kpos_I_limit: 100.0
 
       # P attitude Load: 
-      Kprot_Px: 0.006 # 0.008
-      Kprot_Py: 0.006 # 0.008
-      Kprot_Pz: 0.009 # 0.008
+      Kprot_Px: 0.004 # 0.008
+      Kprot_Py: 0.004 # 0.008
+      Kprot_Pz: 0.004 # 0.008
+      Kprot_P_limit: 0.5
+
       #D attitude Load 
-      Kprot_Dx: 0.0008 #0.002
-      Kprot_Dy: 0.0008 #0.002
-      Kprot_Dz: 0.0008 #0.002
+      Kprot_Dx: 0.0006 #0.002
+      Kprot_Dy: 0.0006 #0.002
+      Kprot_Dz: 0.001 #0.002
       Kprot_D_limit: 10.0
 
       # I attitude Load
-      Kprot_Ix: 0.0 #0.0001
-      Kprot_Iy: 0.0 #0.0001
-      Kprot_Iz: 0.0 #0.0001
+      Kprot_Ix: 0.0002
+      Kprot_Iy: 0.0002
+      Kprot_Iz: 0.0002
 
       # P cable
       Kqx: 12.0
@@ -128,9 +130,9 @@ all:
       Kqz: 12.0
       Kq_limit: 100.0 #0.7
       # D cable
-      Kwx: 9.0
-      Kwy: 9.0
-      Kwz: 9.0
+      Kwx: 8.0
+      Kwy: 8.0
+      Kwz: 8.0
       # I cable
       KqIx: 0.5
       KqIy: 0.5
@@ -148,6 +150,8 @@ all:
       KRx: 0.0075
       KRy: 0.0075
       KRz: 0.01
+      KR_limit: 0.5
+
       # D angle
       en_num_w: 0
       Komx: 0.0013
