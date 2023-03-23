@@ -10,7 +10,7 @@ FREQUENCY = 50 #Hz
 TIMESCALE = 1.2
 HEIGHT = 0.75
 LOGGING = False
-
+IDs = [4,7]
 
 def derivative(vec, dt):
     dvec  =[]
@@ -59,7 +59,7 @@ def polartovector(cablestate):
 
 
 
-def executeTrajectory(timeHelper, allcfs, position, velocity, rate=100, offset=np.zeros(3)):
+def executeTrajectory(timeHelper, allcfs, position, velocity, cableAngleswithIDs, rate=100, offset=np.zeros(3)):
     
     start_time = timeHelper.time()
     i = 0
@@ -76,6 +76,8 @@ def executeTrajectory(timeHelper, allcfs, position, velocity, rate=100, offset=n
             np.zeros_like(vel),
             0,
             np.zeros_like(vel))
+        
+        allcfs.cmdDesCableAngles(cableAngleswithIDs[i])
         i+=1
         timeHelper.sleepForRate(rate)
 def main():
@@ -84,7 +86,7 @@ def main():
     # parser.add_argument("motions", type=str, help="output file containing solution")
     # args = parser.parse_args()
     # motions_file_path = args.motions
-    motions_file_path = "/home/khaledwahba94/imrc/payload-uavs-planner/trans-planning/examples/3cfs_pointmass/output.yaml"
+    motions_file_path = "/home/khaledwahba94/imrc/col-trans/coltrans_ros/data/2cfs_pointmass_output.yaml"
     with open(motions_file_path) as motions_file:
         motions = yaml.load(motions_file, Loader=yaml.FullLoader)
 
@@ -112,20 +114,31 @@ def main():
    # payload omega
     omega    = quat2omega(quat, dt)
 
+    #cables unit vec
+    cables   = np.asarray([state[7::] for state in states])
+    num_cables = int(len(cables[0])/2)
+    cableAngleswithIDs = []
+    for cable in cables:
+        data_tmp = []
+        for i in range(num_cables):
+            az_el = cable[0+2*i: 2+2*i]
+            data_tmp.append((IDs[i],  az_el[0], az_el[1]))
+        cableAngleswithIDs.append(data_tmp)
+
     swarm = Crazyswarm()
     timeHelper = swarm.timeHelper
-    # cf = swarm.allcfs.crazyflies[0]
     allcfs = swarm.allcfs
-
     allcfs.setParam('stabilizer.controller', 7)
     timeHelper.sleep(2.0)
     allcfs.takeoff(targetHeight=HEIGHT, duration=3.0)
-    timeHelper.sleep(3.0)
-    timeHelper.sleep(5.0) # extra time
+    # timeHelper.sleep(3.0)
+    # timeHelper.sleep(5.0) # extra time
 
 
+    allcfs.emergency()
     rate = FREQUENCY
-    # executeTrajectory(timeHelper, allcfs, position, velocity, offset=np.array([0, 0, HEIGHT]))
+    print("executing traj")
+    executeTrajectory(timeHelper, allcfs, position, velocity, cableAngleswithIDs, offset=np.array([0, 0, HEIGHT]))
 
     # cf.notifySetpointsStop()
     allcfs.land(targetHeight=0.03, duration=1.5)
