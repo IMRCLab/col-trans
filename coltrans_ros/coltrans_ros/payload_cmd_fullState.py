@@ -10,7 +10,7 @@ FREQUENCY = 50 #Hz
 TIMESCALE = 1.2
 HEIGHT = 0.75
 LOGGING = False
-IDs = [4,7]
+IDs = [4,8]
 
 def derivative(vec, dt):
     dvec  =[]
@@ -63,6 +63,7 @@ def executeTrajectory(timeHelper, allcfs, position, velocity, cableAngleswithIDs
     
     start_time = timeHelper.time()
     i = 0
+    
     while not timeHelper.isShutdown():
         t = timeHelper.time() - start_time
 
@@ -80,13 +81,14 @@ def executeTrajectory(timeHelper, allcfs, position, velocity, cableAngleswithIDs
         allcfs.cmdDesCableAngles(cableAngleswithIDs[i])
         i+=1
         timeHelper.sleepForRate(rate)
+    print("Trajectory executed")
 def main():
 
     # parser = argparse.ArgumentParser()
     # parser.add_argument("motions", type=str, help="output file containing solution")
     # args = parser.parse_args()
     # motions_file_path = args.motions
-    motions_file_path = "/home/khaledwahba94/imrc/col-trans/coltrans_ros/data/2cfs_pointmass_output.yaml"
+    motions_file_path = "/home/khaledwahba94/imrc/col-trans/coltrans_ros/data/2cfs_pointmass_output2.yaml"
     with open(motions_file_path) as motions_file:
         motions = yaml.load(motions_file, Loader=yaml.FullLoader)
 
@@ -128,21 +130,27 @@ def main():
     swarm = Crazyswarm()
     timeHelper = swarm.timeHelper
     allcfs = swarm.allcfs
+    # allcfs.emergency()
+ 
     allcfs.setParam('stabilizer.controller', 7)
-    timeHelper.sleep(2.0)
+    allcfs.setParam('ctrlLeeP.form_ctrl', 3)
+    timeHelper.sleep(3.0) # extra time
+    
     allcfs.takeoff(targetHeight=HEIGHT, duration=3.0)
-    # timeHelper.sleep(3.0)
-    # timeHelper.sleep(5.0) # extra time
+    timeHelper.sleep(7.0) # extra time
 
-
-    allcfs.emergency()
     rate = FREQUENCY
-    print("executing traj")
+    print("Executing trajectory...  ")
     executeTrajectory(timeHelper, allcfs, position, velocity, cableAngleswithIDs, offset=np.array([0, 0, HEIGHT]))
 
-    # cf.notifySetpointsStop()
-    allcfs.land(targetHeight=0.03, duration=1.5)
-    timeHelper.sleep(2.0)
+    print("Landing...")
+    for cf in allcfs.crazyflies:
+        cf.notifySetpointsStop()
+
+    allcfs.setParam('stabilizer.controller', 6)
+    
+    allcfs.land(targetHeight=0.03, duration=3.0)
+    timeHelper.sleep(4.0)
 
 if __name__ == "__main__":
     main()
