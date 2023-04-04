@@ -11,3 +11,5 @@ osqp/cffirmware_osqp/src/.~lock.FDvsmu.csv#
 sim/output/
 sim/config/*.pdf
 __pycache__/
+cf*_*
+*.pdf
