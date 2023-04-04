@@ -13,3 +13,4 @@ sim/config/*.pdf
 __pycache__/
 cf*_*
 *.pdf
+hardware/qp-solve/src
