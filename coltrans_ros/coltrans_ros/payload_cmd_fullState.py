@@ -6,11 +6,11 @@ import rowan as rn
 from crazyflie_py import *
 from crazyflie_py.uav_trajectory import Trajectory
 
-FREQUENCY = 50 #Hz
+FREQUENCY = 25 #Hz
 TIMESCALE = 1.2
-HEIGHT = 0.75
-LOGGING = False
-IDs = [4,8]
+HEIGHT = 0.7
+LOGGING = True
+IDs = [7, 9]
 
 def derivative(vec, dt):
     dvec  =[]
@@ -23,7 +23,7 @@ def derivative(vec, dt):
 ## from : https://github.com/IMRCLab/crazyflie-firmware/blob/17ccb8e553d0dba0294ca4bc5e159ed279724814/src/modules/interface/math3d.h#L904
 def qinv(q):
     return rn.conjugate(q)
-
+    
 ## from: https://github.com/IMRCLab/crazyflie-firmware/blob/17ccb8e553d0dba0294ca4bc5e159ed279724814/src/modules/interface/math3d.h#L896
 def qqmul(q, p):
     return rn.multiply(q, p)
@@ -59,7 +59,7 @@ def polartovector(cablestate):
 
 
 
-def executeTrajectory(timeHelper, allcfs, position, velocity, cableAngleswithIDs, rate=100, offset=np.zeros(3)):
+def executeTrajectory(timeHelper, allcfs, position, velocity, quats, omegas, cableAngleswithIDs, rate=100, offset=np.zeros(3)):
     
     start_time = timeHelper.time()
     i = 0
@@ -71,13 +71,15 @@ def executeTrajectory(timeHelper, allcfs, position, velocity, cableAngleswithIDs
             break
         pos = position[i]
         vel = velocity[i]
+        quat = quats[i]
+        omega = omegas[i]
+
         allcfs.cmdFullState(
             pos + offset,
             vel,
             np.zeros_like(vel),
-            0,
+            quat,
             np.zeros_like(vel))
-        
         allcfs.cmdDesCableAngles(cableAngleswithIDs[i])
         i+=1
         timeHelper.sleepForRate(rate)
@@ -88,7 +90,7 @@ def main():
     # parser.add_argument("motions", type=str, help="output file containing solution")
     # args = parser.parse_args()
     # motions_file_path = args.motions
-    motions_file_path = "/home/khaledwahba94/imrc/col-trans/coltrans_ros/data/2cfs_pointmass_output2.yaml"
+    motions_file_path = "/home/khaledwahba94/imrc/col-trans/coltrans_ros/data/2cfs_payload_output.yaml"
     with open(motions_file_path) as motions_file:
         motions = yaml.load(motions_file, Loader=yaml.FullLoader)
 
@@ -110,15 +112,15 @@ def main():
         time.append(time[i]+dt)
 
     # payload orientation
-    quat     = [state[3:7] for state in states]
-    euler    = rn.to_euler(rn.normalize(quat))
-   
+    quats = [state[3:7] for state in states]
+    euler = rn.to_euler(rn.normalize(quats))
    # payload omega
-    omega    = quat2omega(quat, dt)
+    omegas = quat2omega(quats, dt)
 
     #cables unit vec
     cables   = np.asarray([state[7::] for state in states])
     num_cables = int(len(cables[0])/2)
+ 
     cableAngleswithIDs = []
     for cable in cables:
         data_tmp = []
@@ -130,18 +132,29 @@ def main():
     swarm = Crazyswarm()
     timeHelper = swarm.timeHelper
     allcfs = swarm.allcfs
-    # allcfs.emergency()
+    allcfs.emergency()
  
     allcfs.setParam('stabilizer.controller', 7)
     allcfs.setParam('ctrlLeeP.form_ctrl', 3)
     timeHelper.sleep(3.0) # extra time
     
+    # timeHelper.sleep(10.0) # extra time
     allcfs.takeoff(targetHeight=HEIGHT, duration=3.0)
-    timeHelper.sleep(7.0) # extra time
+    timeHelper.sleep(15.0) # extra time
 
     rate = FREQUENCY
-    print("Executing trajectory...  ")
-    executeTrajectory(timeHelper, allcfs, position, velocity, cableAngleswithIDs, offset=np.array([0, 0, HEIGHT]))
+    print("Executing trajectory...")
+    if LOGGING:
+        print('Logging..')
+        for cf in allcfs.crazyflies:
+            cf.setParam("usd.logging", 1)
+       
+    executeTrajectory(timeHelper, allcfs, position, velocity, quats, omegas, cableAngleswithIDs, FREQUENCY, offset=np.array([0, 0, HEIGHT]))
+
+    if LOGGING:
+        print("Logging done...")
+        for cf in allcfs.crazyflies:
+            cf.setParam("usd.logging", 0)
 
     print("Landing...")
     for cf in allcfs.crazyflies:
