@@ -1,32 +1,32 @@
 # named list of all robots
 robots:
-  cf4:
+  cf7:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E704
-    initial_position: [1.0, -1.0, 0.0]
+    uri: radio://0/80/2M/E7E7E7E707
+    initial_position: [-0.5, 0.5, 0.0]
     # initial_position: [0.0, 0.5, 0.0]
     type: cf21 # see robot_types
-    firmware_params:
-      ring:
-        solidBlue: 255 # if set to solid color
-        solidGreen: 0 # if set to solid color
-        solidRed: 0 # if set to solid color
+    # firmware_params:
+    #   ring:
+    #     solidBlue: 255 # if set to solid color
+    #     solidGreen: 0 # if set to solid color
+    #     solidRed: 0 # if set to solid color
 
-  cf8:
+  cf9:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E708
-    initial_position: [0.0, -1.0, 0.0]
+    uri: radio://0/80/2M/E7E7E7E709
+    initial_position: [-0.5, -0.5, 0.0]
     # initial_position: [0.0, -0.5, 0.0]
     type: cf21 # see robot_types
-    firmware_params:
-      ring:
-        solidBlue: 0 # if set to solid color
-        solidGreen: 0 # if set to solid color
-        solidRed: 255 # if set to solid color
+    # firmware_params:
+    #   ring:
+    #     solidBlue: 0 # if set to solid color
+    #     solidGreen: 0 # if set to solid color
+    #     solidRed: 255 # if set to solid color
 
   payload3:
       enabled: true
-      initial_position: [0.5, -1.0, 0.0]
+      initial_position: [-0.5, 0.0, 0.0]
       # initial_position: [0.0, 0.0, 0.0]
       type: mocap_rigidbody  # see robot_types
       id: 255
@@ -125,14 +125,14 @@ all:
       Kprot_Iz: 0.0002
 
       # P cable
-      Kqx: 12.0
-      Kqy: 12.0
-      Kqz: 12.0
+      Kqx: 12.0 #9.0
+      Kqy: 12.0 #9.0
+      Kqz: 12.0 #9.0
       Kq_limit: 100.0 #0.7
       # D cable
-      Kwx: 8.0
-      Kwy: 8.0
-      Kwz: 8.0
+      Kwx: 9.0 #6.0
+      Kwy: 9.0 #6.0
+      Kwz: 9.0 #6.0
       # I cable
       KqIx: 0.5
       KqIy: 0.5
@@ -171,13 +171,14 @@ all:
       
 
       Kpos_P_limit: 100.0 #0.5 #0.5
-      Kpos_D_limit: 100.0 #0.1 #0.1
+      # Kpos_D_limit: 100.0 #0.1 #0.1
 
-      radius: 0.2
+      radius: 0.1  
       gen_hp: 3 # SVM-based hyperplane generation
       lambda_svm: 10.0
-      lambda: 0.0
-      form_ctrl: 1
+      # lambda: 0.0
+      # form_ctrl: 1
+      lambda: 100.0
 
       # payload properties (generated using gen_Pinv.py)
       Pinv000: 0.49999999999999956
@@ -190,14 +191,14 @@ all:
       Pinv041: 0.49999999999999983
       Pinv052: 0.5
       Pinv053: -7.1428571428571415
-      Pinv0id1: 4
-      Pinv0id2: 8
-      ap0id: 4
+      Pinv0id1: 7
+      Pinv0id2: 9
+      ap0id: 7
       ap0l: 0.5
       ap0x: 0.0
       ap0y: 0.07
       ap0z: 0.0
-      ap1id: 8
+      ap1id: 9
       ap1l: 0.5
       ap1x: 0.0
       ap1y: -0.07
@@ -205,9 +206,9 @@ all:
       massP: 0.0082
 
 
-    ring:
-      effect: 0 # 6: double spinner, 7: solid color, 16: packetRate
-    #   solidBlue: 255 # if set to solid color
+    # ring:
+    #   effect: 0 # 6: double spinner, 7: solid color, 16: packetRate
+    # #   solidBlue: 255 # if set to solid color
     #   solidGreen: 0 # if set to solid color
     #   solidRed: 0 # if set to solid color
     #   headlightEnable: 0
