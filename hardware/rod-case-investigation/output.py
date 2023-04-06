@@ -28,11 +28,16 @@ def create_subtitle(fig: plt.Figure, grid: SubplotSpec, title: str):
 
 def main(args=None):
     
-    # files = ["cf10_05", "cf11_05"]
-    files = ["/home/whoenig/tubCloud/projects/coltrans/physical flights/3uav_pm_teleop/cf8_20"]
+    # files = ["cf7_57"]
+    # files = ["cf7_58" ,"cf9_52"] # lambda = 5
+    # files = ["cf7_59" ,"cf9_53"] # lambda = 10
+    # files = ["cf9_54"] # lambda = 20
+    files = ["cf9_55"] # lambda = 50
+    # files = ["cf9_56"] # lambda = 100
+    # files = ["/home/whoenig/tubCloud/projects/coltrans/physical flights/3uav_pm_teleop/cf8_20"]
     att_points = [[0,0.07,0], [0,-0.07,0]]
     shape = 'cuboid'
-    start_time = 10
+    start_time = 0
     end_time = 45
 
     # files = ["../tracking/cf6_77", "../tracking/cf7_29"]
@@ -432,6 +437,11 @@ def main(args=None):
         mu = np.array([logDatas[k]['ctrlLeeP.desVirtInpx'],
                         logDatas[k]['ctrlLeeP.desVirtInpy'],
                         logDatas[k]['ctrlLeeP.desVirtInpz']]).T
+
+        qiplanned = -np.array([logDatas[k]['ctrlLeeP.desCableVecx'],
+                        logDatas[k]['ctrlLeeP.desCableVecy'],
+                        logDatas[k]['ctrlLeeP.desCableVecz']]).T
+
         qdi = []
         for i in range(mu.shape[0]):
             munorm = np.linalg.norm(mu[i,:])
@@ -439,8 +449,9 @@ def main(args=None):
         qdi = np.array(qdi).reshape(mu.shape[0],3)
 
         for i in range(0,3):
-            ax[i].plot(time, qi[:,i], lw=0.75,label='qi')
-            ax[i].plot(time, qdi[:,i], lw=0.75,label='desired')
+            ax[i].plot(time, qi[:,i], lw=0.75,label='qi_act')
+            ax[i].plot(time, qdi[:,i], lw=0.75,label='qi_ctrl')
+            ax[i].plot(time, qiplanned[:,i], lw=0.75,label='qi_plan')
         create_subtitle(fig, grid[0, ::], 'qi ' + filename)
         ax[0].set_ylabel('qix')
         ax[1].set_ylabel('qiy')
@@ -457,13 +468,13 @@ def main(args=None):
                           logDatas[k]['ctrlLeeP.qidotz']]).T
 
 
-        qdidot = np.array([logDatas[k]['ctrlLeeP.qdidotx'],
-                          logDatas[k]['ctrlLeeP.qdidoty'],
-                          logDatas[k]['ctrlLeeP.qdidotz']]).T
+        # qdidot = np.array([logDatas[k]['ctrlLeeP.qdidotx'],
+        #                   logDatas[k]['ctrlLeeP.qdidoty'],
+        #                   logDatas[k]['ctrlLeeP.qdidotz']]).T
 
         for i in range(0,3):
             ax[i].plot(time, qidot[:,i], lw=0.75,label='qidot')
-            ax[i].plot(time, qdidot[:,i], lw=0.75,label='desired')
+            # ax[i].plot(time, qdidot[:,i], lw=0.75,label='desired')
 
         create_subtitle(fig, grid[0, ::], 'qidot ' + filename)
         ax[0].set_ylabel('qidotx')
