@@ -6,9 +6,9 @@ import rowan as rn
 from crazyflie_py import *
 from crazyflie_py.uav_trajectory import Trajectory
 
-FREQUENCY = 25 #Hz
+FREQUENCY = 85 #Hz
 TIMESCALE = 1.2
-HEIGHT = 0.7
+HEIGHT = 0.5
 LOGGING = True
 IDs = [7, 9]
 
@@ -90,67 +90,68 @@ def main():
     # parser.add_argument("motions", type=str, help="output file containing solution")
     # args = parser.parse_args()
     # motions_file_path = args.motions
-    motions_file_path = "/home/khaledwahba94/imrc/col-trans/coltrans_ros/data/2cfs_payload_output.yaml"
-    with open(motions_file_path) as motions_file:
-        motions = yaml.load(motions_file, Loader=yaml.FullLoader)
-
-    dt = 1/FREQUENCY
-    states = motions["result"][0]["states"]
-    
-    # payload postion
-    position = np.asarray([state[0:3] for state in states])
-
-    # velocity postion
-    velocity = derivative(position, dt)
-
-    # acceleration postion
-    acceleration = derivative(velocity, dt)
-    
-    #time array
-    time = [0]
-    for i in range(len(position)-1):
-        time.append(time[i]+dt)
-
-    # payload orientation
-    quats = [state[3:7] for state in states]
-    euler = rn.to_euler(rn.normalize(quats))
-   # payload omega
-    omegas = quat2omega(quats, dt)
-
-    #cables unit vec
-    cables   = np.asarray([state[7::] for state in states])
-    num_cables = int(len(cables[0])/2)
- 
-    cableAngleswithIDs = []
-    for cable in cables:
-        data_tmp = []
-        for i in range(num_cables):
-            az_el = cable[0+2*i: 2+2*i]
-            data_tmp.append((IDs[i],  az_el[0], az_el[1]))
-        cableAngleswithIDs.append(data_tmp)
 
     swarm = Crazyswarm()
     timeHelper = swarm.timeHelper
     allcfs = swarm.allcfs
-    allcfs.emergency()
  
     allcfs.setParam('stabilizer.controller', 7)
     allcfs.setParam('ctrlLeeP.form_ctrl', 3)
-    timeHelper.sleep(3.0) # extra time
-    
-    # timeHelper.sleep(10.0) # extra time
-    allcfs.takeoff(targetHeight=HEIGHT, duration=3.0)
-    timeHelper.sleep(15.0) # extra time
+    # allcfs.emergency()
 
-    rate = FREQUENCY
-    print("Executing trajectory...")
     if LOGGING:
         print('Logging..')
         for cf in allcfs.crazyflies:
             cf.setParam("usd.logging", 1)
-       
-    executeTrajectory(timeHelper, allcfs, position, velocity, quats, omegas, cableAngleswithIDs, FREQUENCY, offset=np.array([0, 0, HEIGHT]))
+    timeHelper.sleep(3.0)
 
+    traj_counter = 0
+    motions_file_paths = ["/home/khaledwahba94/imrc/col-trans/coltrans_ros/data/takeoff_2cfs_payload_output.yaml"
+                         ,"/home/khaledwahba94/imrc/col-trans/coltrans_ros/data/2cfs_payload_output_with_takeoff.yaml"]
+    for motions_file_path in motions_file_paths:
+        with open(motions_file_path) as motions_file:
+            motions = yaml.load(motions_file, Loader=yaml.FullLoader)
+
+        dt = 1/FREQUENCY
+        states = motions["result"][0]["states"]
+        
+        # payload postion
+        position = np.asarray([state[0:3] for state in states])
+
+        # velocity postion
+        velocity = derivative(position, dt)
+
+        # acceleration postion
+        acceleration = derivative(velocity, dt)
+        
+        #time array
+        time = [0]
+        for i in range(len(position)-1):
+            time.append(time[i]+dt)
+
+        # payload orientation
+        quats = [state[3:7] for state in states]
+        euler = rn.to_euler(rn.normalize(quats))
+        # payload omega
+        omegas = quat2omega(quats, dt)
+
+        #cables unit vec
+        cables   = np.asarray([state[7::] for state in states])
+        num_cables = int(len(cables[0])/2)
+    
+        cableAngleswithIDs = []
+        for cable in cables:
+            data_tmp = []
+            for i in range(num_cables):
+                az_el = cable[0+2*i: 2+2*i]
+                data_tmp.append((IDs[i],  az_el[0], az_el[1]))
+            cableAngleswithIDs.append(data_tmp)
+
+        rate = FREQUENCY
+
+        print("Executing trajectory" + traj_counter+" ..." )
+        executeTrajectory(timeHelper, allcfs, position, velocity, quats, omegas, cableAngleswithIDs, FREQUENCY, offset=np.array([0, 0, 0]))
+        traj_counter+=1
     if LOGGING:
         print("Logging done...")
         for cf in allcfs.crazyflies:
@@ -164,6 +165,40 @@ def main():
     
     allcfs.land(targetHeight=0.03, duration=3.0)
     timeHelper.sleep(4.0)
+
+    # swarm = Crazyswarm()
+    # timeHelper = swarm.timeHelper
+    # allcfs = swarm.allcfs
+ 
+    # allcfs.setParam('stabilizer.controller', 7)
+    # allcfs.setParam('ctrlLeeP.form_ctrl', 3)
+    # timeHelper.sleep(3.0) # extra time
+    
+    # allcfs.takeoff(targetHeight=HEIGHT, duration=3.0)
+    # timeHelper.sleep(10.0) # extra time
+
+    # rate = FREQUENCY
+    # print("Executing trajectory...")
+    # if LOGGING:
+    #     print('Logging..')
+    #     for cf in allcfs.crazyflies:
+    #         cf.setParam("usd.logging", 1)
+       
+    # executeTrajectory(timeHelper, allcfs, position, velocity, quats, omegas, cableAngleswithIDs, FREQUENCY, offset=np.array([0, 0, HEIGHT]))
+
+    # if LOGGING:
+    #     print("Logging done...")
+    #     for cf in allcfs.crazyflies:
+    #         cf.setParam("usd.logging", 0)
+
+    # print("Landing...")
+    # for cf in allcfs.crazyflies:
+    #     cf.notifySetpointsStop()
+
+    # allcfs.setParam('stabilizer.controller', 6)
+    
+    # allcfs.land(targetHeight=0.03, duration=3.0)
+    # timeHelper.sleep(4.0)
 
 if __name__ == "__main__":
     main()
