@@ -6,9 +6,9 @@ import rowan as rn
 from crazyflie_py import *
 from crazyflie_py.uav_trajectory import Trajectory
 
-FREQUENCY = 85 #Hz
-TIMESCALE = 1.2
-HEIGHT = 0.5
+# FREQUENCY = 85 #Hz
+# TIMESCALE = 1.2
+# HEIGHT = 0.5
 LOGGING = True
 IDs = [7, 9]
 
@@ -59,20 +59,20 @@ def polartovector(cablestate):
 
 
 
-def executeTrajectory(timeHelper, allcfs, position, velocity, quats, omegas, cableAngleswithIDs, rate=100, offset=np.zeros(3)):
+def executeTrajectory(timeHelper, allcfs, position, velocity, quats, omegas, cableAngleswithIDs, rate=100, offset=np.zeros(3), repeat_last_setpoint=0):
     
     start_time = timeHelper.time()
     i = 0
     
     while not timeHelper.isShutdown():
-        t = timeHelper.time() - start_time
 
-        if i >= len(velocity):
+        if i >= len(velocity) + repeat_last_setpoint:
             break
-        pos = position[i]
-        vel = velocity[i]
-        quat = quats[i]
-        omega = omegas[i]
+        idx = min(i, len(velocity)-1)
+        pos = position[idx]
+        vel = velocity[idx]
+        quat = quats[idx]
+        omega = omegas[idx]
 
         allcfs.cmdFullState(
             pos + offset,
@@ -80,7 +80,7 @@ def executeTrajectory(timeHelper, allcfs, position, velocity, quats, omegas, cab
             np.zeros_like(vel),
             quat,
             np.zeros_like(vel))
-        allcfs.cmdDesCableAngles(cableAngleswithIDs[i])
+        allcfs.cmdDesCableAngles(cableAngleswithIDs[idx])
         i+=1
         timeHelper.sleepForRate(rate)
     print("Trajectory executed")
@@ -101,18 +101,18 @@ def main():
 
     if LOGGING:
         print('Logging..')
-        for cf in allcfs.crazyflies:
-            cf.setParam("usd.logging", 1)
+        allcfs.setParam("usd.logging", 1)
     timeHelper.sleep(3.0)
 
     traj_counter = 0
-    motions_file_paths = ["/home/khaledwahba94/imrc/col-trans/coltrans_ros/data/takeoff_2cfs_payload_output.yaml"
-                         ,"/home/khaledwahba94/imrc/col-trans/coltrans_ros/data/2cfs_payload_output_with_takeoff.yaml"]
-    for motions_file_path in motions_file_paths:
+    # (filename, rate, repeat_last_setpoint)
+    motions_file_paths = [("/home/whoenig/projects/tuberlin/col-trans/coltrans_ros/data/takeoff_2cfs_payload_output.yaml", 50, 0)
+                         ,("/home/whoenig/projects/tuberlin/col-trans/coltrans_ros/data/2cfs_payload_output_with_takeoff.yaml", 85, 5*85)]
+    for motions_file_path, rate, repeat_last_setpoint  in motions_file_paths:
         with open(motions_file_path) as motions_file:
             motions = yaml.load(motions_file, Loader=yaml.FullLoader)
 
-        dt = 1/FREQUENCY
+        dt = 1/rate
         states = motions["result"][0]["states"]
         
         # payload postion
@@ -147,15 +147,12 @@ def main():
                 data_tmp.append((IDs[i],  az_el[0], az_el[1]))
             cableAngleswithIDs.append(data_tmp)
 
-        rate = FREQUENCY
-
-        print("Executing trajectory" + traj_counter+" ..." )
-        executeTrajectory(timeHelper, allcfs, position, velocity, quats, omegas, cableAngleswithIDs, FREQUENCY, offset=np.array([0, 0, 0]))
+        print("Executing trajectory" + str(traj_counter) + " ..." )
+        executeTrajectory(timeHelper, allcfs, position, velocity, quats, omegas, cableAngleswithIDs, rate, offset=np.array([0, 0, 0]), repeat_last_setpoint=repeat_last_setpoint)
         traj_counter+=1
     if LOGGING:
         print("Logging done...")
-        for cf in allcfs.crazyflies:
-            cf.setParam("usd.logging", 0)
+        allcfs.setParam("usd.logging", 0)
 
     print("Landing...")
     for cf in allcfs.crazyflies:

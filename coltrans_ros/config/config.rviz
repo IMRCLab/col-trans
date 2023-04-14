@@ -53,13 +53,11 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        cf4:
+        cf7:
           Value: true
-        cf5:
+        cf9:
           Value: true
-        cf6:
-          Value: true
-        payload2:
+        payload3:
           Value: true
         world:
           Value: true
@@ -70,13 +68,11 @@ Visualization Manager:
       Show Names: true
       Tree:
         world:
-          cf4:
+          cf7:
             {}
-          cf5:
+          cf9:
             {}
-          cf6:
-            {}
-          payload2:
+          payload3:
             {}
       Update Interval: 0
       Value: true
@@ -162,5 +158,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1200
-  X: 74
-  Y: 60
+  X: 1295
+  Y: 69
