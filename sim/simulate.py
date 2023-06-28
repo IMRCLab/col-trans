@@ -309,7 +309,7 @@ def setPayloadfromUAVs(uavs_params, payload_params):
     return payload_params, uav.SharedPayload(payload_params, uavs_params)
     pass
 
-def setTeamParams(params, initUavs):
+def setTeamParams(params):
     dt    = float(params['dt'])
     uavs, trajectories, pltrajectory = {}, {}, {}
     plStSize = 13 # 13 is the number of the payload states.
@@ -321,40 +321,28 @@ def setTeamParams(params, initUavs):
                           # thus the state: [xp, yp, zp, xpdot, ypdot, zpdot]
     ## --initUavs: this flag let us initialize the conditions of the payload, given the initial condtions
     ## of the UAVs (which is not what is normally done, but for the sake of having easier tests).
-    if not initUavs:
-        for key in (params['RobotswithPayload']['payload']).keys():
-            if key == 'refTrajPath':
-                pltrajectory = params['RobotswithPayload']['payload']['refTrajPath']
-        payload_params = {**params['RobotswithPayload']['payload'], 'dt': dt}
-        uavs_params = {}
-        for name, robot in params['RobotswithPayload']['Robots'].items():
-            trajectories['uav_'+name]   = robot['refTrajPath']
-            uavs_params.update({name: {**robot}})
-        payload = uav.SharedPayload(payload_params, uavs_params)
-        j = plStSize
-        for name, robot in uavs_params.items():
-            lc     = robot['l_c']
-            eulAng = robot['initConditions']['init_attitude_Q']
-            quat   = rn.from_euler(eulAng[0], eulAng[1], eulAng[2])
-            w_i    = robot['initConditions']['init_angVel_Q']
-            angSt  = np.hstack((quat, w_i)).reshape((7,))
-            uav1   = uav.UavModel(dt, 'uav_'+name, StatefromSharedPayload('uav_'+name, payload, angSt, lc, j), robot, pload=True, lc=lc)
-            if payload.optimize:
-                uav1.hyperrpy = robot['hyperplanes']['rpy']
-                uav1.hyperyaw = robot['hyperplanes']['yaw']
-            j +=3
-            uavs['uav_'+name] = uav1    
-    else:
-        pltrajectory   = params['RobotswithPayload']['payload']['refTrajPath']
-        payload_params = {**params['RobotswithPayload']['payload'], 'dt': dt}
-        uavs_params    = {}
-        for name, robot in params['RobotswithPayload']['Robots'].items():
-            trajectories['uav_'+name]   = robot['refTrajPath']
-            uavs_params.update({name: {**robot['initConditions'], **robot, 'dt': dt}})
-            dt, initState  = initializeState(uavs_params[name])
-            uav1           = uav.UavModel(dt, 'uav_'+name, initState, uavs_params[name])
-            uavs['uav_'+name] = uav1
-        payload_params, payload = setPayloadfromUAVs(uavs_params, payload_params)
+    for key in (params['RobotswithPayload']['payload']).keys():
+        if key == 'refTrajPath':
+            pltrajectory = params['RobotswithPayload']['payload']['refTrajPath']
+    payload_params = {**params['RobotswithPayload']['payload'], 'dt': dt}
+    uavs_params = {}
+    for name, robot in params['RobotswithPayload']['Robots'].items():
+        trajectories['uav_'+name]   = robot['refTrajPath']
+        uavs_params.update({name: {**robot}})
+    payload = uav.SharedPayload(payload_params, uavs_params)
+    j = plStSize
+    for name, robot in uavs_params.items():
+        lc     = robot['l_c']
+        eulAng = robot['initConditions']['init_attitude_Q']
+        quat   = rn.from_euler(eulAng[0], eulAng[1], eulAng[2])
+        w_i    = robot['initConditions']['init_angVel_Q']
+        angSt  = np.hstack((quat, w_i)).reshape((7,))
+        uav1   = uav.UavModel(dt, 'uav_'+name, StatefromSharedPayload('uav_'+name, payload, angSt, lc, j), robot, pload=True, lc=lc)
+        if payload.optimize:
+            uav1.hyperrpy = robot['hyperplanes']['rpy']
+            uav1.hyperyaw = robot['hyperplanes']['yaw']
+        j +=3
+        uavs['uav_'+name] = uav1    
     return plStSize, uavs, uavs_params, payload, trajectories, pltrajectory
 
 
@@ -442,7 +430,7 @@ def updateNeighbors(leePayload, state, id, uavs, payload):
             cffirmware.state_set_neighbor_position(state,  i, cfid, stateofId[0], stateofId[1], stateofId[2])
             i+=1
         attPoint = payload.posFrloaddict[id_]
-        cffirmware.controller_lee_payload_set_attachement(leePayload, cfid, cfid, attPoint[0], attPoint[1], attPoint[2])
+        cffirmware.controller_lee_payload_set_attachement(leePayload, cfid, cfid, attPoint[0], attPoint[1], attPoint[2], 0, 0, 0)
         attPointsById[cfid] = attPoint
         cfid += 1
 
@@ -629,12 +617,11 @@ def main(args, animateOrPlotdict, params):
     # pload: payload flag, enabled: with payload, otherwise: no payload 
     filename = (args.config).replace("config/","")
     filename = (args.config).replace(".yaml","")
-    initUavs = args.initUavs
     simtime  = float(params['simtime'])
     sample   = int(params['sample'])
     shared = False
     if params['RobotswithPayload']['payload']['mode'] in 'shared':
-       plStSize, uavs, uavs_params, payload, trajectories, pltrajectory = setTeamParams(params, initUavs)
+       plStSize, uavs, uavs_params, payload, trajectories, pltrajectory = setTeamParams(params)
        shared = True
     else:
         uavs, payload, trajectories = setParams(params)
@@ -1004,7 +991,6 @@ if __name__ == '__main__':
         parser.add_argument('config', type=str, help="Path of the config file")
         parser.add_argument('--animate', default=False, action='store_true', help='Set true to save a gif in Videos directory')
         parser.add_argument('--plot', default=False, action='store_true', help='Set true to save plots in a pdf  format')
-        parser.add_argument('--initUavs', default=False, action='store_true', help='Set true to initialize the conditions of the UAVs and then compute the payload initial condition')
         args   = parser.parse_args()   
         animateOrPlotdict = {'animate':args.animate, 'plot':args.plot}
     
