@@ -4,11 +4,17 @@ import osqp
 from scipy import sparse
 from scipy.linalg import block_diag
 from postprocessing import postprocess
-from helper import generate_block_diagonal
 import matplotlib.pyplot as plt
 np.set_printoptions(linewidth=np.inf)
 np.set_printoptions(suppress=True)
 
+def generate_block_diagonal(rows, columns):
+    blkrows = int(rows/columns)
+    matrix = np.zeros((rows, 3*columns))
+    randBlk = np.ones((blkrows,3))
+    for i, j in zip(range(0, rows, blkrows), range(0,3*columns,3)):
+        matrix[i:i+blkrows, j:j+3] = randBlk
+    return matrix
 
 def genOSQPprob(nhps, n, loadType, qpWorkspace_fileName) -> None:
     
@@ -22,7 +28,8 @@ def genOSQPprob(nhps, n, loadType, qpWorkspace_fileName) -> None:
     elif loadType == "rigid":
         Aeq = np.ones((6, n*3))
         for i in range(0, Aeq.shape[1],3):
-            Aeq[0:3, i:i+3] = np.eye(3)
+            Aeq[0:3, i:i+3] = np.ones((3,3))
+            Aeq[3:6, i:i+3] = np.ones((3,3))
         l = np.hstack((np.ones(6,), -np.inf*np.ones(nhps,)))
         u = np.hstack((np.ones(6,), np.zeros(nhps,)))
     else:
@@ -56,7 +63,7 @@ def main():
     n = args.uavs #number of uavs
     nhps = (n)*(n-1) #total number of hps
     loadType = args.mass # load type
-    qpWorkspace_fileName = "workspace_"+str(n)+"uav_" + str(int(nhps/2 - 1)) + "hp"
+    qpWorkspace_fileName = "workspace_"+str(n)+"uav_" + str(int(nhps)) + "hp"
 
     # generate the OSQP problem
     genOSQPprob(nhps, n, loadType, qpWorkspace_fileName)
