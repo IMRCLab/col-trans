@@ -50,7 +50,7 @@ if __name__ == '__main__':
         meshcatdata = yaml.load(f, Loader=yaml.FullLoader)
 
 
-    with open(str(currPath)+'/output_{}_{}/configData.yaml'.format(args.uavs, args.load)) as f:
+    with open(str(currPath)+'/output/output_{}_{}/configData.yaml'.format(args.uavs, args.load)) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
         
     uavs         = data['robots']
@@ -100,8 +100,8 @@ if __name__ == '__main__':
 
         
         # Add states for uav
-        states[id]    = np.loadtxt(str(currPath)+'/output_{}_{}/'.format(args.uavs, args.load) + stateFilePath, delimiter=',')
-        Fds[id]       = np.loadtxt(str(currPath)+'/output_{}_{}/'.format(args.uavs, args.load) + FdFilePath, delimiter=',')
+        states[id]    = np.loadtxt(str(currPath)+'/output/output_{}_{}/'.format(args.uavs, args.load) + stateFilePath, delimiter=',')
+        Fds[id]       = np.loadtxt(str(currPath)+'/output/output_{}_{}/'.format(args.uavs, args.load) + FdFilePath, delimiter=',')
         # Add shape for uav and its constraint sphere
         
         Quadspheres[id]    = g.StlMeshGeometry.from_file(robotshape)
@@ -113,7 +113,7 @@ if __name__ == '__main__':
         normaltmp      = {}
         for i, hpFilePath in zip(range(len(hpsFilePaths)), hpsFilePaths):
             # Add states for hyperplane
-            hptmp[i]       = np.loadtxt(str(currPath)+'/output_{}_{}/'.format(args.uavs, args.load) + hpFilePath, delimiter=',')
+            hptmp[i]       = np.loadtxt(str(currPath)+'/output/output_{}_{}/'.format(args.uavs, args.load) + hpFilePath, delimiter=',')
             hps[id]        = hptmp.copy()
             # Add materials for hyperplanes and normals
             hpcolor        = colors[qNum]
@@ -128,7 +128,7 @@ if __name__ == '__main__':
             normals[id]    = normaltmp
         ##
         # Add state for mu vector
-        mus[id]            = np.loadtxt(str(currPath)+'/output_{}_{}/'.format(args.uavs, args.load) + musFilePath, delimiter=',')
+        mus[id]            = np.loadtxt(str(currPath)+'/output/output_{}_{}/'.format(args.uavs, args.load) + musFilePath, delimiter=',')
         # Add shape for mu vector 
         mushape[id]        =  g.LineBasicMaterial(linewidth=muShape['linewidth'], color=colors[qNum])
         Fdshape[id]        =  g.LineBasicMaterial(linewidth=muShape['linewidth'], color=colors[qNum])
@@ -136,7 +136,7 @@ if __name__ == '__main__':
         cables[id]         = g.LineBasicMaterial(linewidth=cableShape['linewidth'], color=cableShape['color'])
     
     plstatePath = payload
-    plstates     = np.loadtxt(str(currPath)+'/output_{}_{}/'.format(args.uavs, args.load) + plstatePath, delimiter=',')
+    plstates     = np.loadtxt(str(currPath)+'/output/output_{}_{}/'.format(args.uavs, args.load) + plstatePath, delimiter=',')
     if ploadShape == 'triangle':
         loadshape   = meshcatdata['triangle']
         vis["payload"].set_object(g.StlMeshGeometry.from_file(loadshape['shape']), g.MeshLambertMaterial(color=loadshape['color']))

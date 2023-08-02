@@ -35,7 +35,7 @@ def create_whisker_plot(data, pdfname="result.pdf", title='Whisker Plot', ylabel
     plt.ylabel(ylabel)
     # plt.yscale("log")
     plt.grid()
-    plt.savefig(pdfname)  # Save the plot as a PDF file
+    # plt.savefig(pdfname)  # Save the plot as a PDF file
     plt.show()
 
 def main():
@@ -55,18 +55,18 @@ def main():
     #     for i in pool.imap_unordered(run_sim, cfgnames):
     #         pass
 
-        
-    result_path = Path(".")
+    result_path = Path("output")
     timeLogs = []
     data = []
     self_total_time_data = []
     total_time_n_data = []
     for item in result_path.glob("logTime_*_{}.yaml".format(payloadType)):
         if item.is_file():
-            timeLogs.append(item.name)
+            timeLogs.append(result_path.name+"/"+item.name)
     timeLogs = sorted(timeLogs, key=extract_number)
     uav_nums = []
     for log in timeLogs:
+        print(log)
         with open(log, "r") as f:
             data_i = yaml.load(f, Loader=yaml.FullLoader)
         uav_num = data_i["uavs_num"]

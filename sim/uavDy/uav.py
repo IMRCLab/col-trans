@@ -418,14 +418,15 @@ class UavModel:
         self.drag  = float((uav_params['drag']))
         if self.drag ==  1:
             self.Kaero = np.diag([-9.1785e-7, -9.1785e-7, -10.311e-7]) 
-        # for collision avoidance
-        self.hpStack   = {}
-        self.hp_prev = {}
-        self.hpNums  = uav_params['NumOfHplane']
-        self.radius  = uav_params['radius']
-        for hpIds in range(self.hpNums):
-            self.hpStack[hpIds] = np.empty((1,4))
-            self.hp_prev[hpIds] = np.empty((1,4))
+        if self.pload: 
+            # for collision avoidance
+            self.hpStack   = {}
+            self.hp_prev = {}
+            self.hpNums  = uav_params['NumOfHplane']
+            self.radius  = uav_params['radius']
+            for hpIds in range(self.hpNums):
+                self.hpStack[hpIds] = np.empty((1,4))
+                self.hp_prev[hpIds] = np.empty((1,4))
 
     def __str__(self):
         return "\nUAV object with physical parameters defined as follows: \n \n m = {} kg, l_arm = {} m \n \n{} {}\n I = {}{} [kg.m^2] \n {}{}\n\n Initial State = {}".format(self.m,self.d,'     ',self.I[0,:],' ',self.I[1,:],'     ',self.I[2,:], self.state)

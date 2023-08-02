@@ -238,8 +238,9 @@ def plotPayloadStates(payload, posq, tf_sim, shared):
 
 
 ###############################################################################################
-def outputPlots(uavs, payloads, tf_sim, pdfName, shared):
+def outputPlots(uavs, payload, tf_sim, pdfName, shared):
     print('Plotting...')
+    print(pdfName)
     f = PdfPages(pdfName)
         # perform file operations
     for id, uav_ in uavs.items():
@@ -254,9 +255,9 @@ def outputPlots(uavs, payloads, tf_sim, pdfName, shared):
         ref_state  = uav_.refState
      
         if shared:
-            payload = payloads 
+            pass 
         elif uav_.pload:
-            payload  = payloads[id]
+            payload  = payload[id]
             
         plt.rcParams['axes.grid'] = True
         plt.rcParams['figure.max_open_warning'] = 600

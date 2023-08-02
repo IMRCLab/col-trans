@@ -227,31 +227,31 @@ def animateTrajectory(uavs, payloads, videoname, shared, sample):
     # Animation    
     fig     = plt.figure(figsize=(10,10))
     ax      = fig.add_subplot(autoscale_on=True,projection="3d")
-    animate = animate.PlotandAnimate(fig, ax, uavs, payloads, sample, shared) 
+    animation = animate.PlotandAnimate(fig, ax, uavs, payloads, sample, shared) 
     dt_sampled = list(uavs.values())[0].dt * sample
     print("Starting Animation... \nAnimating, Please wait...")
     now = time.time()
-    startanimation = animate.startAnimation(videoname,dt_sampled)
+    startanimation = animation.startAnimation(videoname,dt_sampled)
     print("Converting Animation to Video. \nPlease wait...")
 
     end = time.time()
     plt.close(fig)
     print("Run time:  {:.3f}s".format((end - now)))
 
-def animateOrPlot(uavs, payloads, animateOrPlotdict, filename, tf_sim, shared, sample): 
+def animateOrPlot(uavs, payload, animateOrPlotdict, filename, tf_sim, shared, sample): 
     # The plot will be shown eitherways
     # savePlot: saves plot in pdf format
     if animateOrPlotdict['plot']:
         pdfName = filename + '.pdf'
-        animate.outputPlots(uavs, payloads, tf_sim, pdfName, shared)
+        animate.outputPlots(uavs, payload, tf_sim, pdfName, shared)
 
     if animateOrPlotdict['animate']:
         videoname = filename + '.gif'
-        animateTrajectory(uavs, payloads, videoname, shared, sample)     
+        animateTrajectory(uavs, payload, videoname, shared, sample)     
   
 def setParams(params):
     dt           = float(params['dt'])
-    uavs, payloads, trajectories  = {}, {}, {}
+    uavs, payload, trajectories  = {}, {}, {}
     
     for name, robot in params['Robots'].items():
         trajectories['uav_'+name]   = robot['refTrajPath']
@@ -261,13 +261,13 @@ def setParams(params):
             payload                 = uav.Payload(dt, initState, payload_params)
             uav1                    = uav.UavModel(dt, 'uav_'+name, StQuadfromPL(payload), robot, pload=True, lc=payload.lc)
             uavs['uav_'+name]       = uav1
-            payloads['uav_'+name] = payload
+            payload['uav_'+name] = payload
         else:
             uav_params     = {'dt': dt, **robot['initConditions'], **robot}
             dt, initState  = initializeState(uav_params)
             uav1           = uav.UavModel(dt, 'uav_'+name, initState, uav_params) 
             uavs['uav_'+name] = uav1
-    return uavs, payloads, trajectories        
+    return uavs, payload, trajectories        
 
 def StatefromSharedPayload(id, payload, angState, lc, j):
     ## Thid method computes the initial conditions of each quadrotor
@@ -555,14 +555,18 @@ def main(args, animateOrPlotdict, params):
     # initState: initial state
     # set it as 1 tick: i.e: 1 ms
     # pload: payload flag, enabled: with payload, otherwise: no payload 
-    filename = (args.config).replace("config/","")
-    filename = (args.config).replace(".yaml","")
+    filename = "uav_flightTest"
     simtime  = float(params['simtime'])
     sample   = int(params['sample'])
     shared = False
     if params['RobotswithPayload']['payload']['mode'] in 'shared':
-       plStSize, uavs, uavs_params, payload, trajectories, pltrajectory = setTeamParams(params)
-       shared = True
+        plStSize, uavs, uavs_params, payload, trajectories, pltrajectory = setTeamParams(params)
+        if payload.pointmass:
+            payloadType = "pm" 
+        else:
+            payloadType = "rig"
+        filename = "uavs_{}_{}".format(payload.numOfquads, payloadType)
+        shared = True
     else:
         uavs, payload, trajectories = setParams(params)
     # Upload the traj in csv file format
@@ -800,12 +804,12 @@ def main(args, animateOrPlotdict, params):
         stDict = {}
         FdfilePaths = {}
 
-        create_folder_if_not_exists("output_{}_{}".format(payload.numOfquads, payloadShape))
+        create_folder_if_not_exists("output/output_{}_{}".format(payload.numOfquads, payloadShape))
         #log Time
-        with open("logTime_{}_{}.yaml".format(payload.numOfquads, payloadShape), "w") as f:
+        with open("output/logTime_{}_{}.yaml".format(payload.numOfquads, payloadShape), "w") as f:
             yaml.safe_dump(logTime, f, default_flow_style=None)
         # Payload csv file
-        with open("output_{}_{}/payload.csv".format(payload.numOfquads, payloadShape), "w") as f:
+        with open("output/output_{}_{}/payload.csv".format(payload.numOfquads, payloadShape), "w") as f:
             np.savetxt(f, payload.plFullState, delimiter=",")
 
         # mu per robot csv file
@@ -813,7 +817,7 @@ def main(args, animateOrPlotdict, params):
             mufilePathsperId = []
             uavID = id.replace("uav_", "")
             fName = "mu_" + uavID + ".csv"
-            mufilepath = "output_{}_{}/".format(payload.numOfquads, payloadShape)+ fName           
+            mufilepath = "output/output_{}_{}/".format(payload.numOfquads, payloadShape)+ fName           
             with open(mufilepath, "w") as f:
                 np.savetxt(f, splitStackMu[stackMu], delimiter=",")
             
@@ -826,16 +830,16 @@ def main(args, animateOrPlotdict, params):
             num    = uavID.replace("cf","")
             Fdname = 'Fd'+num
             FdfilePaths[id] = Fdname
-            with open("output_{}_{}/".format(payload.numOfquads, payloadShape)+Fdname, "w") as f:
+            with open("output/output_{}_{}/".format(payload.numOfquads, payloadShape)+Fdname, "w") as f:
                 np.savetxt(f, Fddict[id], delimiter=",")
-            with open("output_{}_{}/".format(payload.numOfquads, payloadShape)+ fName, "w") as f:
+            with open("output/output_{}_{}/".format(payload.numOfquads, payloadShape)+ fName, "w") as f:
                 np.savetxt(f, uavs[id].fullState, delimiter=",")    
             stDict[uavID] = fName
             # hps per robot csv
             hpsfilePathsperId = []           
             for hpPerId in uavs[id].hpStack.keys(): 
                 fName = "hp" + str(hpPerId+1) + "_" + uavID + ".csv"               
-                hpfilepath = "output_{}_{}/".format(payload.numOfquads, payloadShape) + fName
+                hpfilepath = "output/output_{}_{}/".format(payload.numOfquads, payloadShape) + fName
                 hpsfilePathsperId.append(fName)
                 with open(hpfilepath, "w") as f:
                     if payload.optimize:
@@ -875,7 +879,7 @@ def main(args, animateOrPlotdict, params):
                 att = payload.posFrloaddict['uav_'+id]
                 robot['att']   = att.tolist()
             configData['robots'][id] = robot
-        with open("output_{}_{}/configData.yaml".format(payload.numOfquads, payloadShape), 'w') as f:
+        with open("output/output_{}_{}/configData.yaml".format(payload.numOfquads, payloadShape), 'w') as f:
             yaml.dump(configData, f)
         
         ## Animate or plot based on flags
@@ -892,9 +896,6 @@ def main(args, animateOrPlotdict, params):
             # Note that 1 tick == 1ms
             # note that the attitude controller will only compute a new output at 500 Hz
             # and the position controller only at 100 Hz
-            # If you want an output always, simply select tick==0
-            # if uavs[id].pload:
-            #     payload = payload[id]
             
             for tick in range(0, int(tf_sim)+1):
                 # update desired state
