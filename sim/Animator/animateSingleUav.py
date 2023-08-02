@@ -150,7 +150,7 @@ def plotPayloadStates(payload, posq, tf_sim, shared):
         create_subtitle(fig9, grid[0, ::], 'Actual Payload Linear Velocities')
 
 ###############################################################################################
-    c = ['g','b','k', 'm']
+    c = ['g','b','k', 'm', 'g', 'b', 'm', 'g', 'b', 'm', 'g', 'b', 'm', 'g', 'b']
     if shared:
         j= 0
         for i in range(0, numOfquads*3,3):
@@ -259,7 +259,7 @@ def outputPlots(uavs, payloads, tf_sim, pdfName, shared):
             payload  = payloads[id]
             
         plt.rcParams['axes.grid'] = True
-        plt.rcParams['figure.max_open_warning'] = 100
+        plt.rcParams['figure.max_open_warning'] = 600
         
         fig1, ax1 = plt.subplots(3, 1, sharex=True)
         fig1.tight_layout()
