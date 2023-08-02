@@ -1,3 +1,4 @@
+import argparse
 import numpy as np
 import time
 import rowan as rn
@@ -39,10 +40,17 @@ class Plane(g.Geometry):
 
 
 if __name__ == '__main__':
-    with open(str(currPath)+'/config/vis.yaml') as f:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--uavs', type=int, help="num of uavs")
+    parser.add_argument('--load', type=str, help="load type: pm or rig")
+    args   = parser.parse_args()   
+    
+    
+    with open(str(currPath)+'/cfg/vis.yaml') as f:
         meshcatdata = yaml.load(f, Loader=yaml.FullLoader)
 
-    with open(str(currPath)+'/output/configData.yaml') as f:
+
+    with open(str(currPath)+'/output_{}_{}/configData.yaml'.format(args.uavs, args.load)) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
         
     uavs         = data['robots']
@@ -92,8 +100,8 @@ if __name__ == '__main__':
 
         
         # Add states for uav
-        states[id]    = np.loadtxt(str(currPath)+'/output/' + stateFilePath, delimiter=',')
-        Fds[id]       = np.loadtxt(str(currPath)+'/output/' + FdFilePath, delimiter=',')
+        states[id]    = np.loadtxt(str(currPath)+'/output_{}_{}/'.format(args.uavs, args.load) + stateFilePath, delimiter=',')
+        Fds[id]       = np.loadtxt(str(currPath)+'/output_{}_{}/'.format(args.uavs, args.load) + FdFilePath, delimiter=',')
         # Add shape for uav and its constraint sphere
         
         Quadspheres[id]    = g.StlMeshGeometry.from_file(robotshape)
@@ -105,7 +113,7 @@ if __name__ == '__main__':
         normaltmp      = {}
         for i, hpFilePath in zip(range(len(hpsFilePaths)), hpsFilePaths):
             # Add states for hyperplane
-            hptmp[i]       = np.loadtxt(str(currPath)+'/output/' + hpFilePath, delimiter=',')
+            hptmp[i]       = np.loadtxt(str(currPath)+'/output_{}_{}/'.format(args.uavs, args.load) + hpFilePath, delimiter=',')
             hps[id]        = hptmp.copy()
             # Add materials for hyperplanes and normals
             hpcolor        = colors[qNum]
@@ -120,7 +128,7 @@ if __name__ == '__main__':
             normals[id]    = normaltmp
         ##
         # Add state for mu vector
-        mus[id]            = np.loadtxt(str(currPath)+'/output/' + musFilePath, delimiter=',')
+        mus[id]            = np.loadtxt(str(currPath)+'/output_{}_{}/'.format(args.uavs, args.load) + musFilePath, delimiter=',')
         # Add shape for mu vector 
         mushape[id]        =  g.LineBasicMaterial(linewidth=muShape['linewidth'], color=colors[qNum])
         Fdshape[id]        =  g.LineBasicMaterial(linewidth=muShape['linewidth'], color=colors[qNum])
@@ -128,7 +136,7 @@ if __name__ == '__main__':
         cables[id]         = g.LineBasicMaterial(linewidth=cableShape['linewidth'], color=cableShape['color'])
     
     plstatePath = payload
-    plstates     = np.loadtxt(str(currPath)+'/output/' + plstatePath, delimiter=',')
+    plstates     = np.loadtxt(str(currPath)+'/output_{}_{}/'.format(args.uavs, args.load) + plstatePath, delimiter=',')
     if ploadShape == 'triangle':
         loadshape   = meshcatdata['triangle']
         vis["payload"].set_object(g.StlMeshGeometry.from_file(loadshape['shape']), g.MeshLambertMaterial(color=loadshape['color']))
@@ -136,13 +144,25 @@ if __name__ == '__main__':
         loadshape   = meshcatdata['sphere']
         vis["payload"].set_object(g.Mesh(g.Sphere(loadshape['radius']), g.MeshLambertMaterial(color=loadshape['color'])))
     elif ploadShape == 'rod':
-        loadshape   = meshcatdata['rod']
-        vis["payload"].set_object(g.Mesh(g.Cylinder(loadshape['height'], radius=loadshape['radius']),
+         loadshape   = meshcatdata['cuboid']
+         vis["payload"].set_object(g.Mesh(g.Box(loadshape['size']),
          g.MeshLambertMaterial(color=loadshape['color'])))
     elif ploadShape == 'cuboid':
          loadshape   = meshcatdata['cuboid']
          vis["payload"].set_object(g.Mesh(g.Box(loadshape['size']),
          g.MeshLambertMaterial(color=loadshape['color'])))
+
+    if visProps["dt"] > 0:
+        steps = int(1/visProps["dt"])
+        plstates = plstates[::steps,:]
+        for id in uavs.keys():
+            states[id] = states[id][::steps, :]
+            Fds[id] = Fds[id][::steps,:]
+            mus[id] = mus[id][::steps,:]
+            if len(list(uavs.keys())) > 1:
+                for hp in hps[id]:
+                    hps[id][hp] = hps[id][hp][::steps,:]
+
     while True:    
         tick = 0
         for plstate in plstates:
@@ -162,12 +182,13 @@ if __name__ == '__main__':
                 cable       = cables[id]
                 muMaterial  = mushape[id]
                 FdMaterial  = Fdshape[id]
-                hplanePerId = hplanes[id]
-                hpsPerId    = hps[id]
-                normal      = normals[id]
                 state       = states[id][tick]
                 mu          = mus[id][tick]
                 Fd          = Fds[id][tick]
+                if len(uavs.keys()) > 1:  
+                    hplanePerId = hplanes[id]
+                    hpsPerId    = hps[id]
+                    normal      = normals[id]
 
                 vis["Quad"+id].set_object(quadsphere)
                 vis["Quad"+id].set_transform(tf.translation_matrix(state[0:3]).dot(
@@ -198,33 +219,34 @@ if __name__ == '__main__':
                     raise 
                     break
                 vis["mu"+id].set_object(g.Line(g.PointsGeometry(muvec), material=muMaterial))
-                for hpsKey in hpsPerId.keys():
-                    hp = hpsPerId[hpsKey][tick,:]
-                    n = hp[0:3]
-                    a = hp[-1]
-                    if np.linalg.norm(n) > 0:
-                        R = tf.identity_matrix()
-                        z_fixed = [0,0,1]
-                        z = normVec(n)
-                        q = rn.vector_vector_rotation(z_fixed, z) 
-                        R1 = rn.to_matrix(q)
-                        R[:3, 0] = R1[:,0]
-                        R[:3, 1] = R1[:,1]
-                        R[:3, 2] = R1[:,2]
-                        R[:3, 3] = p0
-                        planeObj = hplanePerId[hpsKey][0]
-                        planeMat = hplanePerId[hpsKey][1]
+                if len(uavs.keys()) > 1:
+                    for hpsKey in hpsPerId.keys():
+                        hp = hpsPerId[hpsKey][tick,:]
+                        n = hp[0:3]
+                        a = hp[-1]
+                        if np.linalg.norm(n) > 0:
+                            R = tf.identity_matrix()
+                            z_fixed = [0,0,1]
+                            z = normVec(n)
+                            q = rn.vector_vector_rotation(z_fixed, z) 
+                            R1 = rn.to_matrix(q)
+                            R[:3, 0] = R1[:,0]
+                            R[:3, 1] = R1[:,1]
+                            R[:3, 2] = R1[:,2]
+                            R[:3, 3] = p0
+                            planeObj = hplanePerId[hpsKey][0]
+                            planeMat = hplanePerId[hpsKey][1]
 
-                        vis["p"+str(hpsKey)+id].set_object(planeObj, planeMat)
-                        vis["p"+str(hpsKey)+id].set_transform(R)
-                        
-                        # draw normals
-                        normalMat = normal[hpsKey]
-                        n_ = np.linspace(p0, 0.2*n/np.linalg.norm(n)+p0, num=2).T
-                        vis["n"+str(hpsKey)+id].set_object(g.Line(g.PointsGeometry(n_), material=normalMat))
-                    else:
-                        vis["p"+str(hpsKey)+id].delete()
-                        vis["n"+str(hpsKey)+id].delete()
+                            vis["p"+str(hpsKey)+id].set_object(planeObj, planeMat)
+                            vis["p"+str(hpsKey)+id].set_transform(R)
+                            
+                            # draw normals
+                            normalMat = normal[hpsKey]
+                            n_ = np.linspace(p0, 0.2*n/np.linalg.norm(n)+p0, num=2).T
+                            vis["n"+str(hpsKey)+id].set_object(g.Line(g.PointsGeometry(n_), material=normalMat))
+                        else:
+                            vis["p"+str(hpsKey)+id].delete()
+                            vis["n"+str(hpsKey)+id].delete()
             tick+=1
             time.sleep(visProps["timestep"])
                   

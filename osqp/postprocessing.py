@@ -11,7 +11,7 @@ def postprocess(name, output, input = "cffirmware_osqp/src/generated/src/osqp/wo
     for datatype in datatypes:
         contents = contents.replace("{} ".format(datatype), "static {} ".format(datatype))
 
-    contents = contents.replace("OSQPWorkspace workspace", "OSQPWorkspace workspace_{}".format(name))
+    contents = contents.replace("OSQPWorkspace workspace", "OSQPWorkspace {}".format(name))
 
     with open(output, 'w') as f:
         f.write(contents)

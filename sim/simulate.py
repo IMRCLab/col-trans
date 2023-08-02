@@ -9,10 +9,11 @@ import time
 import argparse
 import sys
 from itertools import permutations, combinations, chain
-np.set_printoptions(linewidth=np.inf)
-np.set_printoptions(suppress=True)
+from pathlib import Path
 import cffirmware
 import yaml
+np.set_printoptions(linewidth=np.inf)
+np.set_printoptions(suppress=True)
 
 class hyperplane:
     def __str__(self):
@@ -290,26 +291,7 @@ def StatefromSharedPayload(id, payload, angState, lc, j):
     uavState[10::] =  angState[4:]
     return uavState
 
-def setPayloadfromUAVs(uavs_params, payload_params):
-    ## THIS IS NOT USED NOW!!
-    ## This method sets the states of the payload given the positions of the quadrotor. 
-    ## This is opposite to what is normally done, but since the controller for the whole system
-    ## has not been yet finished, then provided an initial condition of all UAVs and the length of the cables,
-    ## the payload initial conditions are computed. it is activated through --initUavs flag argument
-    for params in uavs_params.values():
-        posq = np.array(params['init_pos_Q'])
-        lc   = params['l_c']
-        vq   = np.array(params['init_linVel_Q'])
-        angR = np.radians(params['q_dg'])
-        q    =  rn.to_matrix(rn.from_euler(angR[0], angR[1], angR[2], convention='xyz',axis_type='extrinsic')) @ np.array([0,0,-1]) #
-        qdot = np.array(params['qd'])
-        initPos  = posq + lc * q
-        initLinV = vq + lc * qdot
-    payload_params.update({'init_pos_L': initPos, 'init_linV_L': initLinV})
-    return payload_params, uav.SharedPayload(payload_params, uavs_params)
-    pass
-
-def setTeamParams(params, initUavs):
+def setTeamParams(params):
     dt    = float(params['dt'])
     uavs, trajectories, pltrajectory = {}, {}, {}
     plStSize = 13 # 13 is the number of the payload states.
@@ -319,42 +301,29 @@ def setTeamParams(params, initUavs):
     if np.linalg.det(inertia) == 0:
             plStSize -= 7 # if the payload is considered as a point mass than we only have the linear terms 
                           # thus the state: [xp, yp, zp, xpdot, ypdot, zpdot]
-    ## --initUavs: this flag let us initialize the conditions of the payload, given the initial condtions
-    ## of the UAVs (which is not what is normally done, but for the sake of having easier tests).
-    if not initUavs:
-        for key in (params['RobotswithPayload']['payload']).keys():
-            if key == 'refTrajPath':
-                pltrajectory = params['RobotswithPayload']['payload']['refTrajPath']
-        payload_params = {**params['RobotswithPayload']['payload'], 'dt': dt}
-        uavs_params = {}
-        for name, robot in params['RobotswithPayload']['Robots'].items():
-            trajectories['uav_'+name]   = robot['refTrajPath']
-            uavs_params.update({name: {**robot}})
-        payload = uav.SharedPayload(payload_params, uavs_params)
-        j = plStSize
-        for name, robot in uavs_params.items():
-            lc     = robot['l_c']
-            eulAng = robot['initConditions']['init_attitude_Q']
-            quat   = rn.from_euler(eulAng[0], eulAng[1], eulAng[2])
-            w_i    = robot['initConditions']['init_angVel_Q']
-            angSt  = np.hstack((quat, w_i)).reshape((7,))
-            uav1   = uav.UavModel(dt, 'uav_'+name, StatefromSharedPayload('uav_'+name, payload, angSt, lc, j), robot, pload=True, lc=lc)
-            if payload.optimize:
-                uav1.hyperrpy = robot['hyperplanes']['rpy']
-                uav1.hyperyaw = robot['hyperplanes']['yaw']
-            j +=3
-            uavs['uav_'+name] = uav1    
-    else:
-        pltrajectory   = params['RobotswithPayload']['payload']['refTrajPath']
-        payload_params = {**params['RobotswithPayload']['payload'], 'dt': dt}
-        uavs_params    = {}
-        for name, robot in params['RobotswithPayload']['Robots'].items():
-            trajectories['uav_'+name]   = robot['refTrajPath']
-            uavs_params.update({name: {**robot['initConditions'], **robot, 'dt': dt}})
-            dt, initState  = initializeState(uavs_params[name])
-            uav1           = uav.UavModel(dt, 'uav_'+name, initState, uavs_params[name])
-            uavs['uav_'+name] = uav1
-        payload_params, payload = setPayloadfromUAVs(uavs_params, payload_params)
+    for key in (params['RobotswithPayload']['payload']).keys():
+        if key == 'refTrajPath':
+            pltrajectory = params['RobotswithPayload']['payload']['refTrajPath']
+    payload_params = {**params['RobotswithPayload']['payload'], 'dt': dt}
+    uavs_params = {}
+    for name, robot in params['RobotswithPayload']['Robots'].items():
+        trajectories['uav_'+name]   = robot['refTrajPath']
+        uavs_params.update({name: {**robot}})
+    payload = uav.SharedPayload(payload_params, uavs_params)
+    j = plStSize
+    for name, robot in uavs_params.items():
+        lc     = robot['l_c']
+        eulAng = robot['initConditions']['init_attitude_Q']
+        quat   = rn.from_euler(eulAng[0], eulAng[1], eulAng[2])
+        w_i    = robot['initConditions']['init_angVel_Q']
+        angSt  = np.hstack((quat, w_i)).reshape((7,))
+        uav1   = uav.UavModel(dt, 'uav_'+name, StatefromSharedPayload('uav_'+name, payload, angSt, lc, j), robot, pload=True, lc=lc)
+        if payload.optimize:
+            uav1.hyperrpy = robot['hyperplanes']['rpy']
+            uav1.hyperyaw = robot['hyperplanes']['yaw']
+        j +=3
+        uavs['uav_'+name] = uav1    
+
     return plStSize, uavs, uavs_params, payload, trajectories, pltrajectory
 
 
@@ -383,6 +352,9 @@ def initPLController(uavs, payload):
             leePayload.Kpos_I.x = payload.controller['kipx']
             leePayload.Kpos_I.y = payload.controller['kipy']
             leePayload.Kpos_I.z = payload.controller['kipz']
+            leePayload.Kpos_P_limit = payload.controller['kp_limit']
+            leePayload.Kpos_I_limit = payload.controller['ki_limit']
+            leePayload.Kpos_D_limit = payload.controller['kd_limit']
 
             leePayload.Kprot_P.x = payload.controller['krpx']
             leePayload.Kprot_P.y = payload.controller['krpy']
@@ -407,6 +379,9 @@ def initPLController(uavs, payload):
             leePayload.K_w.x    = payload.cablegains['kwcx']
             leePayload.K_w.y    = payload.cablegains['kwcy']
             leePayload.K_w.z    = payload.cablegains['kwcz']
+            leePayload.KqIx     = payload.cablegains['kicx']
+            leePayload.KqIy     = payload.cablegains['kicy']
+            leePayload.KqIz     = payload.cablegains['kicz']
             control = cffirmware.control_t()
             # allocate desired state
             setpoint = cffirmware.setpoint_t()
@@ -435,13 +410,14 @@ def updateNeighbors(leePayload, state, id, uavs, payload):
     i = 0
     cfid = 0
     attPointsById = dict()
-    for id_ in uavs.keys():
-        if id != id_:
-            stateofId = uavs[id_].state
-            state.num_neighbors = payload.numOfquads-1
-            cffirmware.state_set_neighbor_position(state,  i, cfid, stateofId[0], stateofId[1], stateofId[2])
-            i+=1
-        attPoint = payload.posFrloaddict[id_]
+    ids = list(uavs.keys())
+    ids.remove(id)
+    ids.insert(0, id)
+    for id in ids:
+        stateofId = uavs[id].state
+        cffirmware.state_set_position(state,  i, cfid, stateofId[0], stateofId[1], stateofId[2])
+        i+=1
+        attPoint = payload.posFrloaddict[id]
         cffirmware.controller_lee_payload_set_attachement(leePayload, cfid, cfid, attPoint[0], attPoint[1], attPoint[2])
         attPointsById[cfid] = attPoint
         cfid += 1
@@ -489,41 +465,14 @@ def updateNeighbors(leePayload, state, id, uavs, payload):
 
 def udpateHpsAndmu(id, uavs, leePayload, num_neighbors):
     # This is currently fixed for 3 uavs 2 hyperplanes
-    if num_neighbors == 2:
-        n1 = np.array([leePayload.n1.x, leePayload.n1.y, leePayload.n1.z])
-        n2 = np.array([leePayload.n2.x, leePayload.n2.y, leePayload.n2.z])
-        n3 = np.array([leePayload.n3.x, leePayload.n3.y, leePayload.n3.z])
-        n4 = np.array([leePayload.n4.x, leePayload.n4.y, leePayload.n4.z])
-        n5 = np.array([leePayload.n5.x, leePayload.n5.y, leePayload.n5.z])
-        n6 = np.array([leePayload.n6.x, leePayload.n6.y, leePayload.n6.z])
-        a  = 0
-        ids = list(uavs.keys())
-
-        hp1 = hyperplane(n1, a)
-        hp2 = hyperplane(n2, a)
-        hp3 = hyperplane(n3, a)
-        hp4 = hyperplane(n4, a)
-        hp5 = hyperplane(n5, a)
-        hp6 = hyperplane(n6, a)
-        
-        uavs[ids[0]].addHp(0 ,hp1)
-        uavs[ids[0]].addHp(1 ,hp2)
-        
-        uavs[ids[1]].addHp(0, hp3)
-        uavs[ids[1]].addHp(1, hp4)
-        
-        uavs[ids[2]].addHp(0, hp5)
-        uavs[ids[2]].addHp(1, hp6)
-    elif num_neighbors == 1:
-        n1 = np.array([leePayload.n1.x, leePayload.n1.y, leePayload.n1.z])
-        n2 = np.array([leePayload.n2.x, leePayload.n2.y, leePayload.n2.z])
-
-        hp1 = hyperplane(n1, 0)
-        hp2 = hyperplane(n2, 0)
-
-        ids = list(uavs.keys())
-        uavs[ids[0]].addHp(0 ,hp1)
-        uavs[ids[1]].addHp(0, hp2)
+    ids = list(uavs.keys())
+    num_uavs = num_neighbors + 1
+    num_hps = num_uavs-1
+    for num_uav in range(num_uavs):
+        n = cffirmware.controller_lee_payload_get_n(leePayload, num_uav)
+        for num_hp in range(num_hps):
+            hp = hyperplane(n,0)
+            uavs[ids[num_uav]].addHp(num_hp, hp)
 
     desVirtInp = leePayload.desVirtInp
     return uavs, desVirtInp
@@ -536,6 +485,7 @@ def updatePlstate(state, payload):
     state.payload_vel.x = plstate[3]    # m/s
     state.payload_vel.y = plstate[4]    # m/s
     state.payload_vel.z = plstate[5]    # m/s
+    state.num_uavs = payload.numOfquads
     if not payload.pointmass:
         q_curr = np.array(plstate[6:10]).reshape((4,))
         state.payload_quat.w = q_curr[0]
@@ -592,32 +542,10 @@ def updatePlDesState(setpoint, payload, fulltraj):
             setpoint.snap.z = 0 
     return setpoint
 
-def setPlanes(leePayload, rpyplanes4robots, yaw4robots):
-    leePayload.rpyPlane11.x = rpyplanes4robots[0][0][0]
-    leePayload.rpyPlane11.y = rpyplanes4robots[0][0][1]
-    leePayload.rpyPlane11.z = rpyplanes4robots[0][0][2]
-    leePayload.rpyPlane12.x = rpyplanes4robots[0][1][0]
-    leePayload.rpyPlane12.y = rpyplanes4robots[0][1][1]
-    leePayload.rpyPlane12.z = rpyplanes4robots[0][1][2]
-    leePayload.rpyPlane21.x = rpyplanes4robots[1][0][0]
-    leePayload.rpyPlane21.y = rpyplanes4robots[1][0][1]
-    leePayload.rpyPlane21.z = rpyplanes4robots[1][0][2]
-    leePayload.rpyPlane22.x = rpyplanes4robots[1][1][0]
-    leePayload.rpyPlane22.y = rpyplanes4robots[1][1][1]
-    leePayload.rpyPlane22.z = rpyplanes4robots[1][1][2]
-    leePayload.rpyPlane31.x = rpyplanes4robots[2][0][0]
-    leePayload.rpyPlane31.y = rpyplanes4robots[2][0][1]
-    leePayload.rpyPlane31.z = rpyplanes4robots[2][0][2]
-    leePayload.rpyPlane32.x = rpyplanes4robots[2][1][0]
-    leePayload.rpyPlane32.y = rpyplanes4robots[2][1][1]
-    leePayload.rpyPlane32.z = rpyplanes4robots[2][1][2]
-    leePayload.yawPlane11   = yaw4robots[0][0][0]
-    leePayload.yawPlane12   = yaw4robots[0][1][0]
-    leePayload.yawPlane21   = yaw4robots[1][0][0]
-    leePayload.yawPlane22   = yaw4robots[1][1][0]
-    leePayload.yawPlane31   = yaw4robots[2][0][0]
-    leePayload.yawPlane32   = yaw4robots[2][1][0]
-    return leePayload
+def create_folder_if_not_exists(folder_path):
+    folder = Path(folder_path)
+    folder.mkdir(parents=True, exist_ok=True)
+
 
 ##----------------------------------------------------------------------------------------------------------------------------------------------------------------##        
 ##----------------------------------------------------------------------------------------------------------------------------------------------------------------##
@@ -629,12 +557,11 @@ def main(args, animateOrPlotdict, params):
     # pload: payload flag, enabled: with payload, otherwise: no payload 
     filename = (args.config).replace("config/","")
     filename = (args.config).replace(".yaml","")
-    initUavs = args.initUavs
     simtime  = float(params['simtime'])
     sample   = int(params['sample'])
     shared = False
     if params['RobotswithPayload']['payload']['mode'] in 'shared':
-       plStSize, uavs, uavs_params, payload, trajectories, pltrajectory = setTeamParams(params, initUavs)
+       plStSize, uavs, uavs_params, payload, trajectories, pltrajectory = setTeamParams(params)
        shared = True
     else:
         uavs, payload, trajectories = setParams(params)
@@ -702,26 +629,24 @@ def main(args, animateOrPlotdict, params):
                     idstmp = ids.copy()
                     idstmp.remove(i)
                     allPairs[i] = idstmp
-        else:
-            controls, setpoints, sensors_, states, lees =  {}, {}, {}, {}, {} 
-            for id in uavs.keys():
-                if uavs[id].controller['name'] == 'lee_firmware':
-                    lee, control, setpoint, sensors, state = initController(uavs[id].controller)
-                    lees[id] = lee
-                else:
-                    control, setpoint, sensors, state = initController(uavs[id].controller)
-                controls[id]  = control
-                setpoints[id] = setpoint
-                sensors_[id]  = sensors
-                states[id]    = state 
                 
         Fddict = {}
         ui_s = {}
-        Mddict= {}
+        Mddict = {}
+        logTime = {}
+        if payload.shape == "rod" or payload.shape == "triangle":
+            payloadShape = "rig"
+        else:
+            payloadShape = "pm"
+        logTime["robots"] = {}
+        logTime["uavs_num"] = payload.numOfquads
+        logTime["type"] = payloadShape
+
         for id in uavs.keys():
             Fddict[id] = []
             Mddict[id] = []
             ui_s[id] = []
+            logTime["robots"][id] = []
         for tick in range(0, int(tf_sim)+1):
             j = plStSize
             ctrlInputs = np.zeros((1,4))
@@ -744,18 +669,18 @@ def main(args, animateOrPlotdict, params):
 
                     #initialize the controller and allocate current state (both sensor and state are the state)
                     # This is kind of odd and should be part of state
-                    if tick <= int(tf_ms):
-                        if not payload.lead:    
-                            setpoint  = updateDesState(setpoint, uavs[id].controller, timeStamped_traj[id][1::,tick])
-                            ref_state = np.array(timeStamped_traj[id][1:7,tick])
-                        else: 
-                            ref_state = uavs[id].state[0:6]
-                    else:
-                        if not payload.lead:    
-                            setpoint  = updateDesState(setpoint, uavs[id].controller, timeStamped_traj[id][1::,-1])
-                            ref_state = np.array(timeStamped_traj[id][1:7,-1])
-                        else:
-                            ref_state =  uavs[id].state[0:6]
+                    # if tick <= int(tf_ms):
+                        # if not payload.lead:    
+                        #     setpoint  = updateDesState(setpoint, uavs[id].controller, timeStamped_traj[id][1::,tick])
+                        #     ref_state = np.array(timeStamped_traj[id][1:7,tick])
+                        # else: 
+                    ref_state = uavs[id].state[0:6]
+                    # else:
+                        # if not payload.lead:    
+                        #     setpoint  = updateDesState(setpoint, uavs[id].controller, timeStamped_traj[id][1::,-1])
+                        #     ref_state = np.array(timeStamped_traj[id][1:7,-1])
+                        # else:
+                        # ref_state =  uavs[id].state[0:6]
                     # update current state              
                     # update the state of the payload 
                     state   =  updatePlstate(state, payload)
@@ -784,13 +709,22 @@ def main(args, animateOrPlotdict, params):
                             leePayload = uavs[id].ctrlPayload
                             leePayload.en_qdidot = payload.en_qdidot
                             leePayload.gen_hp = payload.gen_hp
+                            leePayload.formation_control = payload.desFormFlag
                             leePayload.lambda_svm = payload.lambda_svm
                             leePayload.mass = uavs[id].m
                             leePayload.en_accrb = payload.en_accrb                                
                             try:
-                                leePayload, state = updateNeighbors(leePayload, state, id, uavs, payload)
+                                if payload.numOfquads > 1:
+                                    leePayload, state = updateNeighbors(leePayload, state, id, uavs, payload)
+                                start = time.time_ns()
                                 cffirmware.controllerLeePayload(leePayload, control, setpoint, sensors, state, tick)
+                                end = time.time_ns()
+                                # print((end - start) / 1e6, leePayload.solve_time_total, leePayload.solve_time_svm * payload.numOfquads + leePayload.solve_time_mu)
                                 Fddict[id].append(np.array([leePayload.F_d.x, leePayload.F_d.y, leePayload.F_d.z]))
+                                if payload.pointmass:
+                                    logTime["robots"][id].append([leePayload.solve_time_svm, leePayload.solve_time_mu, leePayload.solve_time_total])
+                                else:
+                                    logTime["robots"][id].append([leePayload.solve_time_svm, leePayload.solve_time_mu, leePayload.solve_time_Fd, leePayload.solve_time_total])
                                 if not payload.pointmass:
                                     Mddict[id].append(np.array([leePayload.M_d.x, leePayload.M_d.y, leePayload.M_d.z]))
                                 ui_s[id].append(np.array([control.u_all[0], control.u_all[1], control.u_all[2]]))
@@ -866,8 +800,12 @@ def main(args, animateOrPlotdict, params):
         stDict = {}
         FdfilePaths = {}
 
+        create_folder_if_not_exists("output_{}_{}".format(payload.numOfquads, payloadShape))
+        #log Time
+        with open("logTime_{}_{}.yaml".format(payload.numOfquads, payloadShape), "w") as f:
+            yaml.safe_dump(logTime, f, default_flow_style=None)
         # Payload csv file
-        with open("output/payload.csv", "w") as f:
+        with open("output_{}_{}/payload.csv".format(payload.numOfquads, payloadShape), "w") as f:
             np.savetxt(f, payload.plFullState, delimiter=",")
 
         # mu per robot csv file
@@ -875,7 +813,7 @@ def main(args, animateOrPlotdict, params):
             mufilePathsperId = []
             uavID = id.replace("uav_", "")
             fName = "mu_" + uavID + ".csv"
-            mufilepath = "output/"+ fName           
+            mufilepath = "output_{}_{}/".format(payload.numOfquads, payloadShape)+ fName           
             with open(mufilepath, "w") as f:
                 np.savetxt(f, splitStackMu[stackMu], delimiter=",")
             
@@ -888,16 +826,16 @@ def main(args, animateOrPlotdict, params):
             num    = uavID.replace("cf","")
             Fdname = 'Fd'+num
             FdfilePaths[id] = Fdname
-            with open("output/"+Fdname, "w") as f:
+            with open("output_{}_{}/".format(payload.numOfquads, payloadShape)+Fdname, "w") as f:
                 np.savetxt(f, Fddict[id], delimiter=",")
-            with open("output/" + fName, "w") as f:
+            with open("output_{}_{}/".format(payload.numOfquads, payloadShape)+ fName, "w") as f:
                 np.savetxt(f, uavs[id].fullState, delimiter=",")    
             stDict[uavID] = fName
             # hps per robot csv
             hpsfilePathsperId = []           
             for hpPerId in uavs[id].hpStack.keys(): 
                 fName = "hp" + str(hpPerId+1) + "_" + uavID + ".csv"               
-                hpfilepath = "output/" + fName
+                hpfilepath = "output_{}_{}/".format(payload.numOfquads, payloadShape) + fName
                 hpsfilePathsperId.append(fName)
                 with open(hpfilepath, "w") as f:
                     if payload.optimize:
@@ -917,8 +855,6 @@ def main(args, animateOrPlotdict, params):
             configData['payload_type'] = 'triangle'
         elif payload.shape == 'rod':
             configData['payload_type'] = 'rod'
-        elif payload.shape == 'cuboid':
-            configData['payload_type'] = 'cuboid'
         else:
             print('please add the right shape!')
             exit()
@@ -939,7 +875,7 @@ def main(args, animateOrPlotdict, params):
                 att = payload.posFrloaddict['uav_'+id]
                 robot['att']   = att.tolist()
             configData['robots'][id] = robot
-        with open("output/configData.yaml", 'w') as f:
+        with open("output_{}_{}/configData.yaml".format(payload.numOfquads, payloadShape), 'w') as f:
             yaml.dump(configData, f)
         
         ## Animate or plot based on flags
@@ -1004,7 +940,6 @@ if __name__ == '__main__':
         parser.add_argument('config', type=str, help="Path of the config file")
         parser.add_argument('--animate', default=False, action='store_true', help='Set true to save a gif in Videos directory')
         parser.add_argument('--plot', default=False, action='store_true', help='Set true to save plots in a pdf  format')
-        parser.add_argument('--initUavs', default=False, action='store_true', help='Set true to initialize the conditions of the UAVs and then compute the payload initial condition')
         args   = parser.parse_args()   
         animateOrPlotdict = {'animate':args.animate, 'plot':args.plot}
     
