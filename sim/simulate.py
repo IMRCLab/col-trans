@@ -3,7 +3,7 @@ import rowan as rn
 import matplotlib.pyplot as plt
 from uavDy import uav
 from uavDy.uav import skew
-from Animator import animateSingleUav 
+from Animator import animate 
 from trajectoriescsv import *
 import time
 import argparse
@@ -227,7 +227,7 @@ def animateTrajectory(uavs, payloads, videoname, shared, sample):
     # Animation    
     fig     = plt.figure(figsize=(10,10))
     ax      = fig.add_subplot(autoscale_on=True,projection="3d")
-    animate = animateSingleUav.PlotandAnimate(fig, ax, uavs, payloads, sample, shared) 
+    animate = animate.PlotandAnimate(fig, ax, uavs, payloads, sample, shared) 
     dt_sampled = list(uavs.values())[0].dt * sample
     print("Starting Animation... \nAnimating, Please wait...")
     now = time.time()
@@ -243,7 +243,7 @@ def animateOrPlot(uavs, payloads, animateOrPlotdict, filename, tf_sim, shared, s
     # savePlot: saves plot in pdf format
     if animateOrPlotdict['plot']:
         pdfName = filename + '.pdf'
-        animateSingleUav.outputPlots(uavs, payloads, tf_sim, pdfName, shared)
+        animate.outputPlots(uavs, payloads, tf_sim, pdfName, shared)
 
     if animateOrPlotdict['animate']:
         videoname = filename + '.gif'
