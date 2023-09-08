@@ -309,7 +309,7 @@ class SharedPayload:
             k+=3
             j+=3
 
-    def stateEvolution(self, ctrlInputs, uavs, uavs_params, ext_f):
+    def stateEvolution(self, ctrlInputs, uavs, uavs_params):
         ctrlInputs = np.delete(ctrlInputs, 0,0)
         Bq    = self.getBq(uavs_params)
         Nq    = self.getNq(uavs_params)
@@ -326,9 +326,7 @@ class SharedPayload:
             k+=3
             j+=3
         try:
-            ext_f_ = np.zeros_like(u_inp)
-            ext_f_[0:3] = ext_f
-            self.accl = np.linalg.inv(Bq)@(Nq + u_inp + ext_f_)
+            self.accl = np.linalg.inv(Bq)@(Nq + u_inp)
             self.accl[0:3] -= np.array([0,0,9.81])
             self.accl_prev = self.accl
         except Exception as err:
@@ -336,7 +334,9 @@ class SharedPayload:
             self.accl = self.accl_prev
             raise
         self.prevSt = self.state.copy()
+        # print(self.prevSt[0:3])
         self.getNextState()
+        # print(self.state[0:3])
         self.ctrlInp = np.zeros((1,3))
 
         m, k = 0 , self.plStateSize
@@ -415,6 +415,7 @@ class UavModel:
         self.fullState = np.empty((1,16))
         self.ctrlInps  = np.empty((1,8))
         self.refState  = np.empty((1,12))
+        self.actions  = np.empty((1,4))
         self.drag  = float((uav_params['drag']))
         if self.drag ==  1:
             self.Kaero = np.diag([-9.1785e-7, -9.1785e-7, -10.311e-7]) 
@@ -512,10 +513,13 @@ class UavModel:
         self.fullState  = np.vstack((self.fullState, state))
 
         f_motors   = self.invAll @ control_t
+        f_motors_ = f_motors/(0.034*9.81)
+
         f_motorsG  =  (f_motors/9.81)*1000
         f_motorsG_clipped   = np.clip(f_motorsG, 0, self.maxThrust)
         f_motors = f_motorsG_clipped*9.81/1000
         self.ctrlInps   = np.vstack((self.ctrlInps, np.array([control_t, f_motors]).reshape(1,8)))
+        self.actions    = np.vstack((self.actions, np.array(f_motors_).reshape(1,4)))
         self.refState   = np.vstack((self.refState, ref_state))
     
     def cursorUpwPl(self):
@@ -527,6 +531,7 @@ class UavModel:
         self.fullState = np.delete(self.fullState, 0, 0)
         self.ctrlInps  = np.delete(self.ctrlInps,  0, 0)
         self.refState  = np.delete(self.refState,  0, 0)
+        self.actions  = np.delete(self.actions,   0, 0)
 
     def wMotors(self, f_motor):
         """This method transforms the current thrust for each motor to command input to angular velocity  in [rad/s]"""

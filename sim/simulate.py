@@ -779,7 +779,7 @@ def main(args, animateOrPlotdict, params):
                 payload.cursorUp() 
                 payload.ui_s = ui_s
                 # Evolve the payload states
-                uavs, loadState =  payload.stateEvolution(ctrlInputs, uavs, uavs_params, floor.interactionForce(payload.state[0:3], payload.state[3:6]))    
+                uavs, loadState =  payload.stateEvolution(ctrlInputs, uavs, uavs_params)    
                 if payload.lead:
                     payload.stackStateandRef(plref_state)
                 else:
@@ -829,11 +829,15 @@ def main(args, animateOrPlotdict, params):
             fName = uavID + ".csv"
             num    = uavID.replace("cf","")
             Fdname = 'Fd'+num
+            actionName = "action_"+num + ".csv"
             FdfilePaths[id] = Fdname
             with open("output/output_{}_{}/".format(payload.numOfquads, payloadShape)+Fdname, "w") as f:
                 np.savetxt(f, Fddict[id], delimiter=",")
             with open("output/output_{}_{}/".format(payload.numOfquads, payloadShape)+ fName, "w") as f:
                 np.savetxt(f, uavs[id].fullState, delimiter=",")    
+            with open("output/output_{}_{}/".format(payload.numOfquads, payloadShape)+ actionName, "w") as f:
+                np.savetxt(f, uavs[id].actions, delimiter=",")    
+
             stDict[uavID] = fName
             # hps per robot csv
             hpsfilePathsperId = []           
@@ -871,6 +875,7 @@ def main(args, animateOrPlotdict, params):
         for id in Ids:
             robot        = {}
             robot['state'] = stDict[id]
+            # robot["actions"] = 0
             robot['hps']   = hpsDict[id]
             robot['mu']    = muDict[id]
             FdidName       = id.replace("cf", 'uav_cf')
