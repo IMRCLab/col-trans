@@ -174,7 +174,7 @@ RobotswithPayload:
     cf1: 
       type : 'cf21'
       size : 'small'
-      m    : 0.356
+      m    : 0.0356
       I    : [16.571710e-6, 16.655602e-6, 29.261652e-6]
       d    : 0.046
       cft  : 0.006 #0.005964552 
@@ -221,7 +221,7 @@ RobotswithPayload:
     cf2: 
       type : 'cf21'
       size : 'small'
-      m    : 0.356
+      m    : 0.0356
       I    : [16.571710e-6, 16.655602e-6, 29.261652e-6]
       d    : 0.046
       cft  : 0.006 #0.005964552 
@@ -273,5 +273,5 @@ environment:
     Kd: [0,0,0]
 ## Simulation parameters 
 dt : 1e-3 # time step
-simtime: 0.922e3 #  This is added (or subtracted) from the total trajectory time defined in the csv file
+simtime:  0.922e3 #  This is added (or subtracted) from the total trajectory time defined in the csv file
 sample: 250 #frames per second
