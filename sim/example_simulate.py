@@ -10,7 +10,7 @@ import argparse
 import sys
 from itertools import permutations, combinations, chain
 from pathlib import Path
-import cffirmware
+# import cffirmware
 import yaml
 from simulate import * 
 np.set_printoptions(linewidth=np.inf)
@@ -62,26 +62,43 @@ def main():
     # uncomment this to go through all states and actions
     # for tick, i in enumerate(tt):    
     for id, cf, ui in zip(uavs.keys(), cfs, u):
-        uavs[id].state = cf[timestep,0:13]
-        payload.state = payload_state[timestep]
+        uavs[id].state = np.copy(cf[timestep,0:13])
+        payload.state = np.copy(payload_state[timestep])
         # get the action and multiply by u_nominal
-        control_inp = uavs[id].ctrlAll @ ui[timestep]* uavs[id].m * 9.81
+        control_inp = np.copy(uavs[id].ctrlAll @ ui[timestep]* uavs[id].m * 9.81)
         # stack them
         ctrlInputs  = np.vstack((ctrlInputs, control_inp.reshape(1,4)))
-        q = uavs[id].state[6:10]
+        q = np.copy(uavs[id].state[6:10])
         R = rn.to_matrix(q)
         # this is the u_i in the paper: see paragraph below equation (8) and ignore -ve sign 
-        ctrlInp = control_inp[0]*R@np.array([0,0,1])
+        ctrlInp = np.copy(control_inp[0]*R@np.array([0,0,1]))
         payload.stackCtrl(ctrlInp.reshape(1,3))  
     
     # step function
     uavs, loadState =  payload.stateEvolution(ctrlInputs, uavs, uavs_params)  
+    
     # compare output of the step function with the loaded data 
-    print(loadState[0:3],   payload_state[timestep][0:3])
-    print(loadState[3:6],   payload_state[timestep][3:6])
-    print(loadState[6:10],  payload_state[timestep][6:10])
-    print(loadState[10:13], payload_state[timestep][10:13])
+    
+    print("difference against previous state")
+    print(payload_state[timestep] - loadState)
+    print(np.linalg.norm( loadState[0:3] - payload_state[timestep][0:3]) )
+    print(np.linalg.norm( loadState[3:6] - payload_state[timestep][3:6]) )
+    print(np.linalg.norm( loadState[6:10] - payload_state[timestep][6:10]) )
+    print(np.linalg.norm( loadState[10:13] -payload_state[timestep][10:13]) )
 
+    print("difference against next state -- this should be zero!!")
+    print(payload_state[timestep+1] - loadState)
+    print(np.linalg.norm( loadState[0:3] -    payload_state[timestep+1][0:3]) )
+    print(np.linalg.norm( loadState[3:6] -   payload_state[timestep+1][3:6]) )
+    print(np.linalg.norm( loadState[6:10] -  payload_state[timestep+1][6:10]) )
+    print(np.linalg.norm( loadState[10:13] - payload_state[timestep+1][10:13]) )
+
+
+
+    # print(loadState[3:6],   payload_state[timestep][3:6])
+    # print(loadState[6:10],  payload_state[timestep][6:10])
+    # print(loadState[10:13], payload_state[timestep][10:13])
+    #
 
 if __name__ == '__main__':
     main()
