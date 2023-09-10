@@ -29,6 +29,8 @@ def main():
     # reference of the paper: https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7843619
     plStSize, uavs, uavs_params, payload, trajectories, pltrajectory = setTeamParams(params)
 
+
+    ## this part is for the reference trajectory, ignore it for now
     input = pltrajectory
     # [t x,y,z, vx,vy, vz, ax,ay,az] reference traj for the payload
     timeStamped_traj = np.loadtxt(input, delimiter=',') 
@@ -37,29 +39,39 @@ def main():
     tf_sim = tf_ms + simtime
     dt =0.001
     tt = np.linspace(0,tf_sim, num=int(tf_sim/dt))
+    ## this part is for the reference trajectory, ignore it for now
+
+
     # this example is only for 2 uavs: if you want more you will need to import more files
-    # cf1 uav state: pos, vel, quat, w
+    # There are two file examples you can test from, a circle trajectory and hover trajectory
+    file_name = "example_2_rig_hover" 
+    # file_name = "example_2_rig_circle" 
+    # choose the timestep you want to simulate
+
+    # the circle trajectory has about 10000 entry and the hover has around 3000
+    
+    timestep = 3000 # choose the timestep to propagate from
+    # cf1 uav state: pos, vel, quat [qw, qx, qy, qz], w
     # load the uav states
-    with open("output/output_2_rig/cf1.csv") as f:
+    with open(file_name +"/cf1.csv") as f:
         cf1 = np.loadtxt(f, delimiter=',')
-    with open("output/output_2_rig/cf2.csv") as f:
+    with open(file_name +"/cf2.csv") as f:
         cf2 = np.loadtxt(f, delimiter=",")
 
     # load actions: motor forces divided by u_nominal: m*9.81
-    with open("output/output_2_rig/action_1.csv") as f:
+    with open(file_name +"/action_1.csv") as f:
         u1 = np.loadtxt(f, delimiter=',')
-    with open("output/output_2_rig/action_2.csv") as f:
+    with open(file_name +"/action_2.csv") as f:
         u2 = np.loadtxt(f, delimiter=",")
 
     # load the payload states
-    with open("output/output_2_rig/payload.csv") as f:
+    with open(file_name +"/payload.csv") as f:
         payload_state = np.loadtxt(f, delimiter=',')
 
     cfs = [np.array(cf1), np.array(cf2)]
     u = [np.array(u1), np.array(u2)]
 
 
-    timestep = 6000 # choose the timestep to propagate from
     ctrlInputs = np.zeros((1,4))
     # uncomment this to go through all states and actions
     # for tick, i in enumerate(tt):    
