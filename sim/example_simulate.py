@@ -44,13 +44,13 @@ def main():
 
     # this example is only for 2 uavs: if you want more you will need to import more files
     # There are two file examples you can test from, a circle trajectory and hover trajectory
-    file_name = "example_2_rig_hover" 
-    # file_name = "example_2_rig_circle" 
+    # file_name = "example_2_rig_hover" 
+    file_name = "example_2_rig_circle" 
     # choose the timestep you want to simulate
 
     # the circle trajectory has about 10000 entry and the hover has around 3000
     
-    timestep = 3000 # choose the timestep to propagate from
+    timestep = 300 # choose the timestep to propagate from
     # cf1 uav state: pos, vel, quat [qw, qx, qy, qz], w
     # load the uav states
     with open(file_name +"/cf1.csv") as f:
@@ -64,13 +64,15 @@ def main():
     with open(file_name +"/action_2.csv") as f:
         u2 = np.loadtxt(f, delimiter=",")
 
-    # load the payload states
+    # load the payload states: 
+    # payload st: position velocity, quat [qw, qx, qy, qz], ang vel
+    # cable st: q1, q2, w1, w2 
+    # payload full state in csv: pos, vel, qaut, w, q1, q2, w1, w2
     with open(file_name +"/payload.csv") as f:
         payload_state = np.loadtxt(f, delimiter=',')
 
     cfs = [np.array(cf1), np.array(cf2)]
     u = [np.array(u1), np.array(u2)]
-
 
     ctrlInputs = np.zeros((1,4))
     # uncomment this to go through all states and actions
@@ -80,15 +82,14 @@ def main():
         payload.state = np.copy(payload_state[timestep])
         # get the action and multiply by u_nominal
         control_inp = np.copy(uavs[id].ctrlAll @ ui[timestep])
-        print(ui[timestep])
         # stack them
+        # ctrlInputs is the [f, taux, tauy, tauz] and we use the taus to compute the angular states of the uav
+        # and f is used to compute: u_i = quat_rotate(quat_uav, [0,0,f])
         ctrlInputs  = np.vstack((ctrlInputs, control_inp.reshape(1,4)))
-        q = np.copy(uavs[id].state[6:10])
-        R = rn.to_matrix(q)
+        # q = np.copy(uavs[id].state[6:10]) # don't need them anymore
+        # R = rn.to_matrix(q)
         # this is the u_i in the paper: see paragraph below equation (8) and ignore -ve sign 
-        ctrlInp = np.copy(control_inp[0]*R@np.array([0,0,1]))
-        # payload.stackCtrl(ualli[timestep].reshape(1,3))  
-        payload.stackCtrl(ctrlInp.reshape(1,3))  
+        # this is used to compute u_i = quat_rotate_vec(q, [0,0,fu])
 
     uavs, loadState =  payload.stateEvolution(ctrlInputs, uavs, uavs_params)  
 
@@ -101,10 +102,10 @@ def main():
 
     print("difference against next state -- this should be zero!!")
     print(payload_state[timestep+1] - loadState)
-    print( np.linalg.norm( loadState[0:3]   - payload_state[timestep+1][0:3]   ) )
-    print( np.linalg.norm( loadState[3:6]   - payload_state[timestep+1][3:6]   ) )
-    print( np.linalg.norm( loadState[6:10]  - payload_state[timestep+1][6:10]  ) )
-    print( np.linalg.norm( loadState[10:13] - payload_state[timestep+1][10:13] ) )
+    print("pos  diff: ", np.linalg.norm( loadState[0:3]   - payload_state[timestep+1][0:3]   ) ) 
+    print("vel  diff: ", np.linalg.norm( loadState[3:6]   - payload_state[timestep+1][3:6]   ) ) 
+    print("quat diff: ", np.linalg.norm( loadState[6:10]  - payload_state[timestep+1][6:10]  ) )
+    print("w    diff: ", np.linalg.norm( loadState[10:13] - payload_state[timestep+1][10:13] ) )
 
 
 
