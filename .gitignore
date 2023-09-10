@@ -1,5 +1,5 @@
 *.o
-# sim/trajectoriescsv/
+sim/trajectoriescsv/
 extractMeshdata.py
 sim/configData.yaml
 *.cmd
