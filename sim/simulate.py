@@ -595,7 +595,7 @@ def main(args, animateOrPlotdict, params):
         print(key, uavs[key].state)
     if shared:
         print() 
-        print('payload pos:',payload.state[0:3])
+        print('payload pos and vel:',payload.state[0:6])
 
     print()
     print('Simulating...')
@@ -651,7 +651,7 @@ def main(args, animateOrPlotdict, params):
             Mddict[id] = []
             ui_s[id] = []
             logTime["robots"][id] = []
-        for tick in range(0, int(tf_sim)+1):
+        for tick in range(0, int(tf_sim)):
             j = plStSize
             ctrlInputs = np.zeros((1,4))
             if payload.lead:
@@ -761,7 +761,7 @@ def main(args, animateOrPlotdict, params):
                     ctrlInp        = np.array([control.u_all[0], control.u_all[1], control.u_all[2]])
                     uavs[id].state = StatefromSharedPayload(id, payload, uavs[id].state[6::], uavs[id].lc, j)
                     ctrlInputs     = np.vstack((ctrlInputs, control_inp.reshape(1,4)))
-                    payload.stackCtrl(ctrlInp.reshape(1,3))  
+                    payload.stackCtrl(ctrlInp.reshape(1,3)) 
                     if not payload.lead:
                         controls[id]  = control
                         setpoints[id] = setpoint
@@ -771,7 +771,7 @@ def main(args, animateOrPlotdict, params):
                         controls[id]  = control
                         sensors_[id]  = sensors
                         states[id]    = state
-                    uavs[id].stackStandCtrl(uavs[id].state, control_inp, ref_state)
+                    uavs[id].stackStandCtrl(uavs[id].state, control_inp,  ctrlInp, ref_state)
                     j+=3
                 if payload.ctrlType == 'lee_firmware':
                     payload.mu_des_prev = np.array(desVirtInp).reshape((3*payload.numOfquads,))
@@ -779,11 +779,11 @@ def main(args, animateOrPlotdict, params):
                 payload.cursorUp() 
                 payload.ui_s = ui_s
                 # Evolve the payload states
-                uavs, loadState =  payload.stateEvolution(ctrlInputs, uavs, uavs_params)    
                 if payload.lead:
                     payload.stackStateandRef(plref_state)
                 else:
                     payload.stackState()     
+                uavs, loadState =  payload.stateEvolution(ctrlInputs, uavs, uavs_params)    
             except Exception as e:
                 print(f"Simulation failed in {e=}, {type(e)=}")
                 print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno), type(e).__name__, e)
@@ -830,6 +830,7 @@ def main(args, animateOrPlotdict, params):
             num    = uavID.replace("cf","")
             Fdname = 'Fd'+num
             actionName = "action_"+num + ".csv"
+            uallName = "u_all_"+num +".csv"
             FdfilePaths[id] = Fdname
             with open("output/output_{}_{}/".format(payload.numOfquads, payloadShape)+Fdname, "w") as f:
                 np.savetxt(f, Fddict[id], delimiter=",")
@@ -837,6 +838,8 @@ def main(args, animateOrPlotdict, params):
                 np.savetxt(f, uavs[id].fullState, delimiter=",")    
             with open("output/output_{}_{}/".format(payload.numOfquads, payloadShape)+ actionName, "w") as f:
                 np.savetxt(f, uavs[id].actions, delimiter=",")    
+            with open("output/output_{}_{}/".format(payload.numOfquads, payloadShape)+ uallName, "w") as f:
+                np.savetxt(f, uavs[id].u_all, delimiter=",")    
 
             stDict[uavID] = fName
             # hps per robot csv

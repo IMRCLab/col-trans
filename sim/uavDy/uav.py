@@ -1,7 +1,7 @@
 import numpy as np
 from rowan.calculus import integrate as quat_integrate
 from rowan.functions import _promote_vec, _validate_unit, exp, multiply
-from rowan import from_matrix, to_matrix, to_euler, from_euler
+from rowan import from_matrix, to_matrix, to_euler, from_euler, rotate
 from scipy import  integrate, linalg
 from numpy.polynomial import Polynomial as poly
 import sys
@@ -174,7 +174,7 @@ class SharedPayload:
     def getInitState(self, uav_params, payload_params):
         self.state = np.zeros(self.state_size,)
         self.accl   = np.zeros(self.sys_dim,)
-        self.accl[0:3] = np.array([0,0,-9.81]) 
+        self.accl[0:3] = np.array([0,0,0]) 
         self.state[3:6]   = self.accl[0:3]*self.dt + payload_params['init_linV_L']
         self.state[0:3]   = self.state[3:6]*self.dt + payload_params['init_pos_L']
         if not self.pointmass:
@@ -251,14 +251,15 @@ class SharedPayload:
             Nq[3:6] = Nq[3:6] - skew(wl) @ self.J @ wl
         return Nq
 
-    def getuinp(self, uavs_params):        
+    def getuinp(self, uavs_params, ctrlInputs, uavs):        
         u_inp = np.zeros((self.sys_dim,))
         i, j, k = 0, self.plSysDim, self.plStateSize
 
         for name, uav in uavs_params.items():
             m = float(uav['m'])
             l = float(uav['l_c'])
-            u_i = self.ctrlInp[i,:]
+            f = ctrlInputs[i,0]
+            u_i = rotate(uavs["uav_"+name].state[6:10], np.array([0,0,f]))
             if not self.pointmass:
                 R_p = to_matrix(self.state[6:10])
                 wl = self.state[10:13]
@@ -313,7 +314,7 @@ class SharedPayload:
         ctrlInputs = np.delete(ctrlInputs, 0,0)
         Bq    = self.getBq(uavs_params)
         Nq    = self.getNq(uavs_params)
-        u_inp = self.getuinp(uavs_params)
+        u_inp = self.getuinp(uavs_params, ctrlInputs, uavs)
         
         k = self.plStateSize
         j = self.plSysDim
@@ -357,10 +358,10 @@ class SharedPayload:
        self.ctrlInp = np.vstack((self.ctrlInp,ctrlInp))
     
     def stackState(self):
-        self.plFullState = np.vstack((self.plFullState, self.plstate)) 
+        self.plFullState = np.vstack((self.plFullState, self.state)) 
     
     def stackStateandRef(self,plref_state):
-        self.plFullState = np.vstack((self.plFullState, self.plstate)) 
+        self.plFullState = np.vstack((self.plFullState, self.state)) 
         self.plref_state = np.vstack((self.plref_state, plref_state.reshape((1,6)))) 
 
     def removemu(self):
@@ -416,6 +417,7 @@ class UavModel:
         self.ctrlInps  = np.empty((1,8))
         self.refState  = np.empty((1,12))
         self.actions  = np.empty((1,4))
+        self.u_all = np.empty((1,3))
         self.drag  = float((uav_params['drag']))
         if self.drag ==  1:
             self.Kaero = np.diag([-9.1785e-7, -9.1785e-7, -10.311e-7]) 
@@ -504,7 +506,7 @@ class UavModel:
         motorForce += noise
         return motorForce, self.ctrlAll @ motorForce
     
-    def stackStandCtrl(self, state, control_t, ref_state):
+    def stackStandCtrl(self, state, control_t, u_all, ref_state):
         ## This method stacks the actual and reference states of the UAV 
         ## and the control input vector [fz taux, tauy, tauz, f1, f2, f3, f4]
         curr_w = self.state[10::]
@@ -513,13 +515,13 @@ class UavModel:
         self.fullState  = np.vstack((self.fullState, state))
 
         f_motors   = self.invAll @ control_t
-        f_motors_ = f_motors/(0.034*9.81)
-
+        f_motors_ = f_motors.copy()
         f_motorsG  =  (f_motors/9.81)*1000
         f_motorsG_clipped   = np.clip(f_motorsG, 0, self.maxThrust)
         f_motors = f_motorsG_clipped*9.81/1000
         self.ctrlInps   = np.vstack((self.ctrlInps, np.array([control_t, f_motors]).reshape(1,8)))
         self.actions    = np.vstack((self.actions, np.array(f_motors_).reshape(1,4)))
+        self.u_all      = np.vstack((self.u_all, np.array(u_all).reshape(1,3)))
         self.refState   = np.vstack((self.refState, ref_state))
     
     def cursorUpwPl(self):
@@ -532,6 +534,7 @@ class UavModel:
         self.ctrlInps  = np.delete(self.ctrlInps,  0, 0)
         self.refState  = np.delete(self.refState,  0, 0)
         self.actions  = np.delete(self.actions,   0, 0)
+        self.u_all  = np.delete(self.u_all,   0, 0)
 
     def wMotors(self, f_motor):
         """This method transforms the current thrust for each motor to command input to angular velocity  in [rad/s]"""
