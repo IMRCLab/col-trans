@@ -131,7 +131,7 @@ if __name__ == '__main__':
         mus[id]            = np.loadtxt(str(currPath)+'/output/output_{}_{}/'.format(args.uavs, args.load) + musFilePath, delimiter=',')
         # Add shape for mu vector 
         mushape[id]        =  g.LineBasicMaterial(linewidth=muShape['linewidth'], color=colors[qNum])
-        Fdshape[id]        =  g.LineBasicMaterial(linewidth=muShape['linewidth'], color=colors[qNum])
+        Fdshape[id]        =  g.LineBasicMaterial(linewidth=muShape['linewidth'], color=colors[qNum], opacity=0)
         # Add shape for cable 
         cables[id]         = g.LineBasicMaterial(linewidth=cableShape['linewidth'], color=cableShape['color'])
     
@@ -247,6 +247,6 @@ if __name__ == '__main__':
                         else:
                             vis["p"+str(hpsKey)+id].delete()
                             vis["n"+str(hpsKey)+id].delete()
+                    time.sleep(visProps["timestep"])
             tick+=1
-            time.sleep(visProps["timestep"])
                   

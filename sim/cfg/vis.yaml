@@ -2,8 +2,8 @@
 # for each shape
 meshcat: 
   openWindow: true
-  timestep: 0.000 # in secs
-  dt: 0.05
+  timestep: 0.00001 # in secs
+  dt: 1.0
 robot:
   shape  :  Animator/cf2_assembly.stl
   colors : [0xFF0000, 0x00FF00, 0x0000FF, 0x00FFFF, 0xFF00FF, 0xFFFF00, 0xFFA500, 0x800080, 0xFFC0CB, 0x008080]
@@ -19,7 +19,7 @@ robot:
   
   cable:
     color: 0x000000
-    linewidth: 4
+    linewidth: 0
   
   constrSphere: 
     radius  : [0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08 ,0.08 ,0.08 ,0.08 ,0.08, 0.08]

@@ -45,7 +45,8 @@ def main():
     # this example is only for 2 uavs: if you want more you will need to import more files
     # There are two file examples you can test from, a circle trajectory and hover trajectory
     # file_name = "example_2_rig_hover" 
-    file_name = "example_2_rig_circle" 
+    # file_name = "example_2_rig_circle" 
+    file_name = "example_3_rig_hover"
     # choose the timestep you want to simulate
 
     # the circle trajectory has about 10000 entry and the hover has around 3000
@@ -58,12 +59,17 @@ def main():
     with open(file_name +"/cf2.csv") as f:
         cf2 = np.loadtxt(f, delimiter=",")
 
+    with open(file_name +"/cf3.csv") as f:
+        cf3 = np.loadtxt(f, delimiter=",")
+
+
     # load actions: motor forces divided by u_nominal: m*9.81
     with open(file_name +"/action_1.csv") as f:
         u1 = np.loadtxt(f, delimiter=',')
     with open(file_name +"/action_2.csv") as f:
         u2 = np.loadtxt(f, delimiter=",")
-
+    with open(file_name +"/action_2.csv") as f:
+        u3 = np.loadtxt(f, delimiter=",")
     # load the payload states: 
     # payload st: position velocity, quat [qw, qx, qy, qz], ang vel
     # cable st: q1, q2, w1, w2 
@@ -71,8 +77,8 @@ def main():
     with open(file_name +"/payload.csv") as f:
         payload_state = np.loadtxt(f, delimiter=',')
 
-    cfs = [np.array(cf1), np.array(cf2)]
-    u = [np.array(u1), np.array(u2)]
+    cfs = [np.array(cf1), np.array(cf2), np.array(cf3)]
+    u = [np.array(u1), np.array(u2), np.array(u3)]
 
     ctrlInputs = np.zeros((1,4))
     # uncomment this to go through all states and actions

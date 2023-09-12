@@ -101,7 +101,7 @@ RobotswithPayload:
     mode        : 'shared' # shared: payload is shared between UAVs through cables,  otherwise: independent paylaod for each UAV
     m_p         : 0.0169
     shape       : 'triangle'
-    inertia    :  [ 7.53799416e-06, 7.54105751e-06, 1.47984432e-05] #[0.001072, 0.001072, 0.001072] #[0, 0, 0] #[0.001072, 0.001072, 0.001072] # [0.001072, 0.001072, 0.001072] # [0.001072, 0.001072, 0.001072] #[0.001072, 0.001072, 0.001072] # sphere rigid body of radius = 0.5176 [m], mass = 0.01 [kg], Ixx = Iyy = Izz = (2/5) * m * r^2 
+    inertia    :  [7.53799416e-06, 7.54105751e-06, 1.47984432e-05] #[0.001072, 0.001072, 0.001072] #[0, 0, 0] #[0.001072, 0.001072, 0.001072] # [0.001072, 0.001072, 0.001072] # [0.001072, 0.001072, 0.001072] #[0.001072, 0.001072, 0.001072] # sphere rigid body of radius = 0.5176 [m], mass = 0.01 [kg], Ixx = Iyy = Izz = (2/5) * m * r^2 
     init_pos_L  : [0,0,0] #[0.255, 0.13,0] #[0.055238, 0, 0]
     #[0.747886, 0.573861, 0] #[0.747886, 0.573861, 0] #[0, 0, -0.3] #[0.747886, 0.573861, 0] #[0.747886, 0.573861, 0] #[0.91321, 0.240792, 0.699988] #[0.000094,0,0] #[0.91321, 0.240792, 0.699988] # [0,0.000094,0] #[0.91321, 0.240792, 0.699988] # [0.090768, 0.234859, 0.097903] #[0.91321, 0.240792,-0.800012]
     init_linV_L : [0,   0,    0]
@@ -131,13 +131,13 @@ RobotswithPayload:
       gains:
         ctrlLee:
           # Payload PID
-          kpx  :  12.0 #15.0 #18.0 #10.0 #10.0  
-          kpy  :  12.0 #15.0 #18.0 #10.0 #10.0
-          kpz  :  12.0 #15.0 #18.0 #10.0 #10.0
+          kpx  :  15.0 #15.0 #18.0 #10.0 #10.0  
+          kpy  :  15.0 #15.0 #18.0 #10.0 #10.0
+          kpz  :  15.0 #15.0 #18.0 #10.0 #10.0
           kp_limit: 100
-          kdx  :  10.0 #12.5 #4.0 #16.0 #8.0 #8.0
-          kdy  :  10.0 #12.5 #4.0 #16.0 #8.0 #8.0
-          kdz  :  10.0 #12.5 #4.0 #16.0 #8.0 #8.0
+          kdx  :  13.0 #12.5 #4.0 #16.0 #8.0 #8.0
+          kdy  :  13.0 #12.5 #4.0 #16.0 #8.0 #8.0
+          kdz  :  13.0 #12.5 #4.0 #16.0 #8.0 #8.0
           kd_limit: 100
           kipx :  0.0
           kipy :  0.0
@@ -162,12 +162,12 @@ RobotswithPayload:
           kiz  : 0.0 #0.015     
         cable:
           # Cable PD
-          kqx  :  20.0 #6.0 #25.0 #10.0 #25.0 #35.0 #3.0 #10.0 #30.0 #25.0 
-          kqy  :  20.0 #6.0 #25.0 #10.0 #25.0 #35.0 #3.0 #10.0 #30.0 #25.0 
-          kqz  :  20.0 #6.0 #25.0 #10.0 #25.0 #35.0 #3.0 #10.0 #30.0 #25.0 
-          kwcx :  4.5 #2.0 #24.0 #22.0 #34.0 #1.0 #28.0 #24.0  
-          kwcy :  4.5 #2.0 #24.0 #22.0 #34.0 #1.0 #28.0 #24.0  
-          kwcz :  4.5 #2.0 #24.0 #22.0 #34.0 #1.0 #28.0 #24.0 
+          kqx  :  10.0 #6.0 #25.0 #10.0 #25.0 #35.0 #3.0 #10.0 #30.0 #25.0 
+          kqy  :  10.0 #6.0 #25.0 #10.0 #25.0 #35.0 #3.0 #10.0 #30.0 #25.0 
+          kqz  :  10.0 #6.0 #25.0 #10.0 #25.0 #35.0 #3.0 #10.0 #30.0 #25.0 
+          kwcx :  6.5 #2.0 #24.0 #22.0 #34.0 #1.0 #28.0 #24.0  
+          kwcy :  6.5 #2.0 #24.0 #22.0 #34.0 #1.0 #28.0 #24.0  
+          kwcz :  6.5 #2.0 #24.0 #22.0 #34.0 #1.0 #28.0 #24.0 
           kicx:   3.5 
           kicy:   3.5
           kicz:   3.5
@@ -206,7 +206,7 @@ RobotswithPayload:
       l_c  :  0.5 #0.854 #0.77 # Length of cable
       q_dg : [0, 0, 180] #[0,-51.4298,0]   #[-39.8273,36.159552, 20.156] #[-45, 0, 0] #[-45, 0, 0] # [0, 0, 0]  # Initial angle between UAV and payload
       qd   : [0, 0, 0]  # Initial angle derivates between UAV and payload (i.e., of cables)
-      pos_fr_payload: [0, 0.0355, 0] #[0, 0.1294, 0] #[0.2588, 0, 0] #position vector of the cable on the load (i.e., zero vector means a point mass)
+      pos_fr_payload: [0, 0.04, 0] #[0, 0.1294, 0] #[0.2588, 0, 0] #position vector of the cable on the load (i.e., zero vector means a point mass)
       initConditions:
         init_pos_Q      : [0,  0, 0] #[0.91321, 0.240792, 0.7]
         init_attitude_Q : [0,  0, 0] 
@@ -253,7 +253,7 @@ RobotswithPayload:
       l_c  : 0.5 #0.754 #0.707 # Length of cable
       q_dg : [0, 0, 300]  # [0, 0, 0]  # Initial angle between UAV and payload
       qd   : [0, 0, 0]  # Initial angle derivates between UAV and payload (i.e., of cables)
-      pos_fr_payload: [-0.041, -0.0355, 0] #[-0.2241, -0.1294, 0] #[-0.1294, 0.2241, 0] #position vector of the cable on the load (i.e., zero vector means a point mass)
+      pos_fr_payload: [-0.04, -0.04, 0] #[-0.2241, -0.1294, 0] #[-0.1294, 0.2241, 0] #position vector of the cable on the load (i.e., zero vector means a point mass)
       initConditions:
         init_pos_Q      : [0,  0, 0] #[0.91321, 0.240792, 0.7]
         init_attitude_Q : [0,  0, 0] 
@@ -300,7 +300,7 @@ RobotswithPayload:
       l_c  : 0.5 #0.754 #0.707 # Length of cable
       q_dg : [0, 0, 420]  # [0, 0, 0]  # Initial angle between UAV and payload
       qd   : [0, 0, 0]  # Initial angle derivates between UAV and payload (i.e., of cables)
-      pos_fr_payload: [0.041, -0.0355, 0] #[0.2241, -0.1294, 0] #[-0.1294, 0.2241, 0] #position vector of the cable on the load (i.e., zero vector means a point mass)
+      pos_fr_payload: [0.04, -0.04, 0] #[0.2241, -0.1294, 0] #[-0.1294, 0.2241, 0] #position vector of the cable on the load (i.e., zero vector means a point mass)
       initConditions:
         init_pos_Q      : [0,  0, 0] #[0.91321, 0.240792, 0.7]
         init_attitude_Q : [0,  0, 0] 
@@ -321,5 +321,5 @@ environment:
     Kd: [0,0,0]
 ## Simulation parameters 
 dt : 1e-3 # time step
-simtime: -1.01e3 #  This is added (or subtracted) from the total trajectory time defined in the csv file
+simtime: 2.01e3 #  This is added (or subtracted) from the total trajectory time defined in the csv file
 sample: 250 #frames per second

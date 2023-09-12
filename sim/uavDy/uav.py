@@ -292,7 +292,7 @@ class SharedPayload:
         vp  = self.state[3:6]
         if not self.pointmass:
             quat_p = self.state[6:10]
-            wp = self.state[10:13]  
+            wp = self.state[10:13]
             self.state[10:13] = self.accl[3:6]*self.dt + wp #wp_next
             self.state[6:10] = self.integrate_quat(quat_p, wp, self.dt) # payload quaternion (atttitude)   
 
@@ -312,6 +312,16 @@ class SharedPayload:
 
     def stateEvolution(self, ctrlInputs, uavs, uavs_params):
         ctrlInputs = np.delete(ctrlInputs, 0,0)
+        u1 = np.array([1.0,1.0,1.0,1.0])
+        u2 = np.array([0,0,0,0])
+        u3 = np.array([0,0,0,0])
+        u_nominal = 0.034*9.81/4
+        control_inp1 = uavs["uav_cf1"].ctrlAll@u1* u_nominal
+        control_inp2 = uavs["uav_cf1"].ctrlAll@u2
+        control_inp3 = uavs["uav_cf1"].ctrlAll@u3
+
+        ctrlInputs = np.array([control_inp1, control_inp2, control_inp3])
+
         Bq    = self.getBq(uavs_params)
         Nq    = self.getNq(uavs_params)
         u_inp = self.getuinp(uavs_params, ctrlInputs, uavs)
