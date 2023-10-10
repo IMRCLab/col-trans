@@ -174,7 +174,7 @@ class SharedPayload:
     def getInitState(self, uav_params, payload_params):
         self.state = np.zeros(self.state_size,)
         self.accl   = np.zeros(self.sys_dim,)
-        self.accl[0:3] = np.array([0,0,0]) 
+        self.accl[0:3] = np.array([0,0,-9.81]) 
         self.state[3:6]   = self.accl[0:3]*self.dt + payload_params['init_linV_L']
         self.state[0:3]   = self.state[3:6]*self.dt + payload_params['init_pos_L']
         if not self.pointmass:
@@ -272,7 +272,6 @@ class SharedPayload:
             qiqiT = qi.reshape((3,1))@(qi.T).reshape((1,3))
             u_inp[0:3] += u_i
             
-            u_perp = ((np.eye(3) - qiqiT) @  u_i)
             u_inp[j:j+3] = -skew(qi) @ u_i
 
             if not self.pointmass:
@@ -289,10 +288,10 @@ class SharedPayload:
         if not self.pointmass:
             posNext = np.zeros(self.sys_dim+1)
         xp  = self.state[0:3]
-        vp  = self.state[3:6]
+        vp  = np.copy(self.state[3:6])
         if not self.pointmass:
             quat_p = self.state[6:10]
-            wp = self.state[10:13]
+            wp = np.copy(self.state[10:13])
             self.state[10:13] = self.accl[3:6]*self.dt + wp #wp_next
             self.state[6:10] = self.integrate_quat(quat_p, wp, self.dt) # payload quaternion (atttitude)   
 
@@ -302,9 +301,8 @@ class SharedPayload:
         j = self.plSysDim
         for i in range(0, self.numOfquads):
             qi = self.state[k:k+3]
-            wi = self.state[k+3*self.numOfquads:k+3+3*self.numOfquads]
-            wdi = self.accl[j:j+3]
-            self.state[k+3*self.numOfquads:k+3+3*self.numOfquads] = wdi*self.dt + wi # wi_next: cables angular velocity
+            wi = np.copy(self.state[k+3*self.numOfquads:k+3+3*self.numOfquads])
+            self.state[k+3*self.numOfquads:k+3+3*self.numOfquads] = self.accl[j:j+3]*self.dt + wi # wi_next: cables angular velocity
             qdot = np.cross(wi, qi) # qdot 
             self.state[k:k+3] = qdot*self.dt + qi # qi_next: cables directional vectors
             k+=3
