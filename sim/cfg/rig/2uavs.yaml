@@ -102,12 +102,12 @@ RobotswithPayload:
     m_p         : 0.0115
     shape       : 'rod'
     inertia    :  [3.0002e-4, 7.7083e-7, 3.0075e-4] # cylinder rigid body of radius = 0.025 [m], height = 0.2, mass = 0.016 [kg], Ixx = Izz = (1/12)*m*(3r^2 + h^2), Iyy = (1/2)m*r^2
-    init_pos_L  : [0.255, 0.13,0] #[0.055238, 0, 0]
+    init_pos_L  : [0,0,0] #[0.255, 0.13,0] #[0.055238, 0, 0]
     #[0.747886, 0.573861, 0] #[0.747886, 0.573861, 0] #[0, 0, -0.3] #[0.747886, 0.573861, 0] #[0.747886, 0.573861, 0] #[0.91321, 0.240792, 0.699988] #[0.000094,0,0] #[0.91321, 0.240792, 0.699988] # [0,0.000094,0] #[0.91321, 0.240792, 0.699988] # [0.090768, 0.234859, 0.097903] #[0.91321, 0.240792,-0.800012]
     init_linV_L : [0,   0,    0]
     init_angle  : [0,   0,    0]
     wl          : [0,   0,    0]
-    refTrajPath: 'trajectoriescsv/circle.csv' #linTraj_traj.csv #cirTraj1.csv
+    refTrajPath: 'trajectoriescsv/hover.csv' #linTraj_traj.csv #cirTraj1.csv
     refAttitude: [0, 0, 0] # attitude setpoint in euler angles (degrees) 
     payloadCtrl:
       name: 'lee_firmware'
@@ -273,5 +273,5 @@ environment:
     Kd: [0,0,0]
 ## Simulation parameters 
 dt : 1e-3 # time step
-simtime:  0.922e3 #  This is added (or subtracted) from the total trajectory time defined in the csv file
+simtime: 1.02e3 #  This is added (or subtracted) from the total trajectory time defined in the csv file
 sample: 250 #frames per second
