@@ -21,8 +21,8 @@ def main():
     traj1.loadcsv("/home/khaledwahba94/imrc/ros2_ws/src/crazyswarm2/crazyflie_examples/crazyflie_examples/data/figure8.csv")
 
     print("Upload trajectory")
-    for cf in allcfs.crazyflies:
-        cf.uploadTrajectory(0, 0, traj1)
+    # for cf in allcfs.crazyflies:
+    #     cf.uploadTrajectory(0, 0, traj1)
     # logging and takoff
     if LOGGING:
         allcfs.setParam('usd.logging', 1)

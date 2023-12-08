@@ -18,7 +18,7 @@ def main():
     # allcfs.emergency()
 
     traj1 = Trajectory()
-    traj1.loadcsv("/home/whoenig/projects/crazyflie/crazyswarm2/src/coltrans_ros/data/figure8_3.csv")
+    traj1.loadcsv("/home/khaledwahba94/imrc/col-trans/coltrans_ros/data/figure8_3.csv")
 
     print("Upload trajectory")
     for cf in allcfs.crazyflies:
