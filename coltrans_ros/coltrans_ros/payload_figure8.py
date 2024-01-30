@@ -1,56 +1,70 @@
 #!/usr/bin/env python
 
-import numpy as np
+from crazyflie_py import Crazyswarm
+from crazyflie_py.uav_trajectory import Trajectory
 from pathlib import Path
 
-from py_crazyswarm2 import *
-from py_crazyswarm2.uav_trajectory import Trajectory
+import numpy as np
 
-TIMESCALE          = 1.5  # time scale of figure8 trajectory
-TAKEOFF_DURATION   = 10.0 # Take off with payload (lee controller) 
-PAYLOAD_CONTROLLER = 8.0  # Hover before starting traj (to stop swinging)
-TARGET_HEIGHT      = 1.0  # Height of the payload
 
-HOVER_BACK         = 5.0  
+TIMESCALE               = 1.5  # time scale of figure8 trajectory
+TAKEOFF_DURATION        = 3.0 # Take off with payload (lee controller) 
+PAYLOAD_CONTROLLER_TIME = 5.0  # Hover before starting traj (to stop swinging)
+TARGET_HEIGHT           = 1.0  # Height of the payload
 
+HOVER_BACK              = 5.0  
+
+LOGGING = False
+START_TRAJ = True
 def main():
     swarm = Crazyswarm()
     timeHelper = swarm.timeHelper
-    cf = swarm.allcfs.crazyflies[0]
-
+    allcfs = swarm.allcfs
+    # upload trajectory
     traj1 = Trajectory()
-    traj1.loadcsv(Path(__file__).parent / "data/figure8.csv")
+    traj1.loadcsv("/home/khaledwahba94/imrc/col-trans/coltrans_ros/data/figure8.csv")
 
-## Upload figure8 Trajectory
-    cf.uploadTrajectory(0, 0, traj1)
+    for cf in allcfs.crazyflies:
+        cf.uploadTrajectory(0, 0, traj1)
 
-## Take off with Lee controller
-    cf.setParam('stabilizer.controller', 6)    
-    cf.takeoff(targetHeight=TARGET_HEIGHT, duration=TAKEOFF_DURATION)
-    timeHelper.sleep(TAKEOFF_DURATION)    
+    # logging and takoff
+    if LOGGING:
+        allcfs.setParam('usd.logging', 1)
+        timeHelper.sleep(2.0)
+
+    # set controller to lee + takeoff
+    allcfs.setParam('ring.effect', 7)
+    allcfs.setParam('stabilizer.controller', 6)
+    timeHelper.sleep(2.0)
+    allcfs.takeoff(targetHeight=TARGET_HEIGHT, duration=TAKEOFF_DURATION)
+    timeHelper.sleep(TAKEOFF_DURATION + 2.) # extra time
     
-## Hover with lee UAV-payload controller 
+    # switch controller
+    allcfs.setParam('stabilizer.controller', 7)
+    timeHelper.sleep(PAYLOAD_CONTROLLER_TIME)
+    
+    # Hover with leePayload controller 
     print('start hovering with lee payload')
     cf.setParam('stabilizer.controller', 7)
-    timeHelper.sleep(PAYLOAD_CONTROLLER)
-
-
-    cf.setParam("usd/logging", 1)
-
-## Start infinity trajectory
-    cf.startTrajectory(0, timescale=TIMESCALE)
-    timeHelper.sleep(traj1.duration * TIMESCALE + 2.0)
+    timeHelper.sleep(PAYLOAD_CONTROLLER_TIME)
     
-    print('finished trajectory')
-    cf.setParam("usd.logging", 0) 
+    ## Start infinity trajectory
+    if START_TRAJ:
+        print('start trajectory with lee payload')
+        allcfs.startTrajectory(0, timescale=TIMESCALE)
+        timeHelper.sleep(traj1.duration * TIMESCALE + 2.0)
+        
+        print('finished trajectory')
+        allcfs.setParam("usd.logging", 0) 
 
-    print('swap controller')
-    cf.setParam('ctrlLee.mass', 0.034+0.007)
-    cf.setParam('stabilizer.controller', 6)
+    # Landing
+    print("Landing...")
+    for cf in allcfs.crazyflies:
+        cf.notifySetpointsStop()
 
-    cf.land(targetHeight=0.04, duration=2.0)
-    timeHelper.sleep(TAKEOFF_DURATION)
-
+    allcfs.setParam('stabilizer.controller', 6)
+    allcfs.land(targetHeight=0.03, duration=3.0)
+    timeHelper.sleep(4.0)
 
 if __name__ == "__main__":
     main()
