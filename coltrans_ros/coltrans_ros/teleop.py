@@ -25,21 +25,24 @@ class TeleopNode(Node):
         # self.publisher = self.create_publisher(
                 # PoseStamped, "{}/frontnet_targetpos_typed".format(self.cf), 10)
 
+        self.timer = None
+        self.buttons_prev = None
+
         self.subscription1 = self.create_subscription(
             Joy,
             'joy',
             self.joy_callback,
             10)
 
-        self.timer = None
-        self.buttons_prev = None
-
-
 
     def joy_callback(self, msg: Joy):
         buttons = np.array(msg.buttons)
         
         if self.buttons_prev is None:
+            self.buttons_prev = buttons
+            return
+
+        if len(buttons) != len(self.buttons_prev):
             self.buttons_prev = buttons
             return
 
