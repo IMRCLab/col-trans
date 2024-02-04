@@ -1,6 +1,6 @@
 1     # version
 1024  # buffer size in bytes
-cf7_  # file name
+log   # file name
 0     # enable on startup (0/1)
 on:fixedFrequency
 100     # frequency in Hz
@@ -28,12 +28,11 @@ ctrlLeeP.omegarx
 ctrlLeeP.omegary
 ctrlLeeP.omegarz
 
-# Thrust 
-powerDist.thrustPart
-powerDist.rollPart
-powerDist.pitchPart
-powerDist.yawPart
-powerDist.maxThrust
+# control inp of CF
+ctrlLeeP.thrustSI
+ctrlLeeP.torquex
+ctrlLeeP.torquey
+ctrlLeeP.torquez
 
 # Payload position and velocity states  (Fd)
 stateEstimateZ.px
@@ -78,11 +77,12 @@ ctrlLeeP.qidotx
 ctrlLeeP.qidoty
 ctrlLeeP.qidotz
 
-# Planned Cable States
-ctrlLeeP.mu_refx
-ctrlLeeP.mu_refy
-ctrlLeeP.mu_refz
+# desired cable states
+ctrlLeeP.qdidotx
+ctrlLeeP.qdidoty
+ctrlLeeP.qdidotz
 
+# QP output (qi_des=mu_des/||mu_des||)
 ctrlLeeP.desVirtInpx
 ctrlLeeP.desVirtInpy
 ctrlLeeP.desVirtInpz
@@ -93,6 +93,14 @@ ctrlLeeP.uy
 ctrlLeeP.uz
 
 # QP input
+ctrlLeeP.n1x
+ctrlLeeP.n1y
+ctrlLeeP.n1z
+
+ctrlLeeP.n2x
+ctrlLeeP.n2y
+ctrlLeeP.n2z
+
 ctrlLeeP.Fdx
 ctrlLeeP.Fdy
 ctrlLeeP.Fdz
