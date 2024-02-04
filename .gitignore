@@ -15,3 +15,4 @@ cf*_*
 hardware/qp-solve/src
 logTime_*
 hardware/qp-solve/*.txt
+.vscode
