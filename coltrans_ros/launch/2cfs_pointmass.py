@@ -69,7 +69,7 @@ def generate_launch_description():
                 ('takeoff', 'all/takeoff'),
                 ('land', 'all/land'),
                 ('notify_setpoints_stop', 'all/notify_setpoints_stop'),
-                ('cmd_vel', 'cf2/cmd_vel'),
+                ('cmd_vel', 'all/cmd_vel'),
                 ('cmd_full_state', 'all/cmd_full_state'),
             ],
             parameters=[teleop_params]
@@ -109,7 +109,8 @@ def generate_launch_description():
         Node(
             package='coltrans_ros',
             executable='teleop',
-            name='teleop_coltrans'
+            name='teleop_coltrans',
+            output='screen',
         ),
         Node(
             package='rviz2',
