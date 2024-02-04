@@ -77,7 +77,7 @@ class VisualizationNode(Node):
 
         print(self.get_topic_names_and_types())
 
-        cfs = ['cf4' , 'cf7']
+        cfs = ['cf2' , 'cf7']
         # cfs = ['cf5', 'cf6']
         self.payloadname = "payload"
         self.cfs = cfs
@@ -95,7 +95,7 @@ class VisualizationNode(Node):
 
         # for each crazyflie, generate a 3D model, a sphere, and a hyperplane
         for cf in cfs:
-            model = mcg.StlMeshGeometry.from_file("/home/khaledwahba94/col-trans-project/col-trans/sim/Animator/cf2_assembly.stl")
+            model = mcg.StlMeshGeometry.from_file("/home/khaledwahba94/imrc/col-trans/sim/Animator/cf2_assembly.stl")
             self.vis["{}_model".format(cf)].set_object(model)
 
             sphere = mcg.Mesh(mcg.Sphere(0.1), 
@@ -168,7 +168,8 @@ class VisualizationNode(Node):
 
     def listener_callback(self, msg: LogDataGeneric, name: str):
         # the expected configuration is
-        # vars: ["ctrlLeeP.n1x", "ctrlLeeP.n1y", "ctrlLeeP.n1z", "ctrlLeeP.desVirtInpx", , "ctrlLeeP.desVirtInpy", , "ctrlLeeP.desVirtInpz"]
+        # vars: ["ctrlLeeP.n1x", "ctrlLeeP.n1y", "ctrlLeeP.n1z", "ctrlLeeP.desVirtInpx", "ctrlLeeP.desVirtInpy", "ctrlLeeP.desVirtInpz"
+        # ,"ctrlLeeP.mu_refx", "ctrlLeeP.mu_refy", "ctrlLeeP.mu_refz"]
 
         # self.get_logger().info('I heard: "%s"' % msg)
 
