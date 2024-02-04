@@ -15,7 +15,13 @@ TARGET_HEIGHT           = 1.0  # Height of the payload
 HOVER_BACK              = 5.0  
 
 LOGGING = False
-START_TRAJ = True
+START_TRAJ = False
+GOTO =  True
+PAYLOAD_TAKEOFF_HEIGHT = 0.5
+gotopos = [0.0, 0.0, PAYLOAD_TAKEOFF_HEIGHT]
+goto_duration = 4.0
+
+
 def main():
     swarm = Crazyswarm()
     timeHelper = swarm.timeHelper
@@ -56,6 +62,12 @@ def main():
         
         print('finished trajectory')
         allcfs.setParam("usd.logging", 0) 
+    
+    elif GOTO:
+        for cf in allcfs.crazyflies:
+            cf.goTo(gotopos, 0.0, goto_duration)
+        timeHelper.sleep(goto_duration+2.0) # extra time
+
 
     # Landing
     print("Landing...")

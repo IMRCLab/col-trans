@@ -18,7 +18,7 @@ def main():
     # allcfs.emergency()
 
     traj1 = Trajectory()
-    traj1.loadcsv("/home/khaledwahba94/imrc/col-trans/coltrans_ros/data/figure8_3.csv")
+    traj1.loadcsv("/home/khaledwahba94/imrc/col-trans/coltrans_ros/data/figure8.csv")
 
     print("Upload trajectory")
     for cf in allcfs.crazyflies:
@@ -30,11 +30,13 @@ def main():
         timeHelper.sleep(2.0)
 
     allcfs.setParam('ring.effect', 7)
-    allcfs.setParam('stabilizer.controller', 7)
+    allcfs.setParam('stabilizer.controller', 6)
     timeHelper.sleep(2.0)
     allcfs.takeoff(targetHeight=HEIGHT, duration=3.0)
-    timeHelper.sleep(3.0)
     timeHelper.sleep(5.0) # extra time
+
+    allcfs.setParam('stabilizer.controller', 7)
+    timeHelper.sleep(2.0)
 
     e = traj1.eval(0.0)
 
@@ -51,14 +53,14 @@ def main():
     timeHelper.sleep(traj1.duration * TIMESCALE + 2.0)
 
     # go back to starting position and hover over floor
-    for cf in allcfs.crazyflies:
-        cf.goTo([0.5,-1.0,HEIGHT],0,4.0)
-    timeHelper.sleep(5.0)
+    # for cf in allcfs.crazyflies:
+    #     cf.goTo([0.5,-1.0,HEIGHT],0,4.0)
+    # timeHelper.sleep(5.0)
 
-    # hover over floor
-    for cf in allcfs.crazyflies:
-        cf.goTo([0.5,-1.0,0.2],0,2.0)
-    timeHelper.sleep(2.0)
+    # # hover over floor
+    # for cf in allcfs.crazyflies:
+    #     cf.goTo([0.5,-1.0,0.2],0,2.0)
+    # timeHelper.sleep(2.0)
 
     # Switch to another controller, so that the setpoint is not the payload
     allcfs.setParam('stabilizer.controller', 6)
