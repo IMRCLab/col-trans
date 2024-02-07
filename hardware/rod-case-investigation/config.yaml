@@ -1,0 +1,94 @@
+flights: 
+  extract: true
+  data:
+    - [cf2/cf2_00]
+    - [cf2/cf2_1_30, cf7/cf7_1_21]
+start_time: 3.0
+end_time: 40
+plot:
+  enabled: false
+  files:
+    - [cf2/cf2_1_30, cf7/cf7_1_21] 
+
+compute_results: [ep, energy]
+
+data_to_plot:  
+    page1:
+      special: true # if this plot needs a special calculation 
+      plot_labels: ["x [m]", "y [m]", "z [m]"]
+      unit: mm 
+      data:
+        name1: p0
+        data1: [stateEstimateZ.px, stateEstimateZ.py, stateEstimateZ.pz]
+        name2: p0d
+        data2: [ctrltargetZ.x, ctrltargetZ.y, ctrltargetZ.z]
+        timestamp: []
+      title: Payload Pose
+      num_of_plots: 3
+
+    page2:
+      special: false
+      plot_labels: ['vx [m/s]', 'vy [m/s]', 'vz [m/s]']
+      unit: mm
+      data:
+        name1: v0
+        data1: [stateEstimateZ.pvx, stateEstimateZ.pvy, stateEstimateZ.pvz]
+        name2: v0d
+        data2: [ctrltargetZ.vx, ctrltargetZ.vy, ctrltargetZ.vz]
+      title: Payload Velocity
+      num_of_plots: 3
+
+    page3:
+      special: true
+      plot_labels: ['f1 [g]', 'f2 [g]', 'f3 [g]', 'f4 [g]', 'maxThrust']
+      unit: g
+      data:
+        name1: Thrust
+        data1: [powerDist.thrustPart, powerDist.rollPart, powerDist.pitchPart, powerDist.yawPart, powerDist.maxThrust] 
+      title: Thrust 
+      num_of_plots: 4
+
+    page4:
+      special: false
+      plot_labels: ['Fdx [N]', 'Fdy [N]', 'Fdz [N]']
+      unit: N 
+      data:
+        name1: Fd
+        data1: [ctrlLeeP.Fdx, ctrlLeeP.Fdy, ctrlLeeP.Fdz] 
+      title: Desired Payload Force
+      num_of_plots: 3
+
+
+    page5:
+      special: false
+      plot_labels: ['mux [N]', 'muy [N]', 'muz [N]']
+      unit: N 
+      data:
+        name1: mu
+        data1: [ctrlLeeP.desVirtInpx, ctrlLeeP.desVirtInpy, ctrlLeeP.desVirtInpz] 
+        name2: mu_ref
+        data2: [ctrlLeeP.mu_refx, ctrlLeeP.mu_refy, ctrlLeeP.mu_refz] 
+      title: Desired Cable force
+      num_of_plots: 3
+
+    page5:
+      special: false
+      plot_labels: ['mux [N]', 'muy [N]', 'muz [N]']
+      unit: N 
+      data:
+        name1: mu
+        data1: [ctrlLeeP.desVirtInpx, ctrlLeeP.desVirtInpy, ctrlLeeP.desVirtInpz] 
+        name2: mu_ref
+        data2: [ctrlLeeP.mu_refx, ctrlLeeP.mu_refy, ctrlLeeP.mu_refz] 
+      title: Desired Cable force
+      num_of_plots: 3
+
+    page6:
+      special: false
+      plot_labels: ['qidotx [rad/s]', 'qidoty [rad/s]', 'qidotz [rad/s]']
+      unit: N 
+      data:
+        name1: qidot
+        data1: [ctrlLeeP.qidotx, ctrlLeeP.qidoty, ctrlLeeP.qidotz] 
+      title: Cable Unit Vector Derivative
+      num_of_plots: 3
