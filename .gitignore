@@ -10,7 +10,7 @@ osqp/cffirmware_osqp/src/.~lock.FDvsmu.csv#
 sim/output*/
 sim/cfg/*.pdf
 __pycache__/
-cf*_*
+data_payload
 *.pdf
 hardware/qp-solve/src
 logTime_*
