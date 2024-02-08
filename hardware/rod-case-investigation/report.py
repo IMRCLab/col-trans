@@ -4,6 +4,7 @@ from helper import *
 def main():
     data = loadyaml("config.yaml")
     flights = data["flights"]["data"]
+    name = data["flights"]["name"]
     extract_data = data["flights"]["extract"]
     plot_files = data["plot"]["files"]
     plot_enabled = data["plot"]["enabled"]
@@ -68,7 +69,7 @@ def main():
     if plot_enabled:
         for flight_num, cfs in enumerate(plot_files):
             flight_value = data_to_plot[flight_num]
-            f = PdfPages(f'results{flight_num}.pdf')
+            f = PdfPages(f'results{flight_num}_{name}.pdf')
             for cf in cfs:
                 for page_key, page_value in flight_value.items():
                     if page_key == "time":
@@ -81,7 +82,7 @@ def main():
 
 
     stats_dict = computeStats(data_to_plot, flights)
-    saveyaml2('stats_dict', stats_dict)
+    saveyaml2('stats_dict_'+name, stats_dict)
 
     
 if __name__=="__main__":

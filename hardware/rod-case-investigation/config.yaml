@@ -1,14 +1,20 @@
 flights: 
   extract: true
+  name: geom
   data:
-    - [cf2/cf2_00]
-    - [cf2/cf2_1_30, cf7/cf7_1_21]
+    # - [cf2/opt/cf2_1_05, cf7/opt/cf7_1_06]
+    # - [cf2/opt/cf2_1_06, cf7/opt/cf7_1_07]
+    - [cf2/geom/cf2_1_07, cf7/geom/cf7_1_08]
+    - [cf2/geom/cf2_1_08, cf7/geom/cf7_1_09]
 start_time: 3.0
 end_time: 40
 plot:
-  enabled: false
+  enabled: true
   files:
-    - [cf2/cf2_1_30, cf7/cf7_1_21] 
+    # - [cf2/opt/cf2_1_05, cf7/opt/cf7_1_06]
+    # - [cf2/opt/cf2_1_06, cf7/opt/cf7_1_07]
+    - [cf2/geom/cf2_1_07, cf7/geom/cf7_1_08]
+    - [cf2/geom/cf2_1_08, cf7/geom/cf7_1_09]
 
 compute_results: [ep, energy]
 
@@ -80,6 +86,9 @@ data_to_plot:
         data1: [ctrlLeeP.desVirtInpx, ctrlLeeP.desVirtInpy, ctrlLeeP.desVirtInpz] 
         name2: mu_ref
         data2: [ctrlLeeP.mu_refx, ctrlLeeP.mu_refy, ctrlLeeP.mu_refz] 
+        # name3: qi
+        # data3: [ctrlLeeP.qix, ctrlLeeP.qiy, ctrlLeeP.qiz] 
+
       title: Desired Cable force
       num_of_plots: 3
 
@@ -90,5 +99,7 @@ data_to_plot:
       data:
         name1: qidot
         data1: [ctrlLeeP.qidotx, ctrlLeeP.qidoty, ctrlLeeP.qidotz] 
+        name2: qidref
+        data2: [ctrlLeeP.qidrefx, ctrlLeeP.qidrefy, ctrlLeeP.qidrefz] 
       title: Cable Unit Vector Derivative
       num_of_plots: 3
