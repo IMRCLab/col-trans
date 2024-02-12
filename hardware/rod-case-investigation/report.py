@@ -82,7 +82,7 @@ def main():
 
 
     stats_dict = computeStats(data_to_plot, flights)
-    saveyaml2('stats_dict_'+name, stats_dict)
+    saveyaml2('stats_'+name, stats_dict)
 
     
 if __name__=="__main__":

@@ -108,7 +108,7 @@ def computeStats(data, flights):
                 if cf_data["title"] =="Payload Pose":
                     data_p0 = np.array(list(cf_data["name_data"]["data1"].values())) 
                     data_p0d = np.array(list(cf_data["name_data"]["data2"].values())) 
-                    ep_trial.append([np.linalg.norm(data_p0-data_p0d, axis=0)*100]) 
+                    ep_trial.extend(np.linalg.norm(data_p0-data_p0d, axis=0)*100) 
                 elif cf_data["title"] == "Thrust":
                     motor_data = np.array(list(cf_data["name_data"]["data1"].values()))
                     motor_thrust = motor_data[0:4, :]
@@ -128,16 +128,17 @@ def computeStats(data, flights):
     stats_dict = dict()
     stats_dict["energy_mean"] = np.mean(energy_trials).tolist()
     stats_dict["energy_std"] = np.std(energy_trials).tolist()
+    stats_dict["energy_unit"] = "Wh"
     stats_dict["trials"] = trials
     stats_dict["ep_mean"] = dict()
-    stats_dict["ep_mean"]["mean"] = dict()
-    stats_dict["ep_mean"]["std"] = dict()
+    # stats_dict["ep_mean"]["mean"] = dict()
+    # stats_dict["ep_mean"]["std"] = dict()
     stats_dict["ep_mean"]["unit"] = "cm"
     flights_flattened = flatten(flights)
     
-    for cf, ep in zip(flights_flattened, ep_trial):
-        stats_dict["ep_mean"]["mean"][cf] = float(np.mean(ep))
-        stats_dict["ep_mean"]["std"][cf] = float(np.std(ep))
+    # for cf, ep in zip(flights_flattened, ep_trial):
+    stats_dict["ep_mean"]["mean"] = float(np.mean(ep_trial))
+    stats_dict["ep_mean"]["std"] = float(np.std(ep_trial))
 
     return stats_dict
 
