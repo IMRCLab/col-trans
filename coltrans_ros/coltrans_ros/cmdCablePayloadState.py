@@ -9,7 +9,14 @@ from crazyflie_py.uav_trajectory import Trajectory
 np.set_printoptions(linewidth=np.inf)
 np.set_printoptions(suppress=True)
 
-def executeTrajectory(timeHelper, allcfs, position, velocity, cablesPlannedwithIDs, rate=100, repeat_last_setpoint=0, quats=np.array([0,0,0,np.nan]), pm=True):
+def derivative(vec, dt):
+    dvec  =[]
+    for i in range(len(vec)-1):
+        dvectmp = (vec[i+1]-vec[i])/dt
+        dvec.append(dvectmp)
+    return np.asarray(dvec)
+
+def executeTrajectory(timeHelper, allcfs, position, velocity, acceleration, cablesPlannedwithIDs, rate=100, repeat_last_setpoint=0, quats=np.array([0,0,0,np.nan]), pm=True):
     
     start_time = timeHelper.time()
     i = 0
@@ -23,6 +30,7 @@ def executeTrajectory(timeHelper, allcfs, position, velocity, cablesPlannedwithI
         # print(cablesPlannedwithIDs[idx])
         pos = position[idx]
         vel = velocity[idx]
+        acc = acceleration[idx]
         if not pm:
             quat = quats[idx]
             omega = omegas[idx]
@@ -31,7 +39,7 @@ def executeTrajectory(timeHelper, allcfs, position, velocity, cablesPlannedwithI
         allcfs.cmdFullState(
             pos,
             vel,
-            np.zeros_like(vel),
+            acc,
             quat,
             np.zeros_like(vel))
         allcfs.cmdDesCableStates(cablesPlannedwithIDs[idx])
@@ -45,15 +53,15 @@ def executeTrajectory(timeHelper, allcfs, position, velocity, cablesPlannedwithI
 
 def main():
 
-    IDs = [2, 7] # TODO: this shouldn't be like this
-    LOGGING = True
+    IDs = [2, 7, 9] # TODO: this shouldn't be like this
+    LOGGING = False
     EMERGENCY = False
     TAKEOFF = True
     TRAJ = True
     TAKEOFF_HEIGHT = 1.0
     PAYLOAD_TAKEOFF_HEIGHT = 0.5
     TAKEOFF_DURATION = 3.0
-    RATE = 70
+    RATE = 50
     num_robots = len(IDs)    
 
     swarm = Crazyswarm()
@@ -66,7 +74,7 @@ def main():
 
     # timeHelper.sleep(10.0)
     if TAKEOFF: 
-        # set controller to lee + takeoff
+        print("set controller to lee + takeoff")
         allcfs.setParam('ring.effect', 7)
         allcfs.setParam('stabilizer.controller', 6)
         timeHelper.sleep(2.0)
@@ -76,6 +84,7 @@ def main():
 
     print("Set controller to LeePayload.")
     allcfs.setParam('stabilizer.controller', 7)
+    print("Params are set.")
     if TAKEOFF:
         timeHelper.sleep(2.0) # extra time
         # go to starting point
@@ -83,19 +92,19 @@ def main():
             cf.goTo([-1.0,0.0, PAYLOAD_TAKEOFF_HEIGHT],0.0, 4.0)
         timeHelper.sleep(5.5) # extra time
 
-    print("Params are set.")
     print("#########")
+    print("Loading file...")
     traj_counter = 0
     # (filename, rate, repeat_last_setpoint)
     motions_file_paths = [
         # ("/home/khaledwahba94/imrc/ros2_ws/src/coltrans_ros/data/2cfs_takeoff/opt/trajectory.yaml", RATE, 0),
         # ("/home/khaledwahba94/imrc/ros2_ws/src/coltrans_ros/data/2cfs_window/geom/trajectory.yaml", RATE, 0),
-        ("/home/khaledwahba94/imrc/ros2_ws/src/coltrans_ros/data/2cfs_window/opt/trajectory.yaml", RATE, 0),
+        ("/home/khaledwahba94/imrc/ros2_ws/src/coltrans_ros/data/3cfs_window/opt/trajectory.yaml", RATE, 0),
                             ]
     for motions_file_path, rate, repeat_last_setpoint  in motions_file_paths:
         with open(motions_file_path) as motions_file:
             motions = yaml.load(motions_file, Loader=yaml.FullLoader)
-        print("file loaded!")
+        print("File loaded!")
         print("#########")
         # state = {"xp [m]",     "yp [m]",      "zp [m]",      "vpx [m/s]",
                 # "vpy [m/s]",  "vpz [m/s]",   "qcx []",      "qcy []",
@@ -111,6 +120,7 @@ def main():
                 pos[2] += PAYLOAD_TAKEOFF_HEIGHT
                 position[i] = pos
         velocity = np.asarray([state[3 : 6] for state in states_d])
+        acceleration = derivative(velocity, 0.01)
         cables   = np.asarray([state[6 : 6+6*num_robots] for state in states_d])        
         cablesPlannedwithIDs = [] #[id, mu_planned, qidot_planned]
         for cable, mu_planned_i in zip(cables, mu_planned): 
@@ -139,7 +149,7 @@ def main():
             print("Ready to execute trajectory...")
             print("########")
             print("Executing trajectory" + str(traj_counter) + " ..." )
-            executeTrajectory(timeHelper, allcfs, position, velocity, cablesPlannedwithIDs, rate, repeat_last_setpoint=repeat_last_setpoint)
+            executeTrajectory(timeHelper, allcfs, position, velocity, acceleration, cablesPlannedwithIDs, rate, repeat_last_setpoint=repeat_last_setpoint)
             traj_counter+=1
 
         # allcfs.setParam('ctrlLeeP.form_ctrl', 1)
