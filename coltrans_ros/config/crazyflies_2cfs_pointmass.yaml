@@ -1,9 +1,9 @@
 # named list of all robots
 robots:
-  cf4:
+  cf2:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E704
-    initial_position: [0.0, 0.5, 0.0]
+    uri: radio://0/80/2M/E7E7E7E702
+    initial_position: [-1.0, 0.25, 0.0]
     type: cf21 # see robot_types
     # firmware_params:
     #   ring:
@@ -14,7 +14,7 @@ robots:
   cf7:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E707
-    initial_position: [0.0, -0.5, 0.0]
+    initial_position: [-1.0, -0.25, 0.0]
     type: cf21 # see robot_types
     # firmware_params:
       # ring:
@@ -22,9 +22,10 @@ robots:
       #   solidGreen: 0 # if set to solid color
       #   solidRed: 255 # if set to solid color
 
+
   payload:
     enabled: true
-    initial_position: [0.0, 0.0, 0.0]
+    initial_position: [-1.0, 0.0, 0.0]
     type: marker    # see robot_types
     id: 255
 
@@ -119,17 +120,17 @@ all:
       KqIz: 1.0
 
       # P angle
-      KRx: 0.008 #0.0055 #0.008
-      KRy: 0.008 #0.0055 #0.008
+      KRx: 0.0076 #0.0055 #0.008
+      KRy: 0.0076 #0.0055 #0.008
       KRz: 0.01         #0.01 #0.008
       # D angle
-      Komx: 0.0013        #0.0013 #0.0017 #0.0013   #0.0017
-      Komy: 0.0013        #0.0013 #0.0017 #0.0013   #0.0017
+      Komx: 0.00115        #0.0013 #0.0017 #0.0013   #0.0017
+      Komy: 0.00115        #0.0013 #0.0017 #0.0013   #0.0017
       Komz: 0.002          #0.0017
       # I angle
-      KI_x: 0.02        #0.05 #0.01 #0.009 #0.015
-      KI_y: 0.02        #0.05 #0.01 #0.009 #0.015
-      KI_z: 0.05        #0.05 #0.01 #0.009 #0.015
+      KI_x: 0.03       #0.05 #0.01 #0.009 #0.015
+      KI_y: 0.03        #0.05 #0.01 #0.009 #0.015
+      KI_z: 0.03        #0.05 #0.01 #0.009 #0.015
 
       # mass: 0.034
       mass: 0.0356 # with LED ring, usd
@@ -141,7 +142,7 @@ all:
       # massP: 0.005 # 2 UAV pointmass case
       # form_ctrl: 3
 
-      ap0id: 4
+      ap0id: 2
       ap0x: 0.0
       ap0y: 0.0
       ap0z: 0.0
@@ -158,10 +159,11 @@ all:
       radius: 0.15
 
       gen_hp: 1 # SVM-based hyperplane generation
+      en_qdidot: 1 # enable qdidot computation
       # lambda_svm: 10000.0
       lambda_svm: 10.0
 
-      lambda: 0.5
+      lambda: 20.0
 
     # ring:
     #   effect: 7 # 6: double spinner, 7: solid color, 16: packetRate
@@ -188,8 +190,11 @@ all:
     custom_topics:
       ctrlLeeP:
         frequency: 10 # Hz
-        vars: [ctrlLeeP.n1x, ctrlLeeP.n1y, ctrlLeeP.n1z, ctrlLeeP.desVirtInpx, ctrlLeeP.desVirtInpy,
-          ctrlLeeP.desVirtInpz]
+        # vars: [ctrlLeeP.n1x, ctrlLeeP.n1y, ctrlLeeP.n1z, 
+        #   ctrlLeeP.mu_refx, ctrlLeeP.mu_refy, ctrlLeeP.mu_refz]
+        vars: [ctrlLeeP.n1x, ctrlLeeP.n1y, ctrlLeeP.n1z, ctrlLeeP.desVirtInpx,
+          ctrlLeeP.desVirtInpy, ctrlLeeP.desVirtInpz]
+
       ctrlLeeP2:
         frequency: 10 # Hz
         vars: [ctrlLeeP.n2x, ctrlLeeP.n2y, ctrlLeeP.n2z, ctrlLeeP.Fdx, ctrlLeeP.Fdy,
