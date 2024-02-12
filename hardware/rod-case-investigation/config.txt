@@ -1,6 +1,6 @@
 1     # version
 1024  # buffer size in bytes
-cf7_  # file name
+cf2_1_  # file name
 0     # enable on startup (0/1)
 on:fixedFrequency
 100     # frequency in Hz
@@ -77,6 +77,10 @@ ctrlLeeP.qiz
 ctrlLeeP.qidotx
 ctrlLeeP.qidoty
 ctrlLeeP.qidotz
+
+ctrlLeeP.qidrefx
+ctrlLeeP.qidrefy
+ctrlLeeP.qidrefz
 
 # Planned Cable States
 ctrlLeeP.mu_refx
