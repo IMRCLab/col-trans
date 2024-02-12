@@ -59,7 +59,7 @@ def main():
     swarm = Crazyswarm()
     timeHelper = swarm.timeHelper
     allcfs = swarm.allcfs
-    
+    # timeHelper.sleep(10.0) # extra time
     if EMERGENCY:
         allcfs.emergency()
         print("In emergency mode")
@@ -88,7 +88,9 @@ def main():
     traj_counter = 0
     # (filename, rate, repeat_last_setpoint)
     motions_file_paths = [
-        ("/home/khaledwahba94/imrc/ros2_ws/src/coltrans_ros/data/2cfs_maze_l_0.75.yaml", RATE, 0),
+        # ("/home/khaledwahba94/imrc/ros2_ws/src/coltrans_ros/data/2cfs_takeoff/opt/trajectory.yaml", RATE, 0),
+        # ("/home/khaledwahba94/imrc/ros2_ws/src/coltrans_ros/data/2cfs_window/geom/trajectory.yaml", RATE, 0),
+        ("/home/khaledwahba94/imrc/ros2_ws/src/coltrans_ros/data/2cfs_window/opt/trajectory.yaml", RATE, 0),
                             ]
     for motions_file_path, rate, repeat_last_setpoint  in motions_file_paths:
         with open(motions_file_path) as motions_file:
@@ -121,13 +123,13 @@ def main():
                 data_tmp.append((IDs[i], mu_i, qdot_i))
             cablesPlannedwithIDs.append(data_tmp)
         
-        timeHelper.sleep(3.0)
+        timeHelper.sleep(2.0)
         # timeHelper.sleep(3.0)
         if LOGGING:
             print("########")
             print('Logging..')
             allcfs.setParam("usd.logging", 1)
-            timeHelper.sleep(3.0)
+            timeHelper.sleep(2.0)
 
         print("Activate formation control...")
         allcfs.setParam('ctrlLeeP.form_ctrl', 3)
@@ -140,12 +142,13 @@ def main():
             executeTrajectory(timeHelper, allcfs, position, velocity, cablesPlannedwithIDs, rate, repeat_last_setpoint=repeat_last_setpoint)
             traj_counter+=1
 
-        allcfs.setParam('ctrlLeeP.form_ctrl', 1)
+        # allcfs.setParam('ctrlLeeP.form_ctrl', 1)
 
     if LOGGING:
         print("Logging done...")
         allcfs.setParam("usd.logging", 0)
-
+        timeHelper.sleep(1.0)
+    
     print("Landing...")
     for cf in allcfs.crazyflies:
         cf.notifySetpointsStop()
