@@ -10,7 +10,7 @@ np.set_printoptions(linewidth=np.inf)
 np.set_printoptions(suppress=True)
 
 def derivative(vec, dt):
-    dvec  =[]
+    dvec  =[[0,0,0]]
     for i in range(len(vec)-1):
         dvectmp = (vec[i+1]-vec[i])/dt
         dvec.append(dvectmp)
@@ -31,6 +31,7 @@ def executeTrajectory(timeHelper, allcfs, position, velocity, acceleration, cabl
         pos = position[idx]
         vel = velocity[idx]
         acc = acceleration[idx]
+        # acc = np.zeros(3,)
         if not pm:
             quat = quats[idx]
             omega = omegas[idx]
@@ -42,6 +43,7 @@ def executeTrajectory(timeHelper, allcfs, position, velocity, acceleration, cabl
             acc,
             quat,
             np.zeros_like(vel))
+        print(cablesPlannedwithIDs[idx])
         allcfs.cmdDesCableStates(cablesPlannedwithIDs[idx])
         i+=1
         timeHelper.sleepForRate(rate)
@@ -54,14 +56,14 @@ def executeTrajectory(timeHelper, allcfs, position, velocity, acceleration, cabl
 def main():
 
     IDs = [2, 7, 9] # TODO: this shouldn't be like this
-    LOGGING = False
-    EMERGENCY = False
+    LOGGING = True
+    EMERGENCY = True
     TAKEOFF = True
     TRAJ = True
     TAKEOFF_HEIGHT = 1.0
     PAYLOAD_TAKEOFF_HEIGHT = 0.5
     TAKEOFF_DURATION = 3.0
-    RATE = 50
+    RATE = 20
     num_robots = len(IDs)    
 
     swarm = Crazyswarm()
@@ -141,13 +143,12 @@ def main():
             allcfs.setParam("usd.logging", 1)
             timeHelper.sleep(2.0)
 
-        print("Activate formation control...")
-        allcfs.setParam('ctrlLeeP.form_ctrl', 3)
-
         print("########")
         if TRAJ: 
-            print("Ready to execute trajectory...")
+            print("Activate formation control...")
+            allcfs.setParam('ctrlLeeP.form_ctrl', 3)
             print("########")
+            print("Ready to execute trajectory...")
             print("Executing trajectory" + str(traj_counter) + " ..." )
             executeTrajectory(timeHelper, allcfs, position, velocity, acceleration, cablesPlannedwithIDs, rate, repeat_last_setpoint=repeat_last_setpoint)
             traj_counter+=1
