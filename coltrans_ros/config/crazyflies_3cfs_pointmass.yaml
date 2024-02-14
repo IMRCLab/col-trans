@@ -1,42 +1,43 @@
 # named list of all robots
 robots:
 
-  cf4:
+  cf2:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E704
-    initial_position: [1.0, 0.5, 0.0]
+    uri: radio://0/80/2M/E7E7E7E702
+    initial_position: [-1.0, 0.25, 0.0]
     type: cf21 # see robot_types
-    firmware_params:
-      ring:
-        solidBlue: 255 # if set to solid color
-        solidGreen: 0 # if set to solid color
-        solidRed: 0 # if set to solid color
+    # firmware_params:
+    #   # ring:
+    #   #   solidBlue: 255 # if set to solid color
+    #   #   solidGreen: 0 # if set to solid color
+    #   #   solidRed: 0 # if set to solid color
 
   cf7:
     enabled: true
     uri: radio://0/80/2M/E7E7E7E707
-    initial_position: [0.5, 0.0, 0.0]
+    initial_position: [-1.0, -0.25, 0.0]
     type: cf21 # see robot_types
-    firmware_params:
-      ring:
-        solidBlue: 0 # if set to solid color
-        solidGreen: 0 # if set to solid color
-        solidRed: 255 # if set to solid color
+    # firmware_params:
+    #   ring:
+    #     solidBlue: 0 # if set to solid color
+    #     solidGreen: 0 # if set to solid color
+    #     solidRed: 255 # if set to solid color
 
-  cf8:
+  cf9:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E708
-    initial_position: [0.0, 0.5, 0.0]
+    uri: radio://0/80/2M/E7E7E7E709
+    initial_position: [-1.25, 0.0, 0.0]
+    # initial_position: [0.0, 0.0, 0.0]
     type: cf21 # see robot_types
-    firmware_params:
-      ring:
-        solidBlue: 0 # if set to solid color
-        solidGreen: 255 # if set to solid color
-        solidRed: 0 # if set to solid color
+    # firmware_params:
+      # ring:
+      #   solidBlue: 0 # if set to solid color
+      #   solidGreen: 255 # if set to solid color
+      #   solidRed: 0 # if set to solid color
 
   payload:
     enabled: true
-    initial_position: [0.5, 0.5, 0.0]
+    initial_position: [-1.0, 0.0, 0.0]
     type: marker    # see robot_types
     id: 255
 
@@ -139,9 +140,9 @@ all:
       Komy: 0.0013        #0.0013 #0.0017 #0.0013   #0.0017
       Komz: 0.002          #0.0017
       # I angle
-      KI_x: 0.02        #0.05 #0.01 #0.009 #0.015
-      KI_y: 0.02        #0.05 #0.01 #0.009 #0.015
-      KI_z: 0.05        #0.05 #0.01 #0.009 #0.015
+      KI_x: 0.03        #0.05 #0.01 #0.009 #0.015
+      KI_y: 0.03        #0.05 #0.01 #0.009 #0.015
+      KI_z: 0.03        #0.05 #0.01 #0.009 #0.015
 
       # mass: 0.034
       mass: 0.0356 # with LED ring, usd
@@ -152,7 +153,7 @@ all:
       massP: 0.01 # 2 UAV pointmass case
       # massP: 0.005 # 2 UAV pointmass case
 
-      ap0id: 4
+      ap0id: 2
       ap0x: 0.0
       ap0y: 0.0
       ap0z: 0.0
@@ -164,36 +165,37 @@ all:
       ap1z: 0.0
       ap1l: 0.5 # manual cable length
 
-      ap2id: 8
+      ap2id: 9
       ap2x: 0.0
       ap2y: 0.0
       ap2z: 0.0
       ap2l: 0.5 # manual cable length
-
+      form_ctrl: 0
       Kpos_P_limit: 100.0 #0.5 #0.5
       Kpos_D_limit: 100.0 #0.1 #0.1
       radius: 0.15
 
       gen_hp: 1 # SVM-based hyperplane generation
+      en_qdidot: 1
       # lambda_svm: 10000.0
       lambda_svm: 100.0
       # lambda: 0.1
-
+      lambda: 40.0
       # desired formation
-      lambda: 0.5 # for fixed formation, 4 is a good value
-      form_ctrl: 1
-      ap0dx: 0.0
-      ap0dy: -0.58
-      ap0dz: 0.82
-      ap1dx: 0.0
-      ap1dy: 0.0
-      ap1dz: 1.0
-      ap2dx: 0.0
-      ap2dy: 0.58
-      ap2dz: 0.82
+      # lambda: 0.5 # for fixed formation, 4 is a good value
+      # form_ctrl: 1
+      # ap0dx: 0.0
+      # ap0dy: -0.58
+      # ap0dz: 0.82
+      # ap1dx: 0.0
+      # ap1dy: 0.0
+      # ap1dz: 1.0
+      # ap2dx: 0.0
+      # ap2dy: 0.58
+      # ap2dz: 0.82
 
-    ring:
-      effect: 7 # 6: double spinner, 7: solid color, 16: packetRate
+    # ring:
+    #   effect: 7 # 6: double spinner, 7: solid color, 16: packetRate
     #   solidBlue: 255 # if set to solid color
     #   solidGreen: 0 # if set to solid color
     #   solidRed: 0 # if set to solid color
@@ -209,7 +211,7 @@ all:
     # led:
     #   bitmask: 128s
   firmware_logging:
-    enabled: false
+    enabled: true
     default_topics:
      # remove to disable default topic
       pose:
