@@ -17,7 +17,16 @@ def generate_launch_description():
     with open(crazyflies_yaml, 'r') as ymlfile:
         crazyflies = yaml.safe_load(ymlfile)
 
-    server_params = crazyflies
+    # server params
+    server_yaml = os.path.join(
+        get_package_share_directory('crazyflie'),
+        'config',
+        'server.yaml')
+
+    with open(server_yaml, 'r') as ymlfile:
+        server_yaml_contents = yaml.safe_load(ymlfile)
+
+    server_params = [crazyflies] + [server_yaml_contents["/crazyflie_server"]["ros__parameters"]]
 
     # construct motion_capture_configuration
     motion_capture_yaml = os.path.join(
@@ -38,6 +47,8 @@ def generate_launch_description():
                     "marker": type["motion_capture"]["marker"],
                     "dynamics": type["motion_capture"]["dynamics"],
                 }
+    # copy relevent settings to server params
+    server_params[1]["poses_qos_deadline"] = motion_capture_params["topics"]["poses"]["qos"]["deadline"]
 
     # teleop params
     teleop_params = os.path.join(
@@ -69,7 +80,7 @@ def generate_launch_description():
                 ('takeoff', 'all/takeoff'),
                 ('land', 'all/land'),
                 ('notify_setpoints_stop', 'all/notify_setpoints_stop'),
-                ('cmd_vel', 'cf2/cmd_vel'),
+                ('cmd_vel', 'all/cmd_vel'),
                 ('cmd_full_state', 'all/cmd_full_state'),
             ],
             parameters=[teleop_params]
@@ -85,7 +96,7 @@ def generate_launch_description():
             condition=LaunchConfigurationEquals('backend','cflib'),
             name='crazyflie_server',
             output='screen',
-            parameters=[server_params]
+            parameters=server_params
         ),
         Node(
             package='crazyflie',
@@ -93,7 +104,7 @@ def generate_launch_description():
             condition=LaunchConfigurationEquals('backend','cpp'),
             name='crazyflie_server',
             output='screen',
-            parameters=[server_params]
+            parameters=server_params
         ),
         Node(
             package='crazyflie_sim',
@@ -102,9 +113,7 @@ def generate_launch_description():
             name='crazyflie_server',
             output='screen',
             emulate_tty=True,
-            parameters=[server_params] + [{
-                "max_dt": 0.1,              # artificially limit the step() function (set to 0 to disable)
-            }]
+            parameters=server_params
         ),
         Node(
             package='coltrans_ros',
