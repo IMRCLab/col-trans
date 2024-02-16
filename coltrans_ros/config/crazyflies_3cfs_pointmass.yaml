@@ -3,7 +3,7 @@ robots:
 
   cf2:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E702
+    uri: radio://0/85/2M/E7E7E7E702
     initial_position: [-1.0, 0.25, 0.0]
     type: cf21 # see robot_types
     # firmware_params:
@@ -12,9 +12,9 @@ robots:
     #   #   solidGreen: 0 # if set to solid color
     #   #   solidRed: 0 # if set to solid color
 
-  cf7:
+  cf3:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E707
+    uri: radio://0/85/2M/E7E7E7E703
     initial_position: [-1.0, -0.25, 0.0]
     type: cf21 # see robot_types
     # firmware_params:
@@ -23,9 +23,9 @@ robots:
     #     solidGreen: 0 # if set to solid color
     #     solidRed: 255 # if set to solid color
 
-  cf9:
+  cf7:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E709
+    uri: radio://0/85/2M/E7E7E7E707
     initial_position: [-1.25, 0.0, 0.0]
     # initial_position: [0.0, 0.0, 0.0]
     type: cf21 # see robot_types
@@ -105,8 +105,8 @@ all:
       Kpos_Dz: 15.0      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
       # I load
       Kpos_Ix: 5.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
-      Kpos_Iy: 5.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
-      Kpos_Iz: 11.0      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
+      Kpos_Iy: 12.0      #15.0 #15.0 #13.0 #18.0 ##13.0 #80.0 #0.0 #2.5
+      Kpos_Iz: 14.0      #15.0 #15.0 #18.0 ##13.0 #90.0 #0.0 #2.5
       Kpos_I_limit: 100.0 #0.5
 
       # # P attitude Load: 
@@ -136,8 +136,8 @@ all:
       KRy: 0.008 #0.0055 #0.008
       KRz: 0.01         #0.01 #0.008
       # D angle
-      Komx: 0.0013        #0.0013 #0.0017 #0.0013   #0.0017
-      Komy: 0.0013        #0.0013 #0.0017 #0.0013   #0.0017
+      Komx: 0.00115        #0.0013 #0.0017 #0.0013   #0.0017
+      Komy: 0.00115        #0.0013 #0.0017 #0.0013   #0.0017
       Komz: 0.002          #0.0017
       # I angle
       KI_x: 0.03        #0.05 #0.01 #0.009 #0.015
@@ -159,13 +159,13 @@ all:
       ap0z: 0.0
       ap0l: 0.5 # manual cable length
 
-      ap1id: 7
+      ap1id: 3
       ap1x: 0.0
       ap1y: 0.0
       ap1z: 0.0
       ap1l: 0.5 # manual cable length
 
-      ap2id: 9
+      ap2id: 7
       ap2x: 0.0
       ap2y: 0.0
       ap2z: 0.0
@@ -180,7 +180,7 @@ all:
       # lambda_svm: 10000.0
       lambda_svm: 100.0
       # lambda: 0.1
-      lambda: 40.0
+      lambda: 100.0
       # desired formation
       # lambda: 0.5 # for fixed formation, 4 is a good value
       # form_ctrl: 1
@@ -211,7 +211,7 @@ all:
     # led:
     #   bitmask: 128s
   firmware_logging:
-    enabled: true
+    enabled: false
     default_topics:
      # remove to disable default topic
       pose:
