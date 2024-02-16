@@ -74,6 +74,11 @@ ctrlLeeP.qp_desw
 ctrlLeeP.qix
 ctrlLeeP.qiy
 ctrlLeeP.qiz
+
+ctrlLeeP.qdix
+ctrlLeeP.qdiy
+ctrlLeeP.qdiz
+
 ctrlLeeP.qidotx
 ctrlLeeP.qidoty
 ctrlLeeP.qidotz
