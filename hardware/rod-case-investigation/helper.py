@@ -32,6 +32,7 @@ def create_fig(cf_data, cf_name):
         names.append(cf_data["name_data"][f"name{i+1}"])
         datas.append(cf_data["name_data"][f"data{i+1}"])
     fig, ax = plt.subplots(num_of_plots, 1, sharex=True)
+    plt.rcParams['figure.max_open_warning'] = 800
     fig.tight_layout()
     for i, data in enumerate(datas):
         name = names[i]
