@@ -1,20 +1,97 @@
 flights: 
   extract: true
-  name: geom
+  name: opt_3cfs_window
   data:
-    # - [cf2/opt/cf2_1_05, cf7/opt/cf7_1_06]
-    # - [cf2/opt/cf2_1_06, cf7/opt/cf7_1_07]
-    - [cf2/geom/cf2_1_07, cf7/geom/cf7_1_08]
-    - [cf2/geom/cf2_1_08, cf7/geom/cf7_1_09]
-start_time: 3.0
-end_time: 40
+    # 3 cfs window opt: 
+    - [3cfs_window/cf2/opt/cf2_1_00, 3cfs_window/cf3/opt/cf3_1_00, 3cfs_window/cf7/opt/cf7_1_00]
+    - [3cfs_window/cf2/opt/cf2_1_01, 3cfs_window/cf3/opt/cf3_1_01, 3cfs_window/cf7/opt/cf7_1_01]
+    - [3cfs_window/cf2/opt/cf2_1_02, 3cfs_window/cf3/opt/cf3_1_02, 3cfs_window/cf7/opt/cf7_1_02]
+    - [3cfs_window/cf2/opt/cf2_1_03, 3cfs_window/cf3/opt/cf3_1_03, 3cfs_window/cf7/opt/cf7_1_03]
+    - [3cfs_window/cf2/opt/cf2_1_04, 3cfs_window/cf3/opt/cf3_1_04, 3cfs_window/cf7/opt/cf7_1_04]
+    - [3cfs_window/cf2/opt/cf2_1_05, 3cfs_window/cf3/opt/cf3_1_05, 3cfs_window/cf7/opt/cf7_1_05]
+    - [3cfs_window/cf2/opt/cf2_1_06, 3cfs_window/cf3/opt/cf3_1_06, 3cfs_window/cf7/opt/cf7_1_06]
+    - [3cfs_window/cf2/opt/cf2_1_07, 3cfs_window/cf3/opt/cf3_1_07, 3cfs_window/cf7/opt/cf7_1_07]
+    - [3cfs_window/cf2/opt/cf2_1_08, 3cfs_window/cf3/opt/cf3_1_08, 3cfs_window/cf7/opt/cf7_1_08]
+    - [3cfs_window/cf2/opt/cf2_1_09, 3cfs_window/cf3/opt/cf3_1_09, 3cfs_window/cf7/opt/cf7_1_09]
+
+    # 3 cfs window geom: 
+    # - [3cfs_window/cf2/geom/cf2_1_01, 3cfs_window/cf3/geom/cf3_1_01 ,3cfs_window/cf7/geom/cf7_1_01]
+    # - [3cfs_window/cf2/geom/cf2_1_03, 3cfs_window/cf3/geom/cf3_1_03 ,3cfs_window/cf7/geom/cf7_1_03]
+    # - [3cfs_window/cf2/geom/cf2_1_04, 3cfs_window/cf3/geom/cf3_1_04 ,3cfs_window/cf7/geom/cf7_1_04]
+    # - [3cfs_window/cf2/geom/cf2_1_06, 3cfs_window/cf3/geom/cf3_1_06 ,3cfs_window/cf7/geom/cf7_1_06]
+    # - [3cfs_window/cf2/geom/cf2_1_08, 3cfs_window/cf3/geom/cf3_1_08 ,3cfs_window/cf7/geom/cf7_1_08]
+    # - [3cfs_window/cf2/geom/cf2_1_09, 3cfs_window/cf3/geom/cf3_1_09 ,3cfs_window/cf7/geom/cf7_1_09]
+
+  
+    # 2 cfs window geom:
+    # - [cf2/geom/cf2_1_00, cf7/geom/cf7_1_00]
+    # - [cf2/geom/cf2_1_03, cf7/geom/cf7_1_03]
+    # - [cf2/geom/cf2_1_04, cf7/geom/cf7_1_04]
+    # - [cf2/geom/cf2_1_05, cf7/geom/cf7_1_05]
+    # - [cf2/geom/cf2_1_06, cf7/geom/cf7_1_06]
+    # - [cf2/geom/cf2_1_07, cf7/geom/cf7_1_07]
+    # - [cf2/geom/cf2_1_08, cf7/geom/cf7_1_08]
+    # - [cf2/geom/cf2_1_09, cf7/geom/cf7_1_09]
+
+    # 2 cfs window opt:
+    # - [cf2/opt/cf2_1_01, cf7/opt/cf7_1_01]
+    # - [cf2/opt/cf2_1_02, cf7/opt/cf7_1_02]
+    # - [cf2/opt/cf2_1_03, cf7/opt/cf7_1_03]
+    # - [cf2/opt/cf2_1_04, cf7/opt/cf7_1_04]
+    # - [cf2/opt/cf2_1_05, cf7/opt/cf7_1_05]
+    # - [cf2/opt/cf2_1_06, cf7/opt/cf7_1_06]
+    # - [cf2/opt/cf2_1_07, cf7/opt/cf7_1_07]
+    # - [cf2/opt/cf2_1_08, cf7/opt/cf7_1_08]
+    # - [cf2/opt/cf2_1_09, cf7/opt/cf7_1_09]
+    # - [cf2/opt/cf2_1_10, cf7/opt/cf7_1_10]
+
+start_time: 2.0
+end_time: 40.0
 plot:
   enabled: true
   files:
-    # - [cf2/opt/cf2_1_05, cf7/opt/cf7_1_06]
-    # - [cf2/opt/cf2_1_06, cf7/opt/cf7_1_07]
-    - [cf2/geom/cf2_1_07, cf7/geom/cf7_1_08]
-    - [cf2/geom/cf2_1_08, cf7/geom/cf7_1_09]
+    # 3 cfs window opt: 
+    - [3cfs_window/cf2/opt/cf2_1_00, 3cfs_window/cf3/opt/cf3_1_00, 3cfs_window/cf7/opt/cf7_1_00]
+    - [3cfs_window/cf2/opt/cf2_1_01, 3cfs_window/cf3/opt/cf3_1_01, 3cfs_window/cf7/opt/cf7_1_01]
+    - [3cfs_window/cf2/opt/cf2_1_02, 3cfs_window/cf3/opt/cf3_1_02, 3cfs_window/cf7/opt/cf7_1_02]
+    - [3cfs_window/cf2/opt/cf2_1_03, 3cfs_window/cf3/opt/cf3_1_03, 3cfs_window/cf7/opt/cf7_1_03]
+    - [3cfs_window/cf2/opt/cf2_1_04, 3cfs_window/cf3/opt/cf3_1_04, 3cfs_window/cf7/opt/cf7_1_04]
+    - [3cfs_window/cf2/opt/cf2_1_05, 3cfs_window/cf3/opt/cf3_1_05, 3cfs_window/cf7/opt/cf7_1_05]
+    - [3cfs_window/cf2/opt/cf2_1_06, 3cfs_window/cf3/opt/cf3_1_06, 3cfs_window/cf7/opt/cf7_1_06]
+    - [3cfs_window/cf2/opt/cf2_1_07, 3cfs_window/cf3/opt/cf3_1_07, 3cfs_window/cf7/opt/cf7_1_07]
+    - [3cfs_window/cf2/opt/cf2_1_08, 3cfs_window/cf3/opt/cf3_1_08, 3cfs_window/cf7/opt/cf7_1_08]
+    - [3cfs_window/cf2/opt/cf2_1_09, 3cfs_window/cf3/opt/cf3_1_09, 3cfs_window/cf7/opt/cf7_1_09]
+
+    # 3 cfs window geom: 
+    # - [3cfs_window/cf2/geom/cf2_1_01, 3cfs_window/cf3/geom/cf3_1_01 ,3cfs_window/cf7/geom/cf7_1_01]
+    # - [3cfs_window/cf2/geom/cf2_1_03, 3cfs_window/cf3/geom/cf3_1_03 ,3cfs_window/cf7/geom/cf7_1_03]
+    # - [3cfs_window/cf2/geom/cf2_1_04, 3cfs_window/cf3/geom/cf3_1_04 ,3cfs_window/cf7/geom/cf7_1_04]
+    # - [3cfs_window/cf2/geom/cf2_1_06, 3cfs_window/cf3/geom/cf3_1_06 ,3cfs_window/cf7/geom/cf7_1_06]
+    # - [3cfs_window/cf2/geom/cf2_1_08, 3cfs_window/cf3/geom/cf3_1_08 ,3cfs_window/cf7/geom/cf7_1_08]
+    # - [3cfs_window/cf2/geom/cf2_1_09, 3cfs_window/cf3/geom/cf3_1_09 ,3cfs_window/cf7/geom/cf7_1_09]
+
+
+    # 2 cfs window geom:
+    # - [cf2/geom/cf2_1_00, cf7/geom/cf7_1_00]
+    # - [cf2/geom/cf2_1_03, cf7/geom/cf7_1_03]
+    # - [cf2/geom/cf2_1_04, cf7/geom/cf7_1_04]
+    # - [cf2/geom/cf2_1_05, cf7/geom/cf7_1_05]
+    # - [cf2/geom/cf2_1_06, cf7/geom/cf7_1_06]
+    # - [cf2/geom/cf2_1_07, cf7/geom/cf7_1_07]
+    # - [cf2/geom/cf2_1_08, cf7/geom/cf7_1_08]
+    # - [cf2/geom/cf2_1_09, cf7/geom/cf7_1_09]
+
+    # 2 cfs window opt:
+    # - [cf2/opt/cf2_1_01, cf7/opt/cf7_1_01]
+    # - [cf2/opt/cf2_1_02, cf7/opt/cf7_1_02]
+    # - [cf2/opt/cf2_1_03, cf7/opt/cf7_1_03]
+    # - [cf2/opt/cf2_1_04, cf7/opt/cf7_1_04]
+    # - [cf2/opt/cf2_1_05, cf7/opt/cf7_1_05]
+    # - [cf2/opt/cf2_1_06, cf7/opt/cf7_1_06]
+    # - [cf2/opt/cf2_1_07, cf7/opt/cf7_1_07]
+    # - [cf2/opt/cf2_1_08, cf7/opt/cf7_1_08]
+    # - [cf2/opt/cf2_1_09, cf7/opt/cf7_1_09]
+    # - [cf2/opt/cf2_1_10, cf7/opt/cf7_1_10]
 
 compute_results: [ep, energy]
 
@@ -77,22 +154,19 @@ data_to_plot:
       title: Desired Cable force
       num_of_plots: 3
 
-    page5:
+    page6:
       special: false
-      plot_labels: ['mux [N]', 'muy [N]', 'muz [N]']
+      plot_labels: ['qix []', 'qiy []', 'qiz []']
       unit: N 
       data:
-        name1: mu
-        data1: [ctrlLeeP.desVirtInpx, ctrlLeeP.desVirtInpy, ctrlLeeP.desVirtInpz] 
-        name2: mu_ref
-        data2: [ctrlLeeP.mu_refx, ctrlLeeP.mu_refy, ctrlLeeP.mu_refz] 
-        # name3: qi
-        # data3: [ctrlLeeP.qix, ctrlLeeP.qiy, ctrlLeeP.qiz] 
-
-      title: Desired Cable force
+        name1: qi
+        data1: [ctrlLeeP.qix, ctrlLeeP.qiy, ctrlLeeP.qiz] 
+        name2: qdi
+        data2: [ctrlLeeP.qdix, ctrlLeeP.qdiy, ctrlLeeP.qdiz] 
+      title: Cable Unit Vectors
       num_of_plots: 3
 
-    page6:
+    page7:
       special: false
       plot_labels: ['qidotx [rad/s]', 'qidoty [rad/s]', 'qidotz [rad/s]']
       unit: N 
