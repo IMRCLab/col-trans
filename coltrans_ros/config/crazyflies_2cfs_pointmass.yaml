@@ -1,9 +1,10 @@
 # named list of all robots
 robots:
-  cf7:
+  cf2:
     enabled: true
-    uri: radio://0/85/2M/E7E7E7E707
-    initial_position: [-1.0, 0.25, 0.0]
+    uri: radio://0/85/2M/E7E7E7E702
+    initial_position: [0.25, -1.0, 0.0]
+    # initial_position: [-0.25, 0.0, 0.0]
     type: cf21 # see robot_types
     # firmware_params:
     #   ring:
@@ -11,10 +12,11 @@ robots:
     #     solidGreen: 0 # if set to solid color
     #     solidRed: 0 # if set to solid color
 
-  cf9:
+  cf3:
     enabled: true
-    uri: radio://0/85/2M/E7E7E7E709
-    initial_position: [-1.0, -0.25, 0.0]
+    uri: radio://0/85/2M/E7E7E7E703
+    initial_position: [-0.25, -1.0, 0.0]
+    # initial_position: [0.25, 0.0, 0.0]
     type: cf21 # see robot_types
     # firmware_params:
       # ring:
@@ -25,7 +27,8 @@ robots:
 
   payload:
     enabled: true
-    initial_position: [-1.0, 0.0, 0.0]
+    initial_position: [0.0, -1.0, 0.0]
+    # initial_position: [0.0, 0.0, 0.0]
     type: marker    # see robot_types
     id: 255
 
@@ -142,13 +145,13 @@ all:
       # massP: 0.005 # 2 UAV pointmass case
       # form_ctrl: 3
 
-      ap0id: 7
+      ap0id: 2
       ap0x: 0.0
       ap0y: 0.0
       ap0z: 0.0
       ap0l: 0.5 # manual cable length
 
-      ap1id: 9
+      ap1id: 3
       ap1x: 0.0
       ap1y: 0.0
       ap1z: 0.0

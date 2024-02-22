@@ -3,7 +3,7 @@ robots:
 
   cf2:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E702
+    uri: radio://0/85/2M/E7E7E7E702
     initial_position: [-1.0, 0.25, 0.0]
     type: cf21 # see robot_types
     # firmware_params:
@@ -14,7 +14,7 @@ robots:
 
   cf3:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E703
+    uri: radio://0/85/2M/E7E7E7E703
     initial_position: [-0.75, 0.0, 0.0]
     type: cf21 # see robot_types
     # firmware_params:
@@ -26,7 +26,7 @@ robots:
 
   cf7:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E707
+    uri: radio://0/85/2M/E7E7E7E707
     initial_position: [-1.0, -0.25, 0.0]
     type: cf21 # see robot_types
     # firmware_params:
@@ -37,7 +37,7 @@ robots:
 
   cf9:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E709
+    uri: radio://0/85/2M/E7E7E7E709
     initial_position: [-1.25, 0.0, 0.0]
     # initial_position: [0.0, 0.0, 0.0]
     type: cf21 # see robot_types
@@ -198,7 +198,7 @@ all:
       # lambda_svm: 10000.0
       lambda_svm: 100.0
       # lambda: 0.1
-      lambda: 40.0
+      lambda: 200.0
       # desired formation
       # lambda: 0.5 # for fixed formation, 4 is a good value
       # form_ctrl: 1

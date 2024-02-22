@@ -4,7 +4,7 @@ robots:
   cf2:
     enabled: true
     uri: radio://0/85/2M/E7E7E7E702
-    initial_position: [-1.0, 0.25, 0.0]
+    initial_position: [0.25, -1.0, 0.0]
     type: cf21 # see robot_types
     # firmware_params:
     #   # ring:
@@ -15,7 +15,7 @@ robots:
   cf3:
     enabled: true
     uri: radio://0/85/2M/E7E7E7E703
-    initial_position: [-1.0, -0.25, 0.0]
+    initial_position: [-0.25, -1.0, 0.0]
     type: cf21 # see robot_types
     # firmware_params:
     #   ring:
@@ -26,7 +26,7 @@ robots:
   cf7:
     enabled: true
     uri: radio://0/85/2M/E7E7E7E707
-    initial_position: [-1.25, 0.0, 0.0]
+    initial_position: [0.0, -1.25, 0.0]
     # initial_position: [0.0, 0.0, 0.0]
     type: cf21 # see robot_types
     # firmware_params:
@@ -37,7 +37,7 @@ robots:
 
   payload:
     enabled: true
-    initial_position: [-1.0, 0.0, 0.0]
+    initial_position: [0.0, -1.0, 0.0]
     type: marker    # see robot_types
     id: 255
 
