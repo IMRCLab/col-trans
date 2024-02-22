@@ -30,8 +30,8 @@ def executeTrajectory(timeHelper, allcfs, position, velocity, acceleration, cabl
         # print(cablesPlannedwithIDs[idx])
         pos = position[idx]
         vel = velocity[idx]
-        acc = acceleration[idx]
-        # acc = np.zeros(3,)
+        # acc = acceleration[idx]
+        acc = np.zeros(3,)
         if not pm:
             quat = quats[idx]
             omega = omegas[idx]
@@ -43,7 +43,7 @@ def executeTrajectory(timeHelper, allcfs, position, velocity, acceleration, cabl
             acc,
             quat,
             np.zeros_like(vel))
-        print(cablesPlannedwithIDs[idx])
+        # print(cablesPlannedwithIDs[idx])
         allcfs.cmdDesCableStates(cablesPlannedwithIDs[idx])
         i+=1
         timeHelper.sleepForRate(rate)
@@ -55,15 +55,15 @@ def executeTrajectory(timeHelper, allcfs, position, velocity, acceleration, cabl
 
 def main():
 
-    IDs = [2, 7, 9] # TODO: this shouldn't be like this
+    IDs = [2, 3, 7] # TODO: this shouldn't be like this
     LOGGING = True
-    EMERGENCY = True
+    EMERGENCY = False
     TAKEOFF = True
     TRAJ = True
     TAKEOFF_HEIGHT = 1.0
     PAYLOAD_TAKEOFF_HEIGHT = 0.5
     TAKEOFF_DURATION = 3.0
-    RATE = 20
+    RATE = 70
     num_robots = len(IDs)    
 
     swarm = Crazyswarm()
@@ -79,20 +79,20 @@ def main():
         print("set controller to lee + takeoff")
         allcfs.setParam('ring.effect', 7)
         allcfs.setParam('stabilizer.controller', 6)
-        timeHelper.sleep(2.0)
+        timeHelper.sleep(1.0)
         allcfs.takeoff(targetHeight=TAKEOFF_HEIGHT, duration=TAKEOFF_DURATION)
-        timeHelper.sleep(TAKEOFF_DURATION + 2.) # extra time
+        timeHelper.sleep(TAKEOFF_DURATION + 1.) # extra time
      
 
     print("Set controller to LeePayload.")
     allcfs.setParam('stabilizer.controller', 7)
     print("Params are set.")
     if TAKEOFF:
-        timeHelper.sleep(2.0) # extra time
+        timeHelper.sleep(1.0) # extra time
         # go to starting point
         for cf in allcfs.crazyflies:
-            cf.goTo([-1.0,0.0, PAYLOAD_TAKEOFF_HEIGHT],0.0, 4.0)
-        timeHelper.sleep(5.5) # extra time
+            cf.goTo([0.0,-1.0, PAYLOAD_TAKEOFF_HEIGHT],0.0, 3.0)
+        timeHelper.sleep(3.5) # extra time
 
     print("#########")
     print("Loading file...")
@@ -101,7 +101,7 @@ def main():
     motions_file_paths = [
         # ("/home/khaledwahba94/imrc/ros2_ws/src/coltrans_ros/data/2cfs_takeoff/opt/trajectory.yaml", RATE, 0),
         # ("/home/khaledwahba94/imrc/ros2_ws/src/coltrans_ros/data/2cfs_window/geom/trajectory.yaml", RATE, 0),
-        ("/home/khaledwahba94/imrc/ros2_ws/src/coltrans_ros/data/3cfs_window/opt/trajectory.yaml", RATE, 0),
+        ("/home/khaledwahba94/imrc/ros2_ws/src/coltrans_ros/data/3cfs_forest/opt/trajectory.yaml", RATE, 0),
                             ]
     for motions_file_path, rate, repeat_last_setpoint  in motions_file_paths:
         with open(motions_file_path) as motions_file:
@@ -135,7 +135,7 @@ def main():
                 data_tmp.append((IDs[i], mu_i, qdot_i))
             cablesPlannedwithIDs.append(data_tmp)
         
-        timeHelper.sleep(2.0)
+        timeHelper.sleep(1.0)
         # timeHelper.sleep(3.0)
         if LOGGING:
             print("########")
@@ -153,7 +153,6 @@ def main():
             executeTrajectory(timeHelper, allcfs, position, velocity, acceleration, cablesPlannedwithIDs, rate, repeat_last_setpoint=repeat_last_setpoint)
             traj_counter+=1
 
-        # allcfs.setParam('ctrlLeeP.form_ctrl', 1)
 
     if LOGGING:
         print("Logging done...")
