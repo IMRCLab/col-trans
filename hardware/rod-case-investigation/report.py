@@ -1,17 +1,27 @@
 from helper import *
-
+import argparse
 
 def main():
-    data = loadyaml("config.yaml")
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", type=str, help="config yaml file, name only without extension (assumed to be .yaml)")
+    parser.add_argument("--output", default=None,  type=str, help="save output file, name only without extension (assumed to be .yaml)")
+    parser.add_argument("--pdf", default="flight",  type=str, help="save output file, name only without extension (assumed to be .pdf)")
+    parser.add_argument("--start", default=0.0,  type=float, help="start time")
+    parser.add_argument("--end", default=40.0,  type=float, help="end time")
+    
+    args = parser.parse_args()
+    data = loadyaml(args.config + ".yaml")
     flights = data["flights"]["data"]
     name = data["flights"]["name"]
     extract_data = data["flights"]["extract"]
-    plot_files = data["plot"]["files"]
     plot_enabled = data["plot"]["enabled"]
-    analysis_values = data["compute_results"]
-        
-    start_time = data["start_time"]
-    end_time = data["end_time"]
+    if plot_enabled and "files" in data["plot"].keys():
+        plot_files = data["plot"]["files"]
+    else:
+        plot_files = []
+    start_time = args.start
+    end_time = args.end
     flightsData = []
     starttimes = []
     
@@ -58,18 +68,18 @@ def main():
                             if axis_name == "Thrust":
                                 motorForces = computeMotorForces(data_to_plot[flight_num][page_num][filename]["name_data"], i)
                                 data_to_plot[flight_num][page_num][filename]["name_data"] = motorForces
-        saveyaml('data_to_plot',data_to_plot)
+        saveyaml(args.output + "_config",data_to_plot)
     
 
     else: 
-        data_to_plot = loadyaml("data_to_plot.yaml")
+        data_to_plot = loadyaml(args.output + "_config.yaml")
     
 
     # generate plots
     if plot_enabled:
         for flight_num, cfs in enumerate(plot_files):
             flight_value = data_to_plot[flight_num]
-            f = PdfPages(f'results{flight_num}_{name}.pdf')
+            f = PdfPages(f'{args.pdf}_results_{flight_num}.pdf')
             for cf in cfs:
                 for page_key, page_value in flight_value.items():
                     if page_key == "time":
@@ -82,7 +92,7 @@ def main():
 
 
     stats_dict = computeStats(data_to_plot, flights)
-    saveyaml2('stats_'+name, stats_dict)
+    saveyaml2(args.output, stats_dict)
 
     
 if __name__=="__main__":

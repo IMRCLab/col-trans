@@ -1,6 +1,7 @@
 import cfusdlog
 import yaml
 import numpy as np
+import subprocess
 
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.gridspec import SubplotSpec, GridSpec
@@ -11,6 +12,13 @@ plt.rcParams['axes.grid'] = True
 plt.rcParams['figure.max_open_warning'] = 100
 
 
+def gen_pdf(output_path):
+    print(output_path)
+	# run pdflatex
+    subprocess.run(['pdflatex', output_path.with_suffix(".tex")], check=True, cwd=output_path.parent)
+	# delete temp files
+    output_path.with_suffix(".aux").unlink()
+    output_path.with_suffix(".log").unlink()
 
 def create_subtitle(fig: plt.Figure, grid: SubplotSpec, title: str):
     row = fig.add_subplot(grid)
@@ -39,16 +47,18 @@ def create_fig(cf_data, cf_name):
         for j, axis in enumerate(name):
             # add special conditions for special data
             if axis_name[0] == "Thrust":
-                if j < 4: 
-                    # special plot for the thrust to add maxThrust
-                    ax[j].plot(time, data["maxThrust"], lw=0.75,label="maxThrust")
+                if j < 4:
+                    if len(data[axis]) > 0: 
+                        # special plot for the thrust to add maxThrust
+                        ax[j].plot(time, data["maxThrust"], lw=0.75,label="maxThrust")
+                        ax[j].plot(time, data[axis], lw=0.75, label=f"{axis}")
+                        ax[j].set_ylabel(plot_labels[j])
+                        ax[j].legend()
+            else:
+                if len(data[axis]) > 0:
                     ax[j].plot(time, data[axis], lw=0.75, label=f"{axis}")
                     ax[j].set_ylabel(plot_labels[j])
-                    ax[j].legend()
-            else:
-                ax[j].plot(time, data[axis], lw=0.75, label=f"{axis}")
-                ax[j].set_ylabel(plot_labels[j])
-                ax[0].legend()
+                    ax[0].legend()
         grid = plt.GridSpec(num_of_plots, 1)
         create_subtitle(fig, grid[0, ::], title)
     fig.supxlabel("time [s]",fontsize='small')
@@ -74,13 +84,14 @@ def flatten(xss):
 
 def getData(logDatas, dataname, unit):
     out = []
-    for data in dataname: 
-        res = np.array(logDatas[data])
-        if unit == "mm":
-            res = res / 1000.0
-        elif unit == "g":
-            res = res / 100.0
-        out.extend(res.tolist())
+    for data in dataname:
+        if data in logDatas.keys():
+            res = np.array(logDatas[data])
+            if unit == "mm":
+                res = res / 1000.0
+            elif unit == "g":
+                res = res / 100.0
+            out.extend(res.tolist())
     return out
 
 
