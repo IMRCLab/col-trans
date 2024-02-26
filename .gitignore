@@ -19,3 +19,4 @@ hardware/qp-solve/*.txt
 stats_*.yaml
 data_*.yaml
 trial/
+result
