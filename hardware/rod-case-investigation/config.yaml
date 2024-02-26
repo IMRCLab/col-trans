@@ -1,18 +1,24 @@
 flights: 
   extract: true
-  name: opt_3cfs_window
+  name: opt_4cfs_window_trial
   data:
+
+    # 4 cfs window opt trial: 
+    - [4cfs_window/cf2/opt/trial/cf2_1_02, 4cfs_window/cf3/opt/trial/cf3_1_02, 4cfs_window/cf7/opt/trial/cf7_1_02, 4cfs_window/cf9/opt/trial/cf9_1_02]
+    - [4cfs_window/cf2/opt/trial/cf2_1_03, 4cfs_window/cf3/opt/trial/cf3_1_03, 4cfs_window/cf7/opt/trial/cf7_1_03, 4cfs_window/cf9/opt/trial/cf9_1_03]
+
+
     # 3 cfs window opt: 
-    - [3cfs_window/cf2/opt/cf2_1_00, 3cfs_window/cf3/opt/cf3_1_00, 3cfs_window/cf7/opt/cf7_1_00]
-    - [3cfs_window/cf2/opt/cf2_1_01, 3cfs_window/cf3/opt/cf3_1_01, 3cfs_window/cf7/opt/cf7_1_01]
-    - [3cfs_window/cf2/opt/cf2_1_02, 3cfs_window/cf3/opt/cf3_1_02, 3cfs_window/cf7/opt/cf7_1_02]
-    - [3cfs_window/cf2/opt/cf2_1_03, 3cfs_window/cf3/opt/cf3_1_03, 3cfs_window/cf7/opt/cf7_1_03]
-    - [3cfs_window/cf2/opt/cf2_1_04, 3cfs_window/cf3/opt/cf3_1_04, 3cfs_window/cf7/opt/cf7_1_04]
-    - [3cfs_window/cf2/opt/cf2_1_05, 3cfs_window/cf3/opt/cf3_1_05, 3cfs_window/cf7/opt/cf7_1_05]
-    - [3cfs_window/cf2/opt/cf2_1_06, 3cfs_window/cf3/opt/cf3_1_06, 3cfs_window/cf7/opt/cf7_1_06]
-    - [3cfs_window/cf2/opt/cf2_1_07, 3cfs_window/cf3/opt/cf3_1_07, 3cfs_window/cf7/opt/cf7_1_07]
-    - [3cfs_window/cf2/opt/cf2_1_08, 3cfs_window/cf3/opt/cf3_1_08, 3cfs_window/cf7/opt/cf7_1_08]
-    - [3cfs_window/cf2/opt/cf2_1_09, 3cfs_window/cf3/opt/cf3_1_09, 3cfs_window/cf7/opt/cf7_1_09]
+    # - [3cfs_window/cf2/opt/cf2_1_00, 3cfs_window/cf3/opt/cf3_1_00, 3cfs_window/cf7/opt/cf7_1_00]
+    # - [3cfs_window/cf2/opt/cf2_1_01, 3cfs_window/cf3/opt/cf3_1_01, 3cfs_window/cf7/opt/cf7_1_01]
+    # - [3cfs_window/cf2/opt/cf2_1_02, 3cfs_window/cf3/opt/cf3_1_02, 3cfs_window/cf7/opt/cf7_1_02]
+    # - [3cfs_window/cf2/opt/cf2_1_03, 3cfs_window/cf3/opt/cf3_1_03, 3cfs_window/cf7/opt/cf7_1_03]
+    # - [3cfs_window/cf2/opt/cf2_1_04, 3cfs_window/cf3/opt/cf3_1_04, 3cfs_window/cf7/opt/cf7_1_04]
+    # - [3cfs_window/cf2/opt/cf2_1_05, 3cfs_window/cf3/opt/cf3_1_05, 3cfs_window/cf7/opt/cf7_1_05]
+    # - [3cfs_window/cf2/opt/cf2_1_06, 3cfs_window/cf3/opt/cf3_1_06, 3cfs_window/cf7/opt/cf7_1_06]
+    # - [3cfs_window/cf2/opt/cf2_1_07, 3cfs_window/cf3/opt/cf3_1_07, 3cfs_window/cf7/opt/cf7_1_07]
+    # - [3cfs_window/cf2/opt/cf2_1_08, 3cfs_window/cf3/opt/cf3_1_08, 3cfs_window/cf7/opt/cf7_1_08]
+    # - [3cfs_window/cf2/opt/cf2_1_09, 3cfs_window/cf3/opt/cf3_1_09, 3cfs_window/cf7/opt/cf7_1_09]
 
     # 3 cfs window geom: 
     # - [3cfs_window/cf2/geom/cf2_1_01, 3cfs_window/cf3/geom/cf3_1_01 ,3cfs_window/cf7/geom/cf7_1_01]
@@ -50,17 +56,21 @@ end_time: 40.0
 plot:
   enabled: true
   files:
+    # 4 cfs window opt trial: 
+    - [4cfs_window/cf2/opt/trial/cf2_1_02, 4cfs_window/cf3/opt/trial/cf3_1_02, 4cfs_window/cf7/opt/trial/cf7_1_02, 4cfs_window/cf9/opt/trial/cf9_1_02]
+    - [4cfs_window/cf2/opt/trial/cf2_1_03, 4cfs_window/cf3/opt/trial/cf3_1_03, 4cfs_window/cf7/opt/trial/cf7_1_03, 4cfs_window/cf9/opt/trial/cf9_1_03]
+    
     # 3 cfs window opt: 
-    - [3cfs_window/cf2/opt/cf2_1_00, 3cfs_window/cf3/opt/cf3_1_00, 3cfs_window/cf7/opt/cf7_1_00]
-    - [3cfs_window/cf2/opt/cf2_1_01, 3cfs_window/cf3/opt/cf3_1_01, 3cfs_window/cf7/opt/cf7_1_01]
-    - [3cfs_window/cf2/opt/cf2_1_02, 3cfs_window/cf3/opt/cf3_1_02, 3cfs_window/cf7/opt/cf7_1_02]
-    - [3cfs_window/cf2/opt/cf2_1_03, 3cfs_window/cf3/opt/cf3_1_03, 3cfs_window/cf7/opt/cf7_1_03]
-    - [3cfs_window/cf2/opt/cf2_1_04, 3cfs_window/cf3/opt/cf3_1_04, 3cfs_window/cf7/opt/cf7_1_04]
-    - [3cfs_window/cf2/opt/cf2_1_05, 3cfs_window/cf3/opt/cf3_1_05, 3cfs_window/cf7/opt/cf7_1_05]
-    - [3cfs_window/cf2/opt/cf2_1_06, 3cfs_window/cf3/opt/cf3_1_06, 3cfs_window/cf7/opt/cf7_1_06]
-    - [3cfs_window/cf2/opt/cf2_1_07, 3cfs_window/cf3/opt/cf3_1_07, 3cfs_window/cf7/opt/cf7_1_07]
-    - [3cfs_window/cf2/opt/cf2_1_08, 3cfs_window/cf3/opt/cf3_1_08, 3cfs_window/cf7/opt/cf7_1_08]
-    - [3cfs_window/cf2/opt/cf2_1_09, 3cfs_window/cf3/opt/cf3_1_09, 3cfs_window/cf7/opt/cf7_1_09]
+    # - [3cfs_window/cf2/opt/cf2_1_00, 3cfs_window/cf3/opt/cf3_1_00, 3cfs_window/cf7/opt/cf7_1_00]
+    # - [3cfs_window/cf2/opt/cf2_1_01, 3cfs_window/cf3/opt/cf3_1_01, 3cfs_window/cf7/opt/cf7_1_01]
+    # - [3cfs_window/cf2/opt/cf2_1_02, 3cfs_window/cf3/opt/cf3_1_02, 3cfs_window/cf7/opt/cf7_1_02]
+    # - [3cfs_window/cf2/opt/cf2_1_03, 3cfs_window/cf3/opt/cf3_1_03, 3cfs_window/cf7/opt/cf7_1_03]
+    # - [3cfs_window/cf2/opt/cf2_1_04, 3cfs_window/cf3/opt/cf3_1_04, 3cfs_window/cf7/opt/cf7_1_04]
+    # - [3cfs_window/cf2/opt/cf2_1_05, 3cfs_window/cf3/opt/cf3_1_05, 3cfs_window/cf7/opt/cf7_1_05]
+    # - [3cfs_window/cf2/opt/cf2_1_06, 3cfs_window/cf3/opt/cf3_1_06, 3cfs_window/cf7/opt/cf7_1_06]
+    # - [3cfs_window/cf2/opt/cf2_1_07, 3cfs_window/cf3/opt/cf3_1_07, 3cfs_window/cf7/opt/cf7_1_07]
+    # - [3cfs_window/cf2/opt/cf2_1_08, 3cfs_window/cf3/opt/cf3_1_08, 3cfs_window/cf7/opt/cf7_1_08]
+    # - [3cfs_window/cf2/opt/cf2_1_09, 3cfs_window/cf3/opt/cf3_1_09, 3cfs_window/cf7/opt/cf7_1_09]
 
     # 3 cfs window geom: 
     # - [3cfs_window/cf2/geom/cf2_1_01, 3cfs_window/cf3/geom/cf3_1_01 ,3cfs_window/cf7/geom/cf7_1_01]
@@ -93,7 +103,6 @@ plot:
     # - [cf2/opt/cf2_1_09, cf7/opt/cf7_1_09]
     # - [cf2/opt/cf2_1_10, cf7/opt/cf7_1_10]
 
-compute_results: [ep, energy]
 
 data_to_plot:  
     page1:
