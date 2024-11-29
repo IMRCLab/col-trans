@@ -3,8 +3,8 @@ robots:
   cf2:
     enabled: true
     uri: radio://0/85/2M/E7E7E7E702
-    initial_position: [0.25, -1.0, 0.0]
-    # initial_position: [-0.25, 0.0, 0.0]
+    # initial_position: [-1.0, 0.25, 0.0]
+    initial_position: [0.0, -0.75, 0.0]
     type: cf21 # see robot_types
     # firmware_params:
     #   ring:
@@ -12,21 +12,21 @@ robots:
     #     solidGreen: 0 # if set to solid color
     #     solidRed: 0 # if set to solid color
 
-  cf3:
+  cf9:
     enabled: true
-    uri: radio://0/85/2M/E7E7E7E703
-    initial_position: [-0.25, -1.0, 0.0]
-    # initial_position: [0.25, 0.0, 0.0]
+    uri: radio://0/85/2M/E7E7E7E709
+    # initial_position: [-1.0, 0.25, 0.0]
+    initial_position: [0.0, -1.25, 0.0]
     type: cf21 # see robot_types
     # firmware_params:
-      # ring:
-      #   solidBlue: 0 # if set to solid color
-      #   solidGreen: 0 # if set to solid color
-      #   solidRed: 255 # if set to solid color
-
+    #   ring:
+    #     solidBlue: 255 # if set to solid color
+    #     solidGreen: 0 # if set to solid color
+    #     solidRed: 0 # if set to solid color
 
   payload:
     enabled: true
+    # initial_position: [-1.0, 0.0, 0.0]
     initial_position: [0.0, -1.0, 0.0]
     # initial_position: [0.0, 0.0, 0.0]
     type: marker    # see robot_types
@@ -62,42 +62,46 @@ all:
       enHighLevel: 1
     stabilizer:
       estimator: 2 # 1: complementary, 2: kalman
-      controller: 6 # 1: PID, 2: mellinger 4: sjc 6: Lee 7: lee payload
+      controller: 5 # 1: PID, 2: mellinger 4: sjc 6: Lee 6: lee payload
       pAlphaV: 0.7
       pAlphaW: 0.7
     ctrlLee:
-      Kpos_Px: 9.0 # def: 10.0
-      Kpos_Py: 9.0 # def: 10.0
-      Kpos_Pz: 9.0 # def: 10.0
-      Kpos_Dx: 7.0  # def: 8.0
-      Kpos_Dy: 7.0  # def: 8.0 
-      Kpos_Dz: 7.0  # def: 8.0  
-      Kpos_Ix: 5.0
-      Kpos_Iy: 5.0
-      Kpos_Iz: 8.0
-      KR_x: 0.0055 #0.0055   # def: 0.005  
-      KR_y: 0.0055 #0.0055  # def: 0.005
-      KR_z: 0.01  #0.008   # def: 0.005
-      Kw_x: 0.0013 #0.0013 # def: 0.0009
-      Kw_y: 0.0013 #0.0013  # def: 0.0009
-      Kw_z: 0.002  # def: 0.0012
-      KI_x: 0.012 #0.009 #0.015
-      KI_y: 0.018 #0.009 #0.015
-      KI_z: 0.015 #0.009 #0.015
-      mass: 0.0333
+      Kpos_Px: 11.0 #2.5613 #9.0 # def: 10.0
+      Kpos_Py: 11.0 #2.4822 #9.0 # def: 10.0
+      Kpos_Pz: 11.0 #1.0091 # def: 10.0
+      #9.5109 11.2808 1.0125
+      Kpos_Dx: 12.5 #9.5109 #7.0  # def: 8.0
+      Kpos_Dy: 12.5 #11.2808 #7.0  # def: 8.0 
+      Kpos_Dz: 12.5 #1.0125 #  # def: 8.0  
+      Kpos_Ix: 0.0 # 0.0 #5.0
+      Kpos_Iy: 0.0 # 0.0 #5.0
+      Kpos_Iz: 8.0 # 0.0 #8.0
+      # 0.0265 0.0738 0.0001
+      KR_x: 0.007 #0.0265 # #0.0055   # def: 0.005  
+      KR_y: 0.007 #0.0738 # #0.0055  # def: 0.005
+      KR_z: 0.001 #0.0001 #  #0.008   # def: 0.005
+      Kw_x: 0.002 #0.0026  #0.0013 #0.0013 # def: 0.0009
+      Kw_y: 0.002 #0.0020  #0.0013 #0.0013  # def: 0.0009
+      Kw_z: 0.001  # def: 0.0012
+      KI_x: 0.0 #0.012 #0.0 #0.012 #0.009 #0.015
+      KI_y: 0.0 #0.018 #0.0 #0.018 #0.009 #0.015
+      KI_z: 0.0 #0.015 #0.0 #0.015 #0.009 #0.015
+      mass: 0.0356
+      kpw_xy: 0.0000038
+
     ctrlLeeP:
       # P load
-      Kpos_Px: 18.0
-      Kpos_Py: 18.0
-      Kpos_Pz: 18.0
+      Kpos_Px: 6.0 #18.0
+      Kpos_Py: 6.0 #18.0
+      Kpos_Pz: 6.0 #18.0
       # D load
-      Kpos_Dx: 16.0
-      Kpos_Dy: 16.0
-      Kpos_Dz: 16.0
+      Kpos_Dx: 8.0 #16.0
+      Kpos_Dy: 8.0 #16.0
+      Kpos_Dz: 8.0 #16.0
       # I load
-      Kpos_Ix: 5.0
-      Kpos_Iy: 5.0
-      Kpos_Iz: 11.0
+      Kpos_Ix: 0.0 # 5.0
+      Kpos_Iy: 0.0 # 5.0
+      Kpos_Iz: 0.0 # 11.0
       Kpos_I_limit: 100.0 #0.5
 
       # # P attitude Load: 
@@ -109,39 +113,35 @@ all:
       # Kprot_Dy: 0.0015
       # Kprot_Dz: 0.0015
       # P cable
-      Kqx: 19.0
-      Kqy: 19.0
-      Kqz: 19.0
+      Kqx: 23.0 #19.0
+      Kqy: 23.0 #19.0
+      Kqz: 23.0 #19.0
       Kq_limit: 0.7
       # D cable
-      Kwx: 14.0
-      Kwy: 14.0
-      Kwz: 14.0
+      Kwx: 16.0
+      Kwy: 16.0
+      Kwz: 16.0
       # I cable
-      KqIx: 1.0
-      KqIy: 1.0
-      KqIz: 1.0
+      KqIx: 1.0 #1.0
+      KqIy: 1.0 #1.0
+      KqIz: 1.0 #1.0
 
-      # P angle
-      KRx: 0.0076 #0.0055 #0.008
-      KRy: 0.0076 #0.0055 #0.008
-      KRz: 0.01         #0.01 #0.008
-      # D angle
-      Komx: 0.00115        #0.0013 #0.0017 #0.0013   #0.0017
-      Komy: 0.00115        #0.0013 #0.0017 #0.0013   #0.0017
-      Komz: 0.002          #0.0017
-      # I angle
-      KI_x: 0.03       #0.05 #0.01 #0.009 #0.015
-      KI_y: 0.03        #0.05 #0.01 #0.009 #0.015
-      KI_z: 0.03        #0.05 #0.01 #0.009 #0.015
-
-      # mass: 0.034
-      mass: 0.0356 # with LED ring, usd
+      KR_x: 0.0071 #0.0265 # #0.0055   # def: 0.005  
+      KR_y: 0.0071 #0.0738 # #0.0055  # def: 0.005
+      KR_z: 0.0071 #0.0001 #  #0.008   # def: 0.005
+      Kw_x: 0.0021 #0.0026  #0.0013 #0.0013 # def: 0.0009
+      Kw_y: 0.0021 #0.0020  #0.0013 #0.0013  # def: 0.0009
+      Kw_z: 0.0011  # def: 0.0012
+      KI_x: 0.0 #0.012 #0.0 #0.012 #0.009 #0.015
+      KI_y: 0.0 #0.018 #0.0 #0.018 #0.009 #0.015
+      KI_z: 0.0 #0.015 #0.0 #0.015 #0.009 #0.015
+      mass: 0.0356
+      kpw_xy: 0.0000035
 
       # payload properties
       # massP: 0.017
-      # massP: 0.0054 # 2 UAV pointmass case
       massP: 0.01 # 2 UAV pointmass case
+      # massP: 0.01 # 2 UAV pointmass case
       # massP: 0.005 # 2 UAV pointmass case
       # form_ctrl: 3
 
@@ -151,7 +151,7 @@ all:
       ap0z: 0.0
       ap0l: 0.5 # manual cable length
 
-      ap1id: 3
+      ap1id: 9
       ap1x: 0.0
       ap1y: 0.0
       ap1z: 0.0
@@ -162,10 +162,10 @@ all:
       radius: 0.15
 
       gen_hp: 1 # SVM-based hyperplane generation
-      en_qdidot: 1 # enable qdidot computation
+      en_qdidot: 0 # enable qdidot computation
       # lambda_svm: 10000.0
       lambda_svm: 10.0
-
+      h_x0: 0.0
       lambda: 20.0
 
     # ring:
@@ -176,7 +176,7 @@ all:
     #   headlightEnable: 0
     locSrv:
       extPosStdDev: 1e-3
-      extQuatStdDev: 0.5e0 #0.5e0 #0.5e-1
+      extQuatStdDev: 0.5e-1 #0.5e0 #0.5e-1
     # kalman:
     #   resetEstimation: 1
     # cvmrs:
