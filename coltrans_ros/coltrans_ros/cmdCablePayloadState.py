@@ -55,15 +55,15 @@ def executeTrajectory(timeHelper, allcfs, position, velocity, acceleration, cabl
 
 def main():
 
-    IDs = [2, 3, 7] # TODO: this shouldn't be like this
+    IDs = [2,9] # TODO: this shouldn't be like this
     LOGGING = True
     EMERGENCY = False
     TAKEOFF = True
-    TRAJ = True
+    TRAJ = False
     TAKEOFF_HEIGHT = 1.0
     PAYLOAD_TAKEOFF_HEIGHT = 0.5
-    TAKEOFF_DURATION = 3.0
-    RATE = 70
+    TAKEOFF_DURATION = 4.0
+    RATE = 50
     num_robots = len(IDs)    
 
     swarm = Crazyswarm()
@@ -74,84 +74,93 @@ def main():
         allcfs.emergency()
         print("In emergency mode")
 
+
+    if LOGGING:
+        print("########")
+        print('Logging..')
+        allcfs.setParam("usd.logging", 1)
+        timeHelper.sleep(2.0)
+
     # timeHelper.sleep(10.0)
     if TAKEOFF: 
         print("set controller to lee + takeoff")
-        allcfs.setParam('ring.effect', 7)
-        allcfs.setParam('stabilizer.controller', 6)
+        allcfs.setParam('ring.effect', 0)
+        allcfs.setParam('stabilizer.controller', 5)
         timeHelper.sleep(1.0)
         allcfs.takeoff(targetHeight=TAKEOFF_HEIGHT, duration=TAKEOFF_DURATION)
-        timeHelper.sleep(TAKEOFF_DURATION + 1.) # extra time
+        timeHelper.sleep(TAKEOFF_DURATION + 2.) # extra time
      
+
+
 
     print("Set controller to LeePayload.")
     allcfs.setParam('stabilizer.controller', 7)
     print("Params are set.")
+
+
     if TAKEOFF:
         timeHelper.sleep(1.0) # extra time
         # go to starting point
         for cf in allcfs.crazyflies:
-            cf.goTo([0.0,-1.0, PAYLOAD_TAKEOFF_HEIGHT],0.0, 3.0)
-        timeHelper.sleep(3.5) # extra time
+            cf.goTo([0.0,0.0, PAYLOAD_TAKEOFF_HEIGHT],0.0, 3.0)
+        timeHelper.sleep(5.5) # extra time
 
-    print("#########")
-    print("Loading file...")
-    traj_counter = 0
-    # (filename, rate, repeat_last_setpoint)
-    motions_file_paths = [
-        # ("/home/khaledwahba94/imrc/ros2_ws/src/coltrans_ros/data/2cfs_takeoff/opt/trajectory.yaml", RATE, 0),
-        # ("/home/khaledwahba94/imrc/ros2_ws/src/coltrans_ros/data/2cfs_window/geom/trajectory.yaml", RATE, 0),
-        ("/home/khaledwahba94/imrc/ros2_ws/src/coltrans_ros/data/3cfs_forest/opt/trajectory.yaml", RATE, 0),
-                            ]
-    for motions_file_path, rate, repeat_last_setpoint  in motions_file_paths:
-        with open(motions_file_path) as motions_file:
-            motions = yaml.load(motions_file, Loader=yaml.FullLoader)
-        print("File loaded!")
-        print("#########")
-        # state = {"xp [m]",     "yp [m]",      "zp [m]",      "vpx [m/s]",
-                # "vpy [m/s]",  "vpz [m/s]",   "qcx []",      "qcy []",
-                # "qcz[]",      "wcx [rad/s]", "wcy [rad/s]", "wcz [rad/s]",
-                # "qx []",      "qy []",       "qz []",       "qw []",
-                # "wx [rad/s]", "wy [rad/s]",  "wz [rad/s]"}
-        states_d = motions["result"]["states"]
-        mu_planned = motions["result"]["mu_planned"]
+    # print("#########")
+    # print("Loading file...")
+    # traj_counter = 0
+    # # (filename, rate, repeat_last_setpoint)
+    # motions_file_paths = [
+    #     ("/home/khaledwahba94/imrc/ros2_ws/src/coltrans_ros/data/dbcbs_flights/windows_2robots_dbcbs.yaml", RATE, 0),
+    #                         ]
+    # for motions_file_path, rate, repeat_last_setpoint  in motions_file_paths:
+    #     with open(motions_file_path) as motions_file:
+    #         motions = yaml.load(motions_file, Loader=yaml.FullLoader)
+    #     print("File loaded!")
+    #     print("#########")
+    #     # state = {"xp [m]",     "yp [m]",      "zp [m]",      "vpx [m/s]",
+    #             # "vpy [m/s]",  "vpz [m/s]",   "qcx []",      "qcy []",
+    #             # "qcz[]",      "wcx [rad/s]", "wcy [rad/s]", "wcz [rad/s]",
+    #             # "qx []",      "qy []",       "qz []",       "qw []",
+    #             # "wx [rad/s]", "wy [rad/s]",  "wz [rad/s]"}
+    #     states_d = motions["result"]["refstates"]
+    #     mu_planned = motions["result"]["mu_planned"]
 
-        position = np.asarray([state[0 : 3] for state in states_d])
-        if TAKEOFF:
-            for i, pos in enumerate(position):
-                pos[2] += PAYLOAD_TAKEOFF_HEIGHT
-                position[i] = pos
-        velocity = np.asarray([state[3 : 6] for state in states_d])
-        acceleration = derivative(velocity, 0.01)
-        cables   = np.asarray([state[6 : 6+6*num_robots] for state in states_d])        
-        cablesPlannedwithIDs = [] #[id, mu_planned, qidot_planned]
-        for cable, mu_planned_i in zip(cables, mu_planned): 
-            data_tmp = []
-            for i in range(num_robots):
-                mu_i = mu_planned_i[3*i : 3*i+3]
-                q_i  = cable[6*i : 6*i +3]
-                w_i  = cable[6*i + 3 : 6*i + 6]
-                qdot_i = np.cross(w_i, q_i).tolist()
-                data_tmp.append((IDs[i], mu_i, qdot_i))
-            cablesPlannedwithIDs.append(data_tmp)
+    #     position = np.asarray([state[0 : 3] for state in states_d])
+    #     if TAKEOFF:
+    #         for i, pos in enumerate(position):
+    #             pos[2] += PAYLOAD_TAKEOFF_HEIGHT
+    #             position[i] = pos
+    #     velocity = np.asarray([state[3 : 6] for state in states_d])
+    #     acceleration = np.asarray([state[6 : 9] for state in states_d])
+    #     cables   = np.asarray([state[9 : 9+6*num_robots] for state in states_d])        
+    #     cablesPlannedwithIDs = [] #[id, mu_planned, qidot_planned]
+    #     for cable, mu_planned_i in zip(cables, mu_planned): 
+    #         data_tmp = []
+    #         for i in range(num_robots):
+    #             mu_i = mu_planned_i[3*i : 3*i+3]
+    #             q_i  = cable[6*i : 6*i +3]
+    #             w_i  = cable[6*i + 3 : 6*i + 6]
+    #             qdot_i = np.cross(w_i, q_i).tolist()
+    #             data_tmp.append((IDs[i], mu_i, qdot_i))
+    #         cablesPlannedwithIDs.append(data_tmp)
         
-        timeHelper.sleep(1.0)
-        # timeHelper.sleep(3.0)
-        if LOGGING:
-            print("########")
-            print('Logging..')
-            allcfs.setParam("usd.logging", 1)
-            timeHelper.sleep(2.0)
+    #     timeHelper.sleep(1.0)
+    #     # timeHelper.sleep(3.0)
+        # if LOGGING:
+        #     print("########")
+        #     print('Logging..')
+        #     allcfs.setParam("usd.logging", 1)
+        #     timeHelper.sleep(2.0)
 
-        print("########")
-        if TRAJ: 
-            print("Activate formation control...")
-            allcfs.setParam('ctrlLeeP.form_ctrl', 3)
-            print("########")
-            print("Ready to execute trajectory...")
-            print("Executing trajectory" + str(traj_counter) + " ..." )
-            executeTrajectory(timeHelper, allcfs, position, velocity, acceleration, cablesPlannedwithIDs, rate, repeat_last_setpoint=repeat_last_setpoint)
-            traj_counter+=1
+    #     print("########")
+    #     if TRAJ: 
+    #         print("Activate formation control...")
+    #         allcfs.setParam('ctrlLeeP.form_ctrl', 3)
+    #         print("########")
+    #         print("Ready to execute trajectory...")
+    #         print("Executing trajectory" + str(traj_counter) + " ..." )
+    #         executeTrajectory(timeHelper, allcfs, position, velocity, acceleration, cablesPlannedwithIDs, rate, repeat_last_setpoint=repeat_last_setpoint)
+    #         traj_counter+=1
 
 
     if LOGGING:
@@ -163,7 +172,7 @@ def main():
     for cf in allcfs.crazyflies:
         cf.notifySetpointsStop()
 
-    allcfs.setParam('stabilizer.controller', 6)
+    allcfs.setParam('stabilizer.controller', 2)
     
     allcfs.land(targetHeight=0.03, duration=3.0)
     timeHelper.sleep(4.0)
