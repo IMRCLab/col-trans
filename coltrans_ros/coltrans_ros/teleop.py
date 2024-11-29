@@ -94,7 +94,7 @@ class TeleopNode(Node):
             # make sure teleoperation is disabled
             self.setParamTeleopString("mode", "high_level")
             # switch to regular Lee controller
-            self.setParamInt("all.params.stabilizer.controller", 6)
+            self.setParamInt("all.params.stabilizer.controller", 5)
 
 
     def timer_callback(self):
