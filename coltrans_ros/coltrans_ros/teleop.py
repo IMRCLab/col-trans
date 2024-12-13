@@ -87,14 +87,14 @@ class TeleopNode(Node):
             self.setParamFloat("all.params.ctrlLeeP.lambda", 4.0)
             self.setParamInt("all.params.ctrlLeeP.form_ctrl", 2)
 
-        # land button: switch back to regular lee controller!
+        # land button: switch back to regular lee/mellinger controller!
         if buttonsChange[6] == 1:
             # stop logging
             self.setParamInt("all.params.usd.logging", 0)
             # make sure teleoperation is disabled
             self.setParamTeleopString("mode", "high_level")
             # switch to regular Lee controller
-            self.setParamInt("all.params.stabilizer.controller", 5)
+            self.setParamInt("all.params.stabilizer.controller", 2)
 
 
     def timer_callback(self):

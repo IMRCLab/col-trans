@@ -24,7 +24,7 @@ def main():
     allcfs = swarm.allcfs
     # upload trajectory
     traj1 = Trajectory()
-    traj1.loadcsv("/home/khaledwahba94/imrc/col-trans/coltrans_ros/data/figure8.csv")
+    traj1.loadcsv("/home/kwahba/col-trans/coltrans_ros/data/figure8.csv")
 
     for cf in allcfs.crazyflies:
         cf.uploadTrajectory(0, 0, traj1)
