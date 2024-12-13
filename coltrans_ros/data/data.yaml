@@ -1,0 +1,109 @@
+window_2robots:
+  - coltransplanning: 
+    - cf3_02 cf9_02
+    - cf3_03 cf9_03
+    - cf3_06 cf9_06
+    - cf3_11 cf9_11
+    - cf3_13 cf9_13
+    - cf3_14 cf9_14
+    - cf3_25 cf9_25
+    - cf3_29 cf9_29
+    - cf3_34 cf9_33
+    - cf3_35 cf9_34
+
+  - dbcbs: 
+    - cf3_01 cf9_01
+    - cf3_04 cf9_04
+    - cf3_05 cf9_05
+    - cf3_10 cf9_10
+    - cf3_12 cf9_12
+    - cf3_27 cf9_27
+    - cf3_28 cf9_28
+    - cf3_32 cf9_31
+    - cf3_33 cf9_32
+    - cf3_41 cf9_00
+
+forest_2robots:
+ - coltransplanning:
+  - cf3_02 cf9_02
+  - cf3_04 cf9_04
+  - cf3_06 cf9_06
+  - cf3_08 cf9_08
+  - cf3_10 cf9_10
+  - cf3_12 cf9_12
+  - cf3_14 cf9_14
+  - cf3_16 cf9_16
+  - cf3_18 cf9_18
+  - cf3_20 cf9_20
+ 
+ - dbcbs:
+  - cf3_01 cf9_01
+  - cf3_03 cf9_03
+  - cf3_05 cf9_05
+  - cf3_07 cf9_07
+  - cf3_09 cf9_09
+  - cf3_11 cf9_11
+  - cf3_13 cf9_13
+  - cf3_15 cf9_15
+  - cf3_17 cf9_17
+  - cf3_19 cf9_19
+
+
+window_3robots:
+ - coltransplanning:
+ 
+ 
+ - dbcbs:
+
+
+forest_3robots:
+ - coltransplanning: 
+   - cf3_01 cf7_01 cf9_01
+   - cf3_03 cf7_03 cf9_03
+   - cf3_05 cf7_05 cf9_05
+   - cf3_08 cf7_08 cf9_07
+   - cf3_10 cf7_10 cf9_09
+   - cf3_16 cf7_17 cf9_16
+   - cf3_18 cf7_19 cf9_18
+   - cf3_20 cf7_21 cf9_20
+   - cf3_22 cf7_23 cf9_22
+   - cf3_24 cf7_25 cf9_24
+
+
+
+ - dbcbs:
+   - cf3_00 cf7_00 cf9_00
+   - cf3_02 cf7_02 cf9_02
+   - cf3_04 cf7_04 cf9_04
+   - cf3_06 cf7_06
+   - cf3_09 cf7_09 cf9_08
+   - cf3_15 cf7_16 cf9_15
+   - cf3_17 cf7_18 cf9_17
+   - cf3_19 cf7_20 cf9_19
+   - cf3_21 cf7_22 cf9_21
+   - cf3_23 cf7_24 cf9_23
+
+window_3robots:
+ - coltransplanning: 
+   - cf3_43 cf7_36 cf9_42
+   - cf3_47 cf7_40 cf9_46
+   - cf3_49 cf7_42 cf9_48
+   - cf3_54 cf7_47 cf9_53
+   - cf3_56 cf7_49 cf9_55
+   - cf3_58 cf7_51 cf9_57
+   - cf3_60 cf7_53 cf9_59
+   - cf3_62 cf7_55 cf9_61
+   - cf3_67 cf7_60 cf9_66
+   - cf3_71 cf7_64 cf9_70
+
+ - dbcbs:
+   - cf3_52 cf7_45 cf9_51
+   - cf3_53 cf7_46 cf9_52
+   - cf3_55 cf7_48 cf9_54
+   - cf3_57 cf7_50 cf9_56
+   - cf3_59 cf7_52 cf9_58
+   - cf3_61 cf7_54 cf9_60
+   - cf3_65 cf7_58 cf9_64
+   - cf3_68 cf7_61 cf9_67
+   - cf3_69 cf7_62 cf9_68
+   - cf3_72 cf7_65 cf9_71
