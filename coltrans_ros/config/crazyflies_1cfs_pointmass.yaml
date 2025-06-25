@@ -2,15 +2,28 @@
 robots:
   cf2:
     enabled: true
-    uri: radio://0/85/2M/E7E7E7E702
+    uri: radio://0/80/2M/E7E7E7E702
     # initial_position: [-1.0, 0.25, 0.0]
-    initial_position: [0.0, -1.0, 0.0]
+    initial_position: [0.0, 0.0, 0.0]
     type: cf21 # see robot_types
     # firmware_params:
     #   ring:
     #     solidBlue: 255 # if set to solid color
     #     solidGreen: 0 # if set to solid color
     #     solidRed: 0 # if set to solid color
+  # cf7:
+  #   enabled: true
+  #   uri: radio://0/85/2M/E7E7E7E707
+  #   # initial_position: [-1.0, 0.25, 0.0]
+  #   initial_position: [0.0, 0.0, 0.0]
+  #   type: cf21 # see robot_types
+  #   # firmware_params:
+  #   #   ring:
+  #   #     solidBlue: 255 # if set to solid color
+  #   #     solidGreen: 0 # if set to solid color
+  #   #     solidRed: 0 # if set to solid color
+
+
 
   payload:
     enabled: false
@@ -25,7 +38,7 @@ robot_types:
     motion_capture:
       enabled: true
       # only if enabled; see motion_capture.yaml
-      marker: default_single_marker  #  default_single_marker
+      marker: systemid #default_single_marker  #  default_single_marker
       dynamics: default
     big_quad: false
     battery:
