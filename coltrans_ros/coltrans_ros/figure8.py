@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
-import numpy as np
+from crazyflie_py import Crazyswarm
+from crazyflie_py.uav_trajectory import Trajectory
 from pathlib import Path
 
-from py_crazyswarm2 import *
-from py_crazyswarm2.uav_trajectory import Trajectory
+import numpy as np
+
 
 def main():
     swarm = Crazyswarm()
@@ -12,23 +13,27 @@ def main():
     allcfs = swarm.allcfs
 
     traj1 = Trajectory()
-    traj1.loadcsv(Path(__file__).parent / "data/figure8.csv")
+    # traj1.loadcsv("/home/kwahba/col-trans/coltrans_ros/data/excitatory2_traj.csv")
+    traj1.loadcsv("/home/kwahba/col-trans/coltrans_ros/data/yaw0.csv")
+    # traj1.loadcsv("/home/kwahba/col-trans/coltrans_ros/data/figure8.csv")
 
-    TRIALS = 1
-    TIMESCALE = 1.0
+    TRIALS = 4
+    TIMESCALE = 1.6
     for i in range(TRIALS):
         for cf in allcfs.crazyflies:
             cf.uploadTrajectory(0, 0, traj1)
 
-        allcfs.takeoff(targetHeight=0.7, duration=3.0)
-        timeHelper.sleep(5)
+        allcfs.setParam('stabilizer.controller', 2)
+
+        allcfs.takeoff(targetHeight=0.6, duration=3.0)
+        timeHelper.sleep(4.)
         for cf in allcfs.crazyflies:
-            pos = np.array(cf.initialPosition) + np.array([0, 0, 0.7])
+            pos = np.array(cf.initialPosition) + np.array([0, 0, 0.6])
             cf.goTo(pos, 0, 2.0)
         timeHelper.sleep(3.0)
 
         for cf in allcfs.crazyflies:
-            cf.setParam("usd/logging", 1)
+            cf.setParam("usd.logging", 1)
 
         allcfs.startTrajectory(0, timescale=TIMESCALE)
         timeHelper.sleep(traj1.duration * TIMESCALE + 2.0)
@@ -36,7 +41,7 @@ def main():
         # timeHelper.sleep(traj1.duration * TIMESCALE + 2.0)
 
         for cf in allcfs.crazyflies:
-            cf.setParam("usd/logging", 0)
+            cf.setParam("usd.logging", 0)
 
         allcfs.land(targetHeight=0.06, duration=2.0)
         timeHelper.sleep(3.0)
